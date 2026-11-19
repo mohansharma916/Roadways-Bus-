@@ -127,7 +127,7 @@
       line-height: 1;
     }
 
-    /* Unified Road Network Container (Horns + Oval Roundabout) */
+    /* Unified Road Network Container (Horns + Oval Roundabout + Trapezium Neck) */
     .track-network-container {
       position: absolute;
       top: 0;
@@ -204,20 +204,26 @@
         </radialGradient>
       </defs>
       
-      <!-- Road Surface Fill (#7a7d90) connecting from device sides and around the ring (unmerged from trapezium) -->
+      <!-- Unified Road Surface Fill (#7a7d90) -->
       <path d="M -15,-10 C 60,35 150,75 243.6,126.1 A 345,88 0 0,1 756.4,126.1 C 850,75 940,35 1015,-10 
                L 1015,85 
-               C 940,110 880,135 834.8,163.7 A 345,88 0 0,1 165.2,163.7 C 120,135 60,110 -15,85 
+               C 940,110 880,135 834.8,163.7 A 345,88 0 0,1 600,269.2 L 600,320 
+               L 400,320 
+               L 400,269.2 A 345,88 0 0,1 165.2,163.7 C 120,135 60,110 -15,85 
                Z" 
             fill="#7a7d90" 
             mask="url(#roundabout-island-hole)" />
 
-      <!-- Top Continuous Curb Line (#e1e6ec) spanning left device side, ring top, and right device side -->
+      <!-- Top Continuous Curb Line (#e1e6ec) spanning left horn, ring top, and right horn -->
       <path d="M -15,-10 C 60,35 150,75 243.6,126.1 A 345,88 0 0,1 756.4,126.1 C 850,75 940,35 1015,-10" 
             fill="none" stroke="#e1e6ec" stroke-width="5.5" stroke-linecap="round" />
 
-      <!-- Bottom Continuous Curb Line (#e1e6ec) spanning right device side, around ring bottom, to left device side -->
-      <path d="M 1015,85 C 940,110 880,135 834.8,163.7 A 345,88 0 0,1 165.2,163.7 C 120,135 60,110 -15,85" 
+      <!-- Right Lower Curb Line (#e1e6ec) curving from right corner into roundabout and down into trapezium (wide opening) -->
+      <path d="M 1015,85 C 940,110 880,135 834.8,163.7 A 345,88 0 0,1 600,269.2 L 600,320" 
+            fill="none" stroke="#e1e6ec" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+
+      <!-- Left Lower Curb Line (#e1e6ec) curving from trapezium up through roundabout and out to left corner (wide opening) -->
+      <path d="M 400,320 L 400,269.2 A 345,88 0 0,1 165.2,163.7 C 120,135 60,110 -15,85" 
             fill="none" stroke="#e1e6ec" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
 
       <!-- Inner Island Closed Ring Curb (#e1e6ec) -->
@@ -1363,19 +1369,18 @@
     const container = document.getElementById('canvas-container');
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xfff1f2); // Soft Sakura Daylight Sky
-    scene.fog = new THREE.Fog(0xfff1f2, 40, 140); // Soft sakura depth fog
+    scene.fog = new THREE.Fog(0xfff1f2, 60, 160); // Clean top-down clarity
 
-    // Angled 3D Perspective Camera: Viewed from bottom side (South) looking forward (North) into park
     const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.up.set(0, 1, 0); // Standard Y-up
+    camera.up.set(0, 1, 0); // Standard Y-up for angled view from bottom side
 
     function updateTopDownCamera() {
       const isPortrait = window.innerHeight > window.innerWidth;
       camera.aspect = window.innerWidth / window.innerHeight;
-      camera.fov = isPortrait ? 46 : 38;
-      // Positioned low at South (+Z) looking forward (North) into the park from the bottom side (angle from top strongly reduced)
-      const camY = isPortrait ? 16 : 12;
-      const camZ = isPortrait ? 46 : 38;
+      camera.fov = isPortrait ? 44 : 38;
+      // Positioned at South (+Z) looking forward (North, -Z) into the park from the bottom side
+      const camY = isPortrait ? 30 : 24;
+      const camZ = isPortrait ? 42 : 34;
       const targetZ = isPortrait ? 8 : 4;
       camera.position.set(0, camY, camZ);
       camera.lookAt(0, 0, targetZ);

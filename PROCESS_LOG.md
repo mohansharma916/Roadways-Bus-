@@ -39,14 +39,16 @@ This document records the step-by-step progress, specifications, design guidelin
      - **Unlock Slots (3 rightmost)**: `2px solid #2ecc71` green border with bold green `+` symbol centered inside.
      - Fitting: Contained in one single row inside the trapezium with generous clearance from top neck, bottom boundary, and side sloped edges.
 3. **Unified Track & Roundabout Network (`.track-network-container`)**:
-   - Layout Architecture: Merged into a unified SVG spanning the upper 40% of the screen (`viewBox="0 0 1000 400"`), eliminating sub-pixel CSS offsets and coordinate mismatches.
+   - Layout Architecture: Merged into a unified SVG spanning the upper 40% of the screen (`viewBox="0 0 1000 400"`), eliminating sub-pixel CSS offsets and coordinate mismatches. Pure 2D vector overlay (no CSS `perspective` or `rotateX`).
    - Oval Roundabout Dimensions:
-     - Complete closed oval roundabout ($C_x=500, C_y=185, R_x=345, R_y=88$), with inner island mask ($r_x=160, r_y=35$) and continuous inner and outer curbs (`#e1e6ec`, 5.5px).
-     - **Completely Unmerged from Trapezium**: The ring is distinct and closed with its bottom curb passing at $Y=273$, leaving a clean open park clearance (~47 viewBox units) above the trapezium top edge ($Y=320$). It is strictly not merged into the trapezium.
+     - Outer oval radius: $R_x=345, R_y=88$.
+     - Center island: Masked hollow hole ($C_x=500, C_y=185, r_x=160, r_y=35$) with inner curb (`#e1e6ec`, 5.5px).
+   - Bottom Trapezium Highway Connection:
+     - 200 viewBox units wide ($X=400$ to $X=600$), creating a wide road highway connection bridging the oval roundabout down into the trapezium.
    - Dual Feeder Roads from Device Sides:
-     - Feeder roads connect directly from the device screen sides ($X=-15$ to $X=1015$), spanning edge-to-edge across the screen without gaps or floating ends.
+     - Feeder roads connect directly and seamlessly from the device screen sides ($X=-15$ to $X=1015$), spanning edge-to-edge across the screen without gaps or open ends.
      - Top curb: continuous curve from top-left screen corner across the ring top to top-right screen corner.
-     - Bottom curb: continuous curve from right device edge ($X=1015, Y=85$), sweeping smoothly around the bottom of the ring ($X=500, Y=273$), and curving out to the left device edge ($X=-15, Y=85$).
+     - Lower curbs: flow smoothly from screen corners around the roundabout and down to the trapezium connection at $X=400$ and $X=600$.
      - Road surface (`#7a7d90`) is one continuous solid polygon.
 
 4. **Chilbi ("Candy Bean") Characters Walking System (`#chilbi-characters-layer`)**:
@@ -102,6 +104,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 28 | 2026-11-19 | Reverted Chilbi characters back to original candy bean models, and changed the view angle of the scene with 3D perspective (25° tilt from bottom side) and lowered Three.js camera angle. |
 | 29 | 2026-11-19 | Reduced top-down view angle of the ring further to 38° tilt and lowered Three.js camera (camY=16, camZ=46), keeping original Chilbi path-facing heading. |
 | 30 | 2026-11-19 | Unmerged ring from trapezium to make ring a distinct closed oval, restored feeder roads connecting edge-to-edge from device screen sides, and removed CSS perspective/rotateX. |
+| 31 | 2026-11-19 | Restored clean original highway connection (200px wide) between ring and trapezium, edge-to-edge feeder roads from device sides, original Chilbi candy beans, and stable angled 3D camera. |
 
 ---
 
