@@ -229,53 +229,67 @@
       <!-- Inner Island Closed Ring Curb (#e1e6ec) -->
       <ellipse cx="500" cy="185" rx="160" ry="35" fill="none" stroke="#e1e6ec" stroke-width="5.5" />
 
-      <!-- Animated Chilbi ("Bean") Characters Layer -->
+      <!-- Animated Chilbi ("Bean") Characters Layer (Upright 2.5D Characters viewed from bottom side) -->
       <g id="chilbi-characters-layer">
-        <!-- Left Chilbi Character (Coral Red Candy Bean) -->
-        <g id="chilbi-red" transform="translate(-100, -100)">
-          <!-- Ground Shadow -->
-          <ellipse class="chilbi-shadow" cx="0" cy="12" rx="13" ry="6" fill="rgba(15, 20, 35, 0.35)" />
-          <!-- Left Foot -->
-          <rect id="chilbi-red-foot-l" x="-9" y="5" width="6" height="11" rx="3" fill="#b71540" />
-          <!-- Right Foot -->
-          <rect id="chilbi-red-foot-r" x="3" y="5" width="6" height="11" rx="3" fill="#b71540" />
-          <!-- Body Group -->
+        <!-- Left Chilbi Character (Coral Red Candy Bean - Upright) -->
+        <g id="chilbi-red" class="chilbi-container" transform="translate(-100, -100)">
+          <!-- Ground Shadow beneath feet -->
+          <ellipse class="chilbi-ground-shadow" cx="0" cy="0" rx="16" ry="6" fill="rgba(15, 20, 35, 0.35)" />
+          <!-- Left Leg & Foot -->
+          <rect id="chilbi-red-foot-l" x="-10" y="-8" width="6.5" height="12" rx="3.2" fill="#b71540" />
+          <!-- Right Leg & Foot -->
+          <rect id="chilbi-red-foot-r" x="3.5" y="-8" width="6.5" height="12" rx="3.2" fill="#b71540" />
+          <!-- Upright Body & Head Group -->
           <g id="chilbi-red-body-group">
-            <!-- Bean Capsule Body -->
-            <rect x="-12" y="-16" width="24" height="28" rx="12" fill="url(#chilbi-grad-red-body)" />
-            <!-- Head Dome -->
-            <circle cx="0" cy="-12" r="11" fill="url(#chilbi-grad-red-head)" />
-            <!-- 3D Gloss Highlight -->
-            <ellipse cx="-3.5" cy="-16" rx="4" ry="2.5" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 -3.5 -16)" />
-            <circle cx="3.5" cy="-12" r="1.2" fill="rgba(255, 255, 255, 0.5)" />
-            <!-- Left Arm -->
-            <rect id="chilbi-red-arm-l" x="-16" y="-8" width="5" height="13" rx="2.5" fill="#e55039" />
-            <!-- Right Arm -->
-            <rect id="chilbi-red-arm-r" x="11" y="-8" width="5" height="13" rx="2.5" fill="#e55039" />
+            <!-- Left Side Arm -->
+            <rect id="chilbi-red-arm-l" x="-18" y="-30" width="5.5" height="16" rx="2.7" fill="#e55039" />
+            <!-- Right Side Arm -->
+            <rect id="chilbi-red-arm-r" x="12.5" y="-30" width="5.5" height="16" rx="2.7" fill="#e55039" />
+            <!-- Upright Bean Torso -->
+            <rect x="-13" y="-38" width="26" height="32" rx="13" fill="url(#chilbi-grad-red-body)" />
+            <!-- Round Head Dome -->
+            <circle cx="0" cy="-44" r="13" fill="url(#chilbi-grad-red-head)" />
+            <!-- 3D Specular Highlight -->
+            <ellipse cx="-4" cy="-48" rx="5" ry="3" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 -4 -48)" />
+            <circle cx="4" cy="-44" r="1.5" fill="rgba(255, 255, 255, 0.5)" />
+            <!-- Cute Chibi Eyes (visible when walking towards camera/trapezium) -->
+            <g id="chilbi-red-face">
+              <ellipse cx="-4.5" cy="-41" rx="2" ry="3" fill="#1e1e28" />
+              <ellipse cx="4.5" cy="-41" rx="2" ry="3" fill="#1e1e28" />
+              <circle cx="-5" cy="-42" r="0.8" fill="#ffffff" />
+              <circle cx="4" cy="-42" r="0.8" fill="#ffffff" />
+            </g>
           </g>
         </g>
 
-        <!-- Right Chilbi Character (Turquoise Cyan Candy Bean) -->
-        <g id="chilbi-cyan" transform="translate(-100, -100)">
-          <!-- Ground Shadow -->
-          <ellipse class="chilbi-shadow" cx="0" cy="12" rx="13" ry="6" fill="rgba(15, 20, 35, 0.35)" />
-          <!-- Left Foot -->
-          <rect id="chilbi-cyan-foot-l" x="-9" y="5" width="6" height="11" rx="3" fill="#006266" />
-          <!-- Right Foot -->
-          <rect id="chilbi-cyan-foot-r" x="3" y="5" width="6" height="11" rx="3" fill="#006266" />
-          <!-- Body Group -->
+        <!-- Right Chilbi Character (Turquoise Cyan Candy Bean - Upright) -->
+        <g id="chilbi-cyan" class="chilbi-container" transform="translate(-100, -100)">
+          <!-- Ground Shadow beneath feet -->
+          <ellipse class="chilbi-ground-shadow" cx="0" cy="0" rx="16" ry="6" fill="rgba(15, 20, 35, 0.35)" />
+          <!-- Left Leg & Foot -->
+          <rect id="chilbi-cyan-foot-l" x="-10" y="-8" width="6.5" height="12" rx="3.2" fill="#006266" />
+          <!-- Right Leg & Foot -->
+          <rect id="chilbi-cyan-foot-r" x="3.5" y="-8" width="6.5" height="12" rx="3.2" fill="#006266" />
+          <!-- Upright Body & Head Group -->
           <g id="chilbi-cyan-body-group">
-            <!-- Bean Capsule Body -->
-            <rect x="-12" y="-16" width="24" height="28" rx="12" fill="url(#chilbi-grad-cyan-body)" />
-            <!-- Head Dome -->
-            <circle cx="0" cy="-12" r="11" fill="url(#chilbi-grad-cyan-head)" />
-            <!-- 3D Gloss Highlight -->
-            <ellipse cx="-3.5" cy="-16" rx="4" ry="2.5" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 -3.5 -16)" />
-            <circle cx="3.5" cy="-12" r="1.2" fill="rgba(255, 255, 255, 0.5)" />
-            <!-- Left Arm -->
-            <rect id="chilbi-cyan-arm-l" x="-16" y="-8" width="5" height="13" rx="2.5" fill="#12cbc4" />
-            <!-- Right Arm -->
-            <rect id="chilbi-cyan-arm-r" x="11" y="-8" width="5" height="13" rx="2.5" fill="#12cbc4" />
+            <!-- Left Side Arm -->
+            <rect id="chilbi-cyan-arm-l" x="-18" y="-30" width="5.5" height="16" rx="2.7" fill="#12cbc4" />
+            <!-- Right Side Arm -->
+            <rect id="chilbi-cyan-arm-r" x="12.5" y="-30" width="5.5" height="16" rx="2.7" fill="#12cbc4" />
+            <!-- Upright Bean Torso -->
+            <rect x="-13" y="-38" width="26" height="32" rx="13" fill="url(#chilbi-grad-cyan-body)" />
+            <!-- Round Head Dome -->
+            <circle cx="0" cy="-44" r="13" fill="url(#chilbi-grad-cyan-head)" />
+            <!-- 3D Specular Highlight -->
+            <ellipse cx="-4" cy="-48" rx="5" ry="3" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 -4 -48)" />
+            <circle cx="4" cy="-44" r="1.5" fill="rgba(255, 255, 255, 0.5)" />
+            <!-- Cute Chibi Eyes (visible when walking towards camera/trapezium) -->
+            <g id="chilbi-cyan-face">
+              <ellipse cx="-4.5" cy="-41" rx="2" ry="3" fill="#1e1e28" />
+              <ellipse cx="4.5" cy="-41" rx="2" ry="3" fill="#1e1e28" />
+              <circle cx="-5" cy="-42" r="0.8" fill="#ffffff" />
+              <circle cx="4" cy="-42" r="0.8" fill="#ffffff" />
+            </g>
           </g>
         </g>
       </g>
@@ -1369,23 +1383,21 @@
     const container = document.getElementById('canvas-container');
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xfff1f2); // Soft Sakura Daylight Sky
-    scene.fog = new THREE.Fog(0xfff1f2, 50, 300); // Clean top-down clarity
+    scene.fog = new THREE.Fog(0xfff1f2, 40, 140); // Soft sakura depth fog
 
-    // True Direct Top-Down Orthographic Camera: Zero oblique tilt, zero perspective distortion towards bottom
-    const camera = new THREE.OrthographicCamera(-40, 40, 40, -40, 0.1, 1000);
-    camera.up.set(0, 0, -1); // Directly from top: -Z points to top of screen
+    // Angled 3D Perspective Camera: Viewed from bottom side (South) looking forward (North) into park
+    const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.up.set(0, 1, 0); // Standard Y-up
 
     function updateTopDownCamera() {
       const isPortrait = window.innerHeight > window.innerWidth;
-      const aspect = window.innerWidth / window.innerHeight;
-      const fSize = isPortrait ? 82 : 62;
-      camera.left = -fSize * aspect / 2;
-      camera.right = fSize * aspect / 2;
-      camera.top = fSize / 2;
-      camera.bottom = -fSize / 2;
-      // Position directly above the visible park area (Z shifted slightly to center in top visible area)
-      const targetZ = isPortrait ? 18 : 10;
-      camera.position.set(0, 100, targetZ);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.fov = isPortrait ? 42 : 36;
+      // Positioned at South (+Z) and elevated (+Y), looking forward and slightly down into the park
+      const camY = isPortrait ? 38 : 30;
+      const camZ = isPortrait ? 40 : 32;
+      const targetZ = isPortrait ? 4 : 0;
+      camera.position.set(0, camY, camZ);
       camera.lookAt(0, 0, targetZ);
       camera.updateProjectionMatrix();
     }
@@ -1695,6 +1707,7 @@
       const redFootR = document.getElementById('chilbi-red-foot-r');
       const redArmL = document.getElementById('chilbi-red-arm-l');
       const redArmR = document.getElementById('chilbi-red-arm-r');
+      const redFace = document.getElementById('chilbi-red-face');
 
       const cyanElem = document.getElementById('chilbi-cyan');
       const cyanBody = document.getElementById('chilbi-cyan-body-group');
@@ -1702,6 +1715,7 @@
       const cyanFootR = document.getElementById('chilbi-cyan-foot-r');
       const cyanArmL = document.getElementById('chilbi-cyan-arm-l');
       const cyanArmR = document.getElementById('chilbi-cyan-arm-r');
+      const cyanFace = document.getElementById('chilbi-cyan-face');
 
       if (!redElem || !cyanElem) return;
 
@@ -1735,7 +1749,7 @@
       function updateChilbiFrame(now) {
         const tSec = (now - startTime) / 1000;
 
-        // 1. UPDATE LEFT CHILBI (RED)
+        // 1. UPDATE LEFT CHILBI (RED) - Upright 2.5D Character
         let redPos;
         if (tSec < feederDuration) {
           const u = tSec / feederDuration;
@@ -1749,10 +1763,13 @@
           const dy = ringRy * Math.cos(theta);
           redPos = { x, y, dx, dy };
         }
-        const redHeading = Math.atan2(redPos.dy, redPos.dx) * (180 / Math.PI) + 90;
-        redElem.setAttribute('transform', `translate(${redPos.x.toFixed(2)}, ${redPos.y.toFixed(2)}) rotate(${redHeading.toFixed(1)})`);
+        // Depth perspective scale: smaller at top of ring (y~124), larger near trapezium (y~246)
+        const depthScaleRed = Math.max(0.85, Math.min(1.15, 0.88 + ((redPos.y - 124) / 122) * 0.24));
+        const facingXRed = redPos.dx >= 0 ? 1 : -1;
+        redElem.setAttribute('transform', `translate(${redPos.x.toFixed(2)}, ${redPos.y.toFixed(2)}) scale(${(facingXRed * depthScaleRed).toFixed(3)}, ${depthScaleRed.toFixed(3)})`);
+        if (redFace) redFace.style.opacity = redPos.dy > -25 ? '1' : '0.15';
 
-        // 2. UPDATE RIGHT CHILBI (CYAN)
+        // 2. UPDATE RIGHT CHILBI (CYAN) - Upright 2.5D Character
         let cyanPos;
         if (tSec < feederDuration) {
           const u = tSec / feederDuration;
@@ -1766,39 +1783,39 @@
           const dy = ringRy * Math.cos(theta);
           cyanPos = { x, y, dx, dy };
         }
-        const cyanHeading = Math.atan2(cyanPos.dy, cyanPos.dx) * (180 / Math.PI) + 90;
-        cyanElem.setAttribute('transform', `translate(${cyanPos.x.toFixed(2)}, ${cyanPos.y.toFixed(2)}) rotate(${cyanHeading.toFixed(1)})`);
+        const depthScaleCyan = Math.max(0.85, Math.min(1.15, 0.88 + ((cyanPos.y - 124) / 122) * 0.24));
+        const facingXCyan = cyanPos.dx >= 0 ? 1 : -1;
+        cyanElem.setAttribute('transform', `translate(${cyanPos.x.toFixed(2)}, ${cyanPos.y.toFixed(2)}) scale(${(facingXCyan * depthScaleCyan).toFixed(3)}, ${depthScaleCyan.toFixed(3)})`);
+        if (cyanFace) cyanFace.style.opacity = cyanPos.dy > -25 ? '1' : '0.15';
 
-        // 3. WADDLING BOUNCE & LIMB ANIMATION
+        // 3. 2.5D WADDLING BOUNCE & LIMB ANIMATIONS
         const wPhaseRed = tSec * waddleFreq;
-        const bounceR = Math.abs(Math.sin(wPhaseRed)) * 2.8;
-        const tiltR = Math.sin(wPhaseRed) * 6.5;
-        const footLR = Math.sin(wPhaseRed) * 4.0;
+        const bounceR = Math.abs(Math.sin(wPhaseRed)) * 3.2;
+        const tiltR = Math.sin(wPhaseRed) * 5.5;
+        const footLR = Math.sin(wPhaseRed) * 4.5;
         const footRR = -footLR;
-        const armLR = Math.sin(wPhaseRed) * 22.0;
-        const armRR = -armLR;
+        const armSwingR = Math.sin(wPhaseRed) * 20.0;
         const squishR = 1.0 + Math.sin(wPhaseRed * 2) * 0.04;
 
         redBody.setAttribute('transform', `translate(0, ${-bounceR.toFixed(2)}) rotate(${tiltR.toFixed(1)}) scale(1, ${squishR.toFixed(3)})`);
         redFootL.setAttribute('transform', `translate(0, ${footLR.toFixed(2)})`);
         redFootR.setAttribute('transform', `translate(0, ${footRR.toFixed(2)})`);
-        redArmL.setAttribute('transform', `rotate(${armLR.toFixed(1)}, -13, -2)`);
-        redArmR.setAttribute('transform', `rotate(${armRR.toFixed(1)}, 13, -2)`);
+        redArmL.setAttribute('transform', `rotate(${armSwingR.toFixed(1)}, -15, -24)`);
+        redArmR.setAttribute('transform', `rotate(${-armSwingR.toFixed(1)}, 15, -24)`);
 
         const wPhaseCyan = tSec * waddleFreq + 1.2;
-        const bounceC = Math.abs(Math.sin(wPhaseCyan)) * 2.8;
-        const tiltC = Math.sin(wPhaseCyan) * 6.5;
-        const footLC = Math.sin(wPhaseCyan) * 4.0;
+        const bounceC = Math.abs(Math.sin(wPhaseCyan)) * 3.2;
+        const tiltC = Math.sin(wPhaseCyan) * 5.5;
+        const footLC = Math.sin(wPhaseCyan) * 4.5;
         const footRC = -footLC;
-        const armLC = Math.sin(wPhaseCyan) * 22.0;
-        const armRC = -armLC;
+        const armSwingC = Math.sin(wPhaseCyan) * 20.0;
         const squishC = 1.0 + Math.sin(wPhaseCyan * 2) * 0.04;
 
         cyanBody.setAttribute('transform', `translate(0, ${-bounceC.toFixed(2)}) rotate(${tiltC.toFixed(1)}) scale(1, ${squishC.toFixed(3)})`);
         cyanFootL.setAttribute('transform', `translate(0, ${footLC.toFixed(2)})`);
         cyanFootR.setAttribute('transform', `translate(0, ${footRC.toFixed(2)})`);
-        cyanArmL.setAttribute('transform', `rotate(${armLC.toFixed(1)}, -13, -2)`);
-        cyanArmR.setAttribute('transform', `rotate(${armRC.toFixed(1)}, 13, -2)`);
+        cyanArmL.setAttribute('transform', `rotate(${armSwingC.toFixed(1)}, -15, -24)`);
+        cyanArmR.setAttribute('transform', `rotate(${-armSwingC.toFixed(1)}, 15, -24)`);
 
         requestAnimationFrame(updateChilbiFrame);
       }
