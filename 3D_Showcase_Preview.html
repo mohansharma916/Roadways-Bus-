@@ -84,18 +84,27 @@
       height: 100%;
       display: block;
     }
-    /* Vertical Rectangular Box inside Trapezium (width less than height: 42px x 68px, fill #626479 with 2px white border, 8px corner radius, tilted left -30deg) */
-    .trapezium-box {
+    /* 9 Angled Rectangular Parking Bays inside Trapezium */
+    .trapezium-boxes-container {
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) rotate(-30deg);
-      width: 42px;
-      height: 68px;
+      transform: translate(-50%, -50%);
+      width: 82vw;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+    }
+    .trapezium-box {
+      width: 30px;
+      height: 54px;
       background-color: #626479;
       border: 2px solid #ffffff;
       border-radius: 8px;
       box-sizing: border-box;
+      transform: rotate(-30deg);
+      flex-shrink: 0;
       pointer-events: none;
     }
 
@@ -184,8 +193,18 @@
     <svg class="trapezium-shape-svg" viewBox="0 0 1600 1000" preserveAspectRatio="none">
       <path d="M 0,1000 L 328,180 Q 400,0 480,0 L 1120,0 Q 1200,0 1272,180 L 1600,1000 Z" fill="#7a7d90" />
     </svg>
-    <!-- Small Rectangular Box with 2px border #626479 -->
-    <div class="trapezium-box"></div>
+    <!-- 9 Angled Rectangular Boxes (Bus Bays) inside Trapezium -->
+    <div class="trapezium-boxes-container">
+      <div class="trapezium-box"></div>
+      <div class="trapezium-box"></div>
+      <div class="trapezium-box"></div>
+      <div class="trapezium-box"></div>
+      <div class="trapezium-box"></div>
+      <div class="trapezium-box"></div>
+      <div class="trapezium-box"></div>
+      <div class="trapezium-box"></div>
+      <div class="trapezium-box"></div>
+    </div>
   </div>
 
   <!-- Bottom 60% Boundary Panel (#d3daed with 3D #e1e6ec top border) -->

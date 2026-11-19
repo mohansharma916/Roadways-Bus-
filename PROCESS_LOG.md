@@ -29,12 +29,14 @@ This document records the step-by-step progress, specifications, design guidelin
    - Upper Width: Covers **80% of the screen width** at the top edge ($Y=70\%$), leaving a 10% margin on each side.
    - Bottom Width & Shape: Bottom corners extended so that **30% is off-screen/invisible on both the left and right sides** (`left: -30%`, `width: 160%`).
    - **Rounded Top Corners**: Rendered with an SVG path (`preserveAspectRatio="none"`) using quadratic bezier curves (`Q 400,0 480,0` and `Q 1200,0 1272,180`) to provide a smooth, organic corner radius where the top edge bends into the diagonal sloped sides, eliminating sharp corners.
-   - **Internal Rectangular Box (`.trapezium-box`)**:
-     - Vertical rectangular box centered inside the trapezium (`width: 42px; height: 68px`).
+   - **Angled Rectangular Parking Bays (`.trapezium-boxes-container` & `.trapezium-box`)**:
+     - 9 identical vertical rectangular bus bays evenly spaced in a horizontal flex container across the trapezium (`width: 82vw; justify-content: space-between`).
+     - Dimensions: `width: 30px; height: 54px`.
      - Corner radius: `8px` rounded corners.
-     - Orientation: Tilted 30° towards the left (`transform: translate(-50%, -50%) rotate(-30deg)`).
+     - Orientation: Tilted 30° towards the left (`transform: rotate(-30deg)`).
      - Fill Color: `#626479`.
      - Border: `2px solid #ffffff` (white).
+     - Fitting: Entirely contained inside the trapezium with generous clearance from top neck, bottom boundary, and side sloped edges.
 3. **Unified Track & Roundabout Network (`.track-network-container`)**:
    - Layout Architecture: Merged into a unified SVG spanning the upper 40% of the screen (`viewBox="0 0 1000 400"`), eliminating sub-pixel CSS offsets and coordinate mismatches.
    - Oval Roundabout Dimensions:
@@ -77,6 +79,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 19 | 2026-11-19 | Expanded trapezium height 50px downwards (lowered bottom boundary to calc(60% - 50px)) and reduced bottom block height by 50px. |
 | 20 | 2026-11-19 | Added smooth corner radius to trapezium top corners where they bend into sloped sides using SVG quadratic beziers. |
 | 21 | 2026-11-19 | Added 8px corner radius to trapezium inner rectangular box and tilted it 30° towards the left. |
+| 22 | 2026-11-19 | Created 8 additional identical angled rectangles (9 total) and adjusted them evenly inside the trapezium using an 82vw flex container. |
 
 ---
 
