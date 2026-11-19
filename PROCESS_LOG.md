@@ -13,8 +13,8 @@ This document records the step-by-step progress, specifications, design guidelin
   - **Zero Leaves**: Strictly no leaf particles or petal meshes on the ground or in the air.
   - **Zero Obstacles/Vehicles/Characters**: Completely clean plane park surface.
 - **Camera Perspective & Scene View Angle**:
-  - Three.js camera: Angled view looking into the cherry blossom park from the bottom side (`camY = 30, camZ = 42, targetZ = 8`, `camera.up.set(0, 1, 0)`). Mobile FOV reverted back to 44° (landscape 38°).
-  - Overlay Track Network: Pure 2D screen overlay (no CSS `perspective` or `rotateX`), ensuring pixel-perfect screen-edge alignment and preserving crisp vector geometry.
+  - Three.js camera: Angled view looking into the cherry blossom park from the bottom side (`camY = 30, camZ = 42, targetZ = 8`, `camera.up.set(0, 1, 0)`). Mobile FOV set to 44° (landscape 38°).
+  - Overlay Track Network: Approach 1 implemented — 3D tilted view looking from the bottom side using `perspective: 1200px; transform: rotateX(24deg); transform-origin: 50% 85%;` on `.track-network-container`, keeping feeder roads attached to screen sides while providing an angled perspective of the ring and Chilbi characters.
   - Completely **static**: No camera dragging, panning, orbit rotation, or idle bobbing/movement.
 
 ### B. UI Overlay Structure
@@ -107,6 +107,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 31 | 2026-11-19 | Restored clean original highway connection (200px wide) between ring and trapezium, edge-to-edge feeder roads from device sides, original Chilbi candy beans, and stable angled 3D camera. |
 | 32 | 2026-11-20 | Set mobile camera field of view (FOV) to 90° for wider perspective view. |
 | 33 | 2026-11-20 | Reverted mobile camera field of view (FOV) back to 44° (landscape 38°). |
+| 34 | 2026-11-20 | Implemented Approach 1: applied CSS 3D perspective and rotateX(24deg) with bottom pivot (transform-origin: 50% 85%) on the track network container, providing an angled view looking at the ring and Chilbi from the bottom side without detaching feeder roads from device edges. Isolated Chilbi walk script. |
 
 ---
 

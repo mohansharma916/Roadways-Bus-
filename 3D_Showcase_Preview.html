@@ -154,6 +154,9 @@
       height: 40%;
       z-index: 4;
       pointer-events: none;
+      perspective: 1200px;
+      transform: rotateX(24deg);
+      transform-origin: 50% 85%;
     }
 
     .track-network-svg {
@@ -1409,14 +1412,19 @@
     }
     updateTopDownCamera();
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.25;
-    container.appendChild(renderer.domElement);
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.25;
+      container.appendChild(renderer.domElement);
+    } catch (e) {
+      console.warn("WebGL renderer init note:", e);
+    }
 
     // Static View - No draggable controls, No mouse/touch dragging
 
@@ -1685,27 +1693,24 @@
     scene.add(blossomPark);
 
     function renderStatic() {
-      renderer.render(scene, camera);
+      if (renderer) renderer.render(scene, camera);
     }
 
     // Window Resize Handler (re-renders static frame)
     window.addEventListener('resize', () => {
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      if (renderer) renderer.setSize(window.innerWidth, window.innerHeight);
       updateTopDownCamera();
       renderStatic();
     });
 
     // Pure Static Render (No animation, No draggable interaction)
     renderStatic();
+  </script>
 
-    // =========================================================================
-    // --- CHILBI ("CANDY BEAN") CHARACTER WALKING ANIMATION SYSTEM ---
-    // Two Chibi characters:
-    //   1. Red Chilbi: Walks in from top-left screen corner via left horn road.
-    //   2. Cyan Chilbi: Walks in from top-right screen corner via right horn road.
-    // When each character reaches the roundabout, it continuously circles round
-    // and round the oval ring in a perpetual counter-clockwise loop with waddling bounce.
-    // =========================================================================
+  <!-- ========================================================================= -->
+  <!-- --- CHILBI ("CANDY BEAN") CHARACTER WALKING ANIMATION SYSTEM --- -->
+  <!-- ========================================================================= -->
+  <script>
     (function initChilbiWalkers() {
       const redElem = document.getElementById('chilbi-red');
       const redBody = document.getElementById('chilbi-red-body-group');
@@ -1748,7 +1753,7 @@
         return { x, y, dx, dy };
       }
 
-      const startTime = performance.now();
+      const startTime = performance.now() - 6500;
 
       function updateChilbiFrame(now) {
         const tSec = (now - startTime) / 1000;
@@ -1821,6 +1826,7 @@
         requestAnimationFrame(updateChilbiFrame);
       }
 
+      updateChilbiFrame(performance.now() + 6000);
       requestAnimationFrame(updateChilbiFrame);
     })();
   </script>
