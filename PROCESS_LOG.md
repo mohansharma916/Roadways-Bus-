@@ -13,7 +13,8 @@ This document records the step-by-step progress, specifications, design guidelin
   - **Zero Leaves**: Strictly no leaf particles or petal meshes on the ground or in the air.
   - **Zero Obstacles/Vehicles/Characters**: Completely clean plane park surface.
 - **Camera Perspective**:
-  - Direct bird's-eye top-down view looking down along the Z/Y axes (`camera.up.set(0, 0, -1)`, `lookAt(0, 0, targetZ)`).
+  - Direct bird's-eye top-down view using `THREE.OrthographicCamera` looking straight down along the Y axis (`camera.up.set(0, 0, -1)`, `lookAt(0, 0, targetZ)`).
+  - True parallel projection with $0^\circ$ perspective divergence, eliminating oblique edge distortion and reducing the angle towards the bottom side to zero.
   - Completely **static**: No camera dragging, panning, orbit rotation, or idle bobbing/movement.
 
 ### B. UI Overlay Structure
@@ -98,6 +99,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 23 | 2026-11-19 | Reduced gap between the 9 angled rectangles in the single row to a compact 12px flex gap (~6px perpendicular spacing) centered inside the trapezium. |
 | 24 | 2026-11-19 | Styled the 4th box from right with golden border (#ffd700) and tilted 'VIP' label, and the 3 rightmost boxes with green borders (#2ecc71) and green '+' symbols. |
 | 25 | 2026-11-19 | Implemented animated Chilbi (bean) characters: Red Chilbi entering from left road and Cyan Chilbi from right road, merging onto roundabout ring and looping round and round. |
+| 26 | 2026-11-19 | Converted scene camera to true direct top-down OrthographicCamera, eliminating perspective distortion and removing the angled tilt towards the bottom side. |
 
 ---
 
