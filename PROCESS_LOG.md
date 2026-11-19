@@ -12,9 +12,11 @@ This document records the step-by-step progress, specifications, design guidelin
   - **Zero Trees**: Strictly no trees permitted in the park.
   - **Zero Leaves**: Strictly no leaf particles or petal meshes on the ground or in the air.
   - **Zero Obstacles/Vehicles/Characters**: Completely clean plane park surface.
-- **Camera Perspective**:
-  - Angled bottom-up perspective view using `THREE.PerspectiveCamera(40, ...)` positioned at `(0, 38, 40)` looking at `(0, 0, 4)` (`camera.up.set(0, 1, 0)`).
-  - Provides a realistic ~43° elevated viewing angle from the bottom/South side looking up into the Cherry Blossom park, giving depth and allowing characters and park structures to be seen from the front/side rather than flat top-down.
+- **Camera Perspective & Scene View Angle**:
+  - Angled view from the bottom side looking forward and slightly up into the scene:
+    - Three.js camera: `PerspectiveCamera(45)` positioned low at South (`camY = 24, camZ = 44`) looking forward at `(0, 0, 6)`.
+    - Track network perspective: `.track-network-container` styled with `perspective: 900px; perspective-origin: 50% 100%` and `.track-network-svg` tilted with `transform-origin: 50% 100%; transform: rotateX(25deg);`.
+    - Eliminates the flat perpendicular overhead view: the ring and feeder roads recede into the distance with authentic 3D depth, viewed from the player's bottom/trapezium vantage point.
   - Completely **static**: No camera dragging, panning, orbit rotation, or idle bobbing/movement.
 
 ### B. UI Overlay Structure
@@ -54,17 +56,12 @@ This document records the step-by-step progress, specifications, design guidelin
      - Road surface (`#7a7d90`) is one continuous solid polygon.
 
 4. **Chilbi ("Candy Bean") Characters Walking System (`#chilbi-characters-layer`)**:
-   - Two distinct upright 2.5D chibi bean characters based on the Unity RoundCharacterGenerator pipeline:
+   - Two distinct candy bean characters based on the Unity RoundCharacterGenerator pipeline:
      - **Red Chilbi**: Coral Red candy finish (`url(#chilbi-grad-red-body)` & `url(#chilbi-grad-red-head)`).
      - **Cyan Chilbi**: Turquoise Cyan candy finish (`url(#chilbi-grad-cyan-body)` & `url(#chilbi-grad-cyan-head)`).
-   - Character Visuals & Upright 2.5D Anatomy:
-     - Ground-contact drop shadow (`rx="16" ry="6"`).
-     - Stepping legs and feet planted at ground contact point $(X, Y)$.
-     - Upright bean torso rising vertically upwards (`rect x="-13" y="-38" width="26" height="32"`).
-     - Round candy head dome (`circle cy="-44" r="13"`) with 3D specular highlight and front-facing cute chibi eyes (`#chilbi-red-face` / `#chilbi-cyan-face`).
-     - Swinging side arms (`arm-l` and `arm-r`) swinging on the left and right sides of the body ($\pm 20^\circ$).
-     - Depth scaling: smaller on the far side of the ring ($0.88\times$ scale at top curve) and larger near the trapezium ($1.12\times$ scale at bottom curve).
-     - Cute front eyes become prominently visible when walking forward towards the camera/trapezium ($dy > -25$).
+   - Character Visuals:
+     - Rounded bean pill body (`24px x 28px`), glossy head dome (`r=11`) with 3D specular highlight ellipses.
+     - Swinging stubby side arms (`width: 5px, height: 13px`), stepping feet (`6px x 11px`), and soft ground drop shadow.
    - **Path Trajectory**:
      - Red Chilbi starts at top-left screen corner ($X=-15, Y=37.5$) and walks along the left curved horn road.
      - Cyan Chilbi starts at top-right screen corner ($X=1015, Y=37.5$) and walks along the right curved horn road.
@@ -72,8 +69,8 @@ This document records the step-by-step progress, specifications, design guidelin
      - At $t=5.0\text{s}$, both characters reach the roundabout ring junctions ($X=281.3, Y=154.25$ and $X=718.7, Y=154.25$).
      - They seamlessly transition onto the oval ring centerline ($C_x=500, C_y=185, R_x=252.5, R_y=61.5$) and circle counter-clockwise round and round continuously at $0.55\text{ rad/s}$ without colliding.
    - **Procedural Waddle & Heading**:
-     - Upright horizontal flip facing: Dynamically flips left/right according to horizontal motion direction $\Delta X$, while keeping the body standing upright.
-     - 60 FPS waddle animation: Procedural vertical bounce ($\pm 3.2\text{px}$), body tilt ($\pm 5.5^\circ$), squish-and-stretch, alternating feet stepping ($\pm 4.5\text{px}$), and swinging side arms ($\pm 20^\circ$).
+     - Tangent heading orientation: Dynamically calculates path velocity $(\Delta X, \Delta Y)$ to face forward along the curve (`rotate(heading)`).
+     - 60 FPS waddle animation: Procedural vertical bounce ($\pm 2.8\text{px}$), body tilt ($\pm 6.5^\circ$), squish-and-stretch, alternating feet stepping ($\pm 4.0\text{px}$), and swinging side arms ($\pm 22^\circ$).
 
 ---
 
@@ -108,6 +105,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 25 | 2026-11-19 | Implemented animated Chilbi (bean) characters: Red Chilbi entering from left road and Cyan Chilbi from right road, merging onto roundabout ring and looping round and round. |
 | 26 | 2026-11-19 | Converted scene camera to true direct top-down OrthographicCamera, eliminating perspective distortion and removing the angled tilt towards the bottom side. |
 | 27 | 2026-11-19 | Adjusted camera to angled bottom-up perspective view and converted Chilbi characters to upright 2.5D beans with visible upright body, swinging side arms, stepping legs, and front-facing eyes when approaching the trapezium. |
+| 28 | 2026-11-19 | Reverted Chilbi characters back to original candy bean models, and changed the view angle of the scene with 3D perspective (25° tilt from bottom side) and lowered Three.js camera angle. |
 
 ---
 
