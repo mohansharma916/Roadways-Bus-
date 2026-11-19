@@ -29,8 +29,11 @@ This document records the step-by-step progress, specifications, design guidelin
    - Upper Width: Expanded to cover **80% of the screen width** at the top edge, leaving only a 10% margin on each side.
    - Bottom Width & Shape: Bottom corners extended so that **30% is off-screen/invisible on both the left and right sides** (`left: -30%`, `width: 160%`, `clip-path: polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%)`).
 3. **Oval Roundabout (`.roundabout-container`)**:
-   - Sits directly above the trapezium panel (`bottom: 70%`, centered horizontally, width `76%`, height `18%`).
+   - Position: Sits directly above and shifted towards the trapezium panel (`bottom: 68.4%`, centered horizontally, width `76%`, height `18%`).
    - Structure: Double-ring oval roundabout composed of an outer oval ring (`rx=188, ry=98`) and an inner oval ring (`rx=112, ry=56`).
+   - Junction & Open Path:
+     - Outer bottom border features an open entryway path (~35-40px gap between $x=185$ and $x=215$) where the oval meets the top-middle of the trapezium.
+     - Road connector joins the asphalt surface (`#7a7d90`) seamlessly from the trapezium top into the roundabout.
    - Styling:
      - Outer & Inner borders: 3D/curb stroke `#e1e6ec` (4.5px).
      - Road track surface: Filled with `#7a7d90` between outer and inner rings.
@@ -51,6 +54,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 7 | 2026-11-19 | Initialized repository tracking, created `PROCESS_LOG.md`, and established per-turn commit routine. |
 | 8 | 2026-11-19 | Widened trapezium upper width to 80% screen width (10% margins) and set height coverage to exactly 10%. |
 | 9 | 2026-11-19 | Created oval roundabout with inner and outer rings (#e1e6ec / #7a7d90) and hollow center above trapezium. |
+| 10 | 2026-11-19 | Shifted roundabout toward trapezium and opened a ~35-40px entrance path in the outer border to merge the roads. |
 
 ---
 
