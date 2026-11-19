@@ -34,13 +34,13 @@
       z-index: 1;
       pointer-events: none; /* Completely static - disables any dragging or touch moving */
     }
-    /* Bottom 60% Rectangular Boundary Panel */
+    /* Bottom Boundary Panel (Reduced by 50px to allow trapezium downward expansion) */
     .bottom-boundary-panel {
       position: absolute;
       bottom: 0;
       left: 0;
       width: 100%;
-      height: 60%;
+      height: calc(60% - 50px);
       background-color: #d3daed;
       border-top: 9px solid #e1e6ec; /* Exact color #e1e6ec */
       border-bottom: none;          /* Bottom border invisible */
@@ -65,13 +65,13 @@
       pointer-events: none;
     }
 
-    /* Trapezium Panel Above the 60% Bottom Panel (height: 10%, upper width wider at 80% screen width leaving 10% margins) */
+    /* Trapezium Panel (Height expanded +50px downwards, bottom pushed down by 50px) */
     .trapezium-panel {
       position: absolute;
-      bottom: 60%;
+      bottom: calc(60% - 50px);
       left: -30%;
       width: 160%;
-      height: 10%;
+      height: calc(10% + 50px);
       background-color: #7a7d90;
       clip-path: polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%);
       z-index: 4;
