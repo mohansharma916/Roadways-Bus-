@@ -27,7 +27,8 @@ This document records the step-by-step progress, specifications, design guidelin
    - Height: **`calc(10% + 50px)`** vertical coverage (expanded downwards by 50px from initial 10%).
    - Fill color: `#7a7d90`.
    - Upper Width: Covers **80% of the screen width** at the top edge ($Y=70\%$), leaving a 10% margin on each side.
-   - Bottom Width & Shape: Bottom corners extended so that **30% is off-screen/invisible on both the left and right sides** (`left: -30%`, `width: 160%`, `clip-path: polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%)`).
+   - Bottom Width & Shape: Bottom corners extended so that **30% is off-screen/invisible on both the left and right sides** (`left: -30%`, `width: 160%`).
+   - **Rounded Top Corners**: Rendered with an SVG path (`preserveAspectRatio="none"`) using quadratic bezier curves (`Q 400,0 480,0` and `Q 1200,0 1272,180`) to provide a smooth, organic corner radius where the top edge bends into the diagonal sloped sides, eliminating sharp corners.
    - **Internal Rectangular Box (`.trapezium-box`)**:
      - Vertical rectangular box centered inside the trapezium with width less than height (`width: 42px; height: 68px`).
      - Fill Color: `#626479`.
@@ -72,6 +73,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 17 | 2026-11-19 | Updated trapezium box: set fill color to #626479 and border to 2px solid white (#ffffff). |
 | 18 | 2026-11-19 | Reshaped trapezium box to vertical orientation (width < height, 42px x 68px). |
 | 19 | 2026-11-19 | Expanded trapezium height 50px downwards (lowered bottom boundary to calc(60% - 50px)) and reduced bottom block height by 50px. |
+| 20 | 2026-11-19 | Added smooth corner radius to trapezium top corners where they bend into sloped sides using SVG quadratic beziers. |
 
 ---
 
