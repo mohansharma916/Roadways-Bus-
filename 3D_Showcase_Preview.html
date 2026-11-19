@@ -77,6 +77,24 @@
       z-index: 4;
       pointer-events: none;
     }
+
+    /* Oval Roundabout Ring (Inner and Outer Ring) Above Trapezium */
+    .roundabout-container {
+      position: absolute;
+      bottom: 70%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 76%;
+      height: 18%;
+      z-index: 4;
+      pointer-events: none;
+    }
+    .roundabout-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      filter: drop-shadow(0 3px 8px rgba(60, 70, 90, 0.22));
+    }
     .watermark-pill {
       position: absolute;
       top: 14px;
@@ -103,7 +121,26 @@
   <div id="canvas-container"></div>
   <div class="watermark-pill">🌸 Plain Cherry Blossom Park &bull; Direct Top-Down View</div>
 
-  <!-- 20% Trapezium Shape (#7a7d90) directly above the 60% bottom panel -->
+  <!-- Oval Roundabout (Inner & Outer Ring, Hollow Center) directly above Trapezium -->
+  <div class="roundabout-container">
+    <svg class="roundabout-svg" viewBox="0 0 400 220" preserveAspectRatio="none">
+      <defs>
+        <!-- Mask for hollow center island: nothing inside -->
+        <mask id="roundabout-center-hole">
+          <rect width="400" height="220" fill="white" />
+          <ellipse cx="200" cy="110" rx="112" ry="56" fill="black" />
+        </mask>
+      </defs>
+      <!-- Road Surface Ring (#7a7d90) with hollow center -->
+      <ellipse cx="200" cy="110" rx="188" ry="98" fill="#7a7d90" mask="url(#roundabout-center-hole)" />
+      <!-- Outer Ring Border (#e1e6ec) -->
+      <ellipse cx="200" cy="110" rx="188" ry="98" fill="none" stroke="#e1e6ec" stroke-width="4.5" />
+      <!-- Inner Ring Border (#e1e6ec) -->
+      <ellipse cx="200" cy="110" rx="112" ry="56" fill="none" stroke="#e1e6ec" stroke-width="4.5" />
+    </svg>
+  </div>
+
+  <!-- Trapezium Shape (#7a7d90) directly above the 60% bottom panel -->
   <div class="trapezium-panel"></div>
 
   <!-- Bottom 60% Boundary Panel (#d3daed with 3D #e1e6ec top border) -->

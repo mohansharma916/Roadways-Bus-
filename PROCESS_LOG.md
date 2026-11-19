@@ -28,6 +28,13 @@ This document records the step-by-step progress, specifications, design guidelin
    - Fill color: `#7a7d90`.
    - Upper Width: Expanded to cover **80% of the screen width** at the top edge, leaving only a 10% margin on each side.
    - Bottom Width & Shape: Bottom corners extended so that **30% is off-screen/invisible on both the left and right sides** (`left: -30%`, `width: 160%`, `clip-path: polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%)`).
+3. **Oval Roundabout (`.roundabout-container`)**:
+   - Sits directly above the trapezium panel (`bottom: 70%`, centered horizontally, width `76%`, height `18%`).
+   - Structure: Double-ring oval roundabout composed of an outer oval ring (`rx=188, ry=98`) and an inner oval ring (`rx=112, ry=56`).
+   - Styling:
+     - Outer & Inner borders: 3D/curb stroke `#e1e6ec` (4.5px).
+     - Road track surface: Filled with `#7a7d90` between outer and inner rings.
+     - Central island: Hollow/empty (`mask="url(#roundabout-center-hole)"`), revealing the cherry blossom park surface underneath.
 
 ---
 
@@ -43,6 +50,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 6 | 2026-11-19 | Adjusted trapezium: lowered height to 12%, expanded width with bottom corners cut off by 30% on both sides. |
 | 7 | 2026-11-19 | Initialized repository tracking, created `PROCESS_LOG.md`, and established per-turn commit routine. |
 | 8 | 2026-11-19 | Widened trapezium upper width to 80% screen width (10% margins) and set height coverage to exactly 10%. |
+| 9 | 2026-11-19 | Created oval roundabout with inner and outer rings (#e1e6ec / #7a7d90) and hollow center above trapezium. |
 
 ---
 
