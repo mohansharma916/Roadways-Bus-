@@ -1377,7 +1377,7 @@
     function updateTopDownCamera() {
       const isPortrait = window.innerHeight > window.innerWidth;
       camera.aspect = window.innerWidth / window.innerHeight;
-      camera.fov = isPortrait ? 44 : 38;
+      camera.fov = isPortrait ? 0 : 38;
       // Positioned at South (+Z) looking forward (North, -Z) into the park from the bottom side
       const camY = isPortrait ? 30 : 24;
       const camZ = isPortrait ? 42 : 34;

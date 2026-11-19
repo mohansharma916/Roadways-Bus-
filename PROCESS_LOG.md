@@ -13,7 +13,7 @@ This document records the step-by-step progress, specifications, design guidelin
   - **Zero Leaves**: Strictly no leaf particles or petal meshes on the ground or in the air.
   - **Zero Obstacles/Vehicles/Characters**: Completely clean plane park surface.
 - **Camera Perspective & Scene View Angle**:
-  - Three.js camera: Angled view looking into the cherry blossom park from the bottom side (`camY = 28, camZ = 40, targetZ = 6`).
+  - Three.js camera: Angled view looking into the cherry blossom park from the bottom side (`camY = 30, camZ = 42, targetZ = 8`, `camera.up.set(0, 1, 0)`). Mobile FOV set to 90° (landscape 38°).
   - Overlay Track Network: Pure 2D screen overlay (no CSS `perspective` or `rotateX`), ensuring pixel-perfect screen-edge alignment and preserving crisp vector geometry.
   - Completely **static**: No camera dragging, panning, orbit rotation, or idle bobbing/movement.
 
@@ -105,6 +105,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 29 | 2026-11-19 | Reduced top-down view angle of the ring further to 38° tilt and lowered Three.js camera (camY=16, camZ=46), keeping original Chilbi path-facing heading. |
 | 30 | 2026-11-19 | Unmerged ring from trapezium to make ring a distinct closed oval, restored feeder roads connecting edge-to-edge from device screen sides, and removed CSS perspective/rotateX. |
 | 31 | 2026-11-19 | Restored clean original highway connection (200px wide) between ring and trapezium, edge-to-edge feeder roads from device sides, original Chilbi candy beans, and stable angled 3D camera. |
+| 32 | 2026-11-20 | Set mobile camera field of view (FOV) to 90° for wider perspective view. |
 
 ---
 
