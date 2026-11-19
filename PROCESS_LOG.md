@@ -34,7 +34,7 @@ This document records the step-by-step progress, specifications, design guidelin
      - Horizontal width reduced from corner edges (`Rx=345, Ry=88`), leaving generous breathing room (~154 units on each side) for sweeping feeder curves.
      - Center island: Masked hollow hole (`cx=500, cy=185, rx=160, ry=35`).
    - Bottom Trapezium Connection:
-     - Width **increased by 30+ pixels** (now 80 viewBox units $\approx 68$ screen px, from $X=460$ to $X=540$), forming a robust road trunk bridging down into the trapezium.
+     - Width **substantially expanded** to 200 viewBox units (~145 screen px, from $X=400$ to $X=600$), creating a wide, prominent highway connection bridging the oval roundabout down into the trapezium.
    - Dual Horn Feeder Roads:
      - Road width widened significantly (~65-70px profile).
      - Curvature smoothed into gentle, organic curves with tangential fillets, eliminating sharp/pointy corners.
@@ -63,6 +63,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 12 | 2026-11-19 | Added dual 40px cow-horn curved roads from top screen corners connecting to roundabout at 30°. |
 | 13 | 2026-11-19 | Shifted ring up by 30px, widened horn roads to ~65px, and removed ring borders at junctions for seamless merge. |
 | 14 | 2026-11-19 | Widened trapezium neck by +30px, reduced oval width from corners, expanded horn widths, and smoothed curves into a unified vector network. |
+| 15 | 2026-11-19 | Expanded connection width between ring and trapezium to 200 units (~145 screen px) for a wide road highway trunk. |
 
 ---
 
