@@ -28,26 +28,20 @@ This document records the step-by-step progress, specifications, design guidelin
    - Fill color: `#7a7d90`.
    - Upper Width: Expanded to cover **80% of the screen width** at the top edge, leaving only a 10% margin on each side.
    - Bottom Width & Shape: Bottom corners extended so that **30% is off-screen/invisible on both the left and right sides** (`left: -30%`, `width: 160%`, `clip-path: polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%)`).
-3. **Oval Roundabout (`.roundabout-container`)**:
-   - Position: Shifted up by 30px (`bottom: calc(67.8% + 30px)`, centered horizontally, width `86%`, height `20%`).
-   - Structure & Dimensions:
-     - Outer oval radius: `rx=192, ry=100`.
-     - Inner oval radius: `rx=92, ry=40` (thick ring road).
-   - Junction & Open Path Architecture:
-     - **Trapezium Junction**: Extended neck connector reaches down into the trapezium; bottom outer border opened by ~35-40px.
-     - **Horn Road Junctions**: Outer ring border is **completely removed** across the left junction ($x \in [14.6, 40.9], y \in [54, 84]$) and right junction ($x \in [359.1, 385.4], y \in [54, 84]$), allowing seamless, borderless road flow into the ring.
-   - Styling:
-     - Outer & Inner borders: 3D/curb stroke `#e1e6ec` (4.5px).
-     - Road track surface: Filled with `#7a7d90`.
-     - Central island: Hollow/empty (`mask="url(#roundabout-center-hole)"`).
-4. **Cow-Horn Curved Feeder Roads (`.horns-container`)**:
-   - Structure: Two sweeping horn-shaped roads connecting device screen corners into the oval roundabout at 30° angles.
-   - Road Width: Expanded to a wider road profile (~65px equivalent road surface).
-   - Borderless Junction Merging:
-     - Road surfaces filled with `#7a7d90` extend into the roundabout ring.
-     - Outer curbs (`#e1e6ec`) connect directly to the ring's Top Arc.
-     - Inner curbs (`#e1e6ec`) connect directly to the ring's Lower Arcs.
-     - The ring's outer border is eliminated across the road entrances for a 100% clean merge.
+3. **Unified Track & Roundabout Network (`.track-network-container`)**:
+   - Layout Architecture: Merged into a unified SVG spanning the upper 40% of the screen (`viewBox="0 0 1000 400"`), eliminating sub-pixel CSS offsets and coordinate mismatches.
+   - Oval Roundabout Dimensions:
+     - Horizontal width reduced from corner edges (`Rx=345, Ry=88`), leaving generous breathing room (~154 units on each side) for sweeping feeder curves.
+     - Center island: Masked hollow hole (`cx=500, cy=185, rx=160, ry=35`).
+   - Bottom Trapezium Connection:
+     - Width **increased by 30+ pixels** (now 80 viewBox units $\approx 68$ screen px, from $X=460$ to $X=540$), forming a robust road trunk bridging down into the trapezium.
+   - Dual Horn Feeder Roads:
+     - Road width widened significantly (~65-70px profile).
+     - Curvature smoothed into gentle, organic curves with tangential fillets, eliminating sharp/pointy corners.
+   - Borderless Junctions:
+     - Ring border is completely removed at the left, right, and bottom junctions.
+     - Curbs (`#e1e6ec`, 5.5px) flow continuously from screen corners around the roundabout and down to the trapezium.
+     - Road surface (`#7a7d90`) is one continuous solid polygon.
 
 ---
 
@@ -68,6 +62,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 11 | 2026-11-19 | Increased ring thickness (gap between inner and outer) and expanded overall oval width/radius. |
 | 12 | 2026-11-19 | Added dual 40px cow-horn curved roads from top screen corners connecting to roundabout at 30°. |
 | 13 | 2026-11-19 | Shifted ring up by 30px, widened horn roads to ~65px, and removed ring borders at junctions for seamless merge. |
+| 14 | 2026-11-19 | Widened trapezium neck by +30px, reduced oval width from corners, expanded horn widths, and smoothed curves into a unified vector network. |
 
 ---
 

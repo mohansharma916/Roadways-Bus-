@@ -78,40 +78,21 @@
       pointer-events: none;
     }
 
-    /* Cow Horn Curved Roads Connecting Device Corners to Roundabout at 30° */
-    .horns-container {
+    /* Unified Road Network Container (Horns + Oval Roundabout + Trapezium Neck) */
+    .track-network-container {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 40%;
-      z-index: 3;
-      pointer-events: none;
-    }
-    .horns-svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-      filter: drop-shadow(0 3px 8px rgba(60, 70, 90, 0.22));
-    }
-
-    /* Oval Roundabout Ring (Shifted up 30px, merged horn roads with removed ring borders) */
-    .roundabout-container {
-      position: absolute;
-      bottom: calc(67.8% + 30px);
-      left: 50%;
-      transform: translateX(-50%);
-      width: 86%;
-      height: 20%;
       z-index: 4;
       pointer-events: none;
     }
-    .roundabout-svg {
+    .track-network-svg {
       width: 100%;
       height: 100%;
       display: block;
-      overflow: visible;
-      filter: drop-shadow(0 3px 8px rgba(60, 70, 90, 0.22));
+      filter: drop-shadow(0 4px 10px rgba(60, 70, 90, 0.25));
     }
     .watermark-pill {
       position: absolute;
@@ -139,49 +120,41 @@
   <div id="canvas-container"></div>
   <div class="watermark-pill">🌸 Plain Cherry Blossom Park &bull; Direct Top-Down View</div>
 
-  <!-- Cow Horn Curved Roads (Wider Road ~65px, Merged with Removed Ring Borders at Junctions) -->
-  <div class="horns-container">
-    <svg class="horns-svg" viewBox="0 0 1000 400" preserveAspectRatio="none">
-      <!-- Left Horn Road Surface Fill (#7a7d90) extending into ring road -->
-      <path d="M -15,-10 C 20,40 80,110 158,152 L 185,168 L 101,180 C 60,130 10,70 -15,85 Z" fill="#7a7d90" />
-      <!-- Left Horn Outer Curb (#e1e6ec) connecting to Ring Top Arc -->
-      <path d="M -15,-10 C 20,40 80,110 158,152" fill="none" stroke="#e1e6ec" stroke-width="6" stroke-linecap="round" />
-      <!-- Left Horn Inner Curb (#e1e6ec) connecting to Ring Left Lower Arc -->
-      <path d="M -15,85 C 10,70 60,130 101,180" fill="none" stroke="#e1e6ec" stroke-width="6" stroke-linecap="round" />
-
-      <!-- Right Horn Road Surface Fill (#7a7d90) extending into ring road -->
-      <path d="M 1015,-10 C 980,40 920,110 842,152 L 815,168 L 899,180 C 940,130 990,70 1015,85 Z" fill="#7a7d90" />
-      <!-- Right Horn Outer Curb (#e1e6ec) connecting to Ring Top Arc -->
-      <path d="M 1015,-10 C 980,40 920,110 842,152" fill="none" stroke="#e1e6ec" stroke-width="6" stroke-linecap="round" />
-      <!-- Right Horn Inner Curb (#e1e6ec) connecting to Ring Right Lower Arc -->
-      <path d="M 1015,85 C 990,70 940,130 899,180" fill="none" stroke="#e1e6ec" stroke-width="6" stroke-linecap="round" />
-    </svg>
-  </div>
-
-  <!-- Oval Roundabout (Shifted up 30px, Open Junctions at Horns and Trapezium with Removed Ring Borders) -->
-  <div class="roundabout-container">
-    <svg class="roundabout-svg" viewBox="0 0 400 220" preserveAspectRatio="none">
+  <!-- Unified Road Network (Cow-Horn Curved Roads, Oval Roundabout with Hollow Center, Wide Trapezium Neck) -->
+  <div class="track-network-container">
+    <svg class="track-network-svg" viewBox="0 0 1000 400" preserveAspectRatio="none">
       <defs>
         <!-- Mask for hollow center island: nothing inside -->
-        <mask id="roundabout-center-hole">
-          <rect width="400" height="260" fill="white" />
-          <ellipse cx="200" cy="110" rx="92" ry="40" fill="black" />
+        <mask id="roundabout-island-hole">
+          <rect width="1000" height="400" fill="white" />
+          <ellipse cx="500" cy="185" rx="160" ry="35" fill="black" />
         </mask>
       </defs>
-      <!-- Road Surface Ring (#7a7d90) with thicker road width and hollow center -->
-      <ellipse cx="200" cy="110" rx="192" ry="100" fill="#7a7d90" mask="url(#roundabout-center-hole)" />
-      <!-- Road entrance connector extended down into trapezium to bridge 30px shift -->
-      <rect x="187" y="200" width="26" height="45" fill="#7a7d90" />
       
-      <!-- Top Arc of Ring Border (from Left Horn to Right Horn) -->
-      <path d="M 40.9,54 A 192,100 0 0,1 359.1,54" fill="none" stroke="#e1e6ec" stroke-width="4.5" stroke-linecap="round" />
-      <!-- Right Lower Arc of Ring Border (from Right Horn to Bottom Trapezium) -->
-      <path d="M 385.4,84 A 192,100 0 0,1 213,209.8 L 213,245" fill="none" stroke="#e1e6ec" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
-      <!-- Left Lower Arc of Ring Border (from Bottom Trapezium to Left Horn) -->
-      <path d="M 187,245 L 187,209.8 A 192,100 0 0,1 14.6,84" fill="none" stroke="#e1e6ec" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
-      
-      <!-- Inner Ring Border (#e1e6ec, intact and closed) -->
-      <ellipse cx="200" cy="110" rx="92" ry="40" fill="none" stroke="#e1e6ec" stroke-width="4.5" />
+      <!-- Unified Road Surface Fill (#7a7d90) -->
+      <path d="M -15,-10 C 60,35 150,75 243.6,126.1 A 345,88 0 0,1 756.4,126.1 C 850,75 940,35 1015,-10 
+               L 1015,85 
+               C 940,110 880,135 834.8,163.7 A 345,88 0 0,1 540,269.4 L 540,320 
+               L 460,320 
+               L 460,269.4 A 345,88 0 0,1 165.2,163.7 C 120,135 60,110 -15,85 
+               Z" 
+            fill="#7a7d90" 
+            mask="url(#roundabout-island-hole)" />
+
+      <!-- Top Continuous Curb Line (#e1e6ec) spanning left horn, ring top, and right horn -->
+      <path d="M -15,-10 C 60,35 150,75 243.6,126.1 A 345,88 0 0,1 756.4,126.1 C 850,75 940,35 1015,-10" 
+            fill="none" stroke="#e1e6ec" stroke-width="5.5" stroke-linecap="round" />
+
+      <!-- Right Lower Curb Line (#e1e6ec) curving from right corner into roundabout and down into trapezium -->
+      <path d="M 1015,85 C 940,110 880,135 834.8,163.7 A 345,88 0 0,1 540,269.4 L 540,320" 
+            fill="none" stroke="#e1e6ec" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+
+      <!-- Left Lower Curb Line (#e1e6ec) curving from trapezium up through roundabout and out to left corner -->
+      <path d="M 460,320 L 460,269.4 A 345,88 0 0,1 165.2,163.7 C 120,135 60,110 -15,85" 
+            fill="none" stroke="#e1e6ec" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+
+      <!-- Inner Island Closed Ring Curb (#e1e6ec) -->
+      <ellipse cx="500" cy="185" rx="160" ry="35" fill="none" stroke="#e1e6ec" stroke-width="5.5" />
     </svg>
   </div>
 
