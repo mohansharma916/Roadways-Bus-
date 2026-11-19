@@ -31,12 +31,11 @@ This document records the step-by-step progress, specifications, design guidelin
    - **Rounded Top Corners**: Rendered with an SVG path (`preserveAspectRatio="none"`) using quadratic bezier curves (`Q 400,0 480,0` and `Q 1200,0 1272,180`) to provide a smooth, organic corner radius where the top edge bends into the diagonal sloped sides, eliminating sharp corners.
    - **Angled Rectangular Parking Bays (`.trapezium-boxes-container` & `.trapezium-box`)**:
      - 9 identical vertical rectangular bus bays arranged in a single compact row centered in the trapezium (`display: flex; justify-content: center; gap: 12px;`).
-     - Dimensions: `width: 32px; height: 58px`.
-     - Corner radius: `7px` rounded corners.
+     - Dimensions: `width: 32px; height: 58px`, corner radius `7px`, tilted 30° left (`transform: rotate(-30deg)`), fill `#626479`.
      - Spacing: Tight, uniform small gap (~6px perpendicular clearance between consecutive parallel white borders).
-     - Orientation: Tilted 30° towards the left (`transform: rotate(-30deg)`).
-     - Fill Color: `#626479`.
-     - Border: `2px solid #ffffff` (white).
+     - **Standard Slots (5 leftmost)**: `2px solid #ffffff` white border.
+     - **VIP Slot (4th from right)**: `2px solid #ffd700` golden border with bold gold "VIP" label tilted with the slot.
+     - **Unlock Slots (3 rightmost)**: `2px solid #2ecc71` green border with bold green `+` symbol centered inside.
      - Fitting: Contained in one single row inside the trapezium with generous clearance from top neck, bottom boundary, and side sloped edges.
 3. **Unified Track & Roundabout Network (`.track-network-container`)**:
    - Layout Architecture: Merged into a unified SVG spanning the upper 40% of the screen (`viewBox="0 0 1000 400"`), eliminating sub-pixel CSS offsets and coordinate mismatches.
@@ -82,6 +81,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 21 | 2026-11-19 | Added 8px corner radius to trapezium inner rectangular box and tilted it 30° towards the left. |
 | 22 | 2026-11-19 | Created 8 additional identical angled rectangles (9 total) and adjusted them evenly inside the trapezium using an 82vw flex container. |
 | 23 | 2026-11-19 | Reduced gap between the 9 angled rectangles in the single row to a compact 12px flex gap (~6px perpendicular spacing) centered inside the trapezium. |
+| 24 | 2026-11-19 | Styled the 4th box from right with golden border (#ffd700) and tilted 'VIP' label, and the 3 rightmost boxes with green borders (#2ecc71) and green '+' symbols. |
 
 ---
 
