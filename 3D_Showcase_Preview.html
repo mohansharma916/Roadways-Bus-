@@ -84,24 +84,24 @@
       height: 100%;
       display: block;
     }
-    /* 9 Angled Rectangular Parking Bays inside Trapezium */
+    /* 9 Angled Rectangular Parking Bays inside Trapezium (Single compact row with small gaps) */
     .trapezium-boxes-container {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 82vw;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
+      gap: 12px;
       pointer-events: none;
     }
     .trapezium-box {
-      width: 30px;
-      height: 54px;
+      width: 32px;
+      height: 58px;
       background-color: #626479;
       border: 2px solid #ffffff;
-      border-radius: 8px;
+      border-radius: 7px;
       box-sizing: border-box;
       transform: rotate(-30deg);
       flex-shrink: 0;
