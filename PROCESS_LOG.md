@@ -13,11 +13,8 @@ This document records the step-by-step progress, specifications, design guidelin
   - **Zero Leaves**: Strictly no leaf particles or petal meshes on the ground or in the air.
   - **Zero Obstacles/Vehicles/Characters**: Completely clean plane park surface.
 - **Camera Perspective & Scene View Angle**:
-  - Angled view from the bottom side looking forward and up into the scene with strongly reduced top-down angle:
-    - Three.js camera: `PerspectiveCamera(46)` positioned low at South (`camY = 16, camZ = 46`) looking forward at `(0, 0, 8)`.
-    - Track network perspective: `.track-network-container` styled with `perspective: 800px; perspective-origin: 50% 100%` and `.track-network-svg` tilted with `transform-origin: 50% 100%; transform: rotateX(38deg);`.
-    - Strongly reduces the top-down viewing angle on the ring, flattening the apparent vertical profile to ~0.60 for a dramatic low-angle perspective while keeping the road network spanning seamlessly from top corners to the trapezium.
-    - Chilbi characters strictly maintain their natural tangent heading along the road path (`rotate(heading)`), with waddling bounce, stepping feet, and swinging arms.
+  - Three.js camera: Angled view looking into the cherry blossom park from the bottom side (`camY = 28, camZ = 40, targetZ = 6`).
+  - Overlay Track Network: Pure 2D screen overlay (no CSS `perspective` or `rotateX`), ensuring pixel-perfect screen-edge alignment and preserving crisp vector geometry.
   - Completely **static**: No camera dragging, panning, orbit rotation, or idle bobbing/movement.
 
 ### B. UI Overlay Structure
@@ -44,16 +41,12 @@ This document records the step-by-step progress, specifications, design guidelin
 3. **Unified Track & Roundabout Network (`.track-network-container`)**:
    - Layout Architecture: Merged into a unified SVG spanning the upper 40% of the screen (`viewBox="0 0 1000 400"`), eliminating sub-pixel CSS offsets and coordinate mismatches.
    - Oval Roundabout Dimensions:
-     - Horizontal width reduced from corner edges (`Rx=345, Ry=88`), leaving generous breathing room (~154 units on each side) for sweeping feeder curves.
-     - Center island: Masked hollow hole (`cx=500, cy=185, rx=160, ry=35`).
-   - Bottom Trapezium Connection:
-     - Width **substantially expanded** to 200 viewBox units (~145 screen px, from $X=400$ to $X=600$), creating a wide, prominent highway connection bridging the oval roundabout down into the trapezium.
-   - Dual Horn Feeder Roads:
-     - Road width widened significantly (~65-70px profile).
-     - Curvature smoothed into gentle, organic curves with tangential fillets, eliminating sharp/pointy corners.
-   - Borderless Junctions:
-     - Ring border is completely removed at the left, right, and bottom junctions.
-     - Curbs (`#e1e6ec`, 5.5px) flow continuously from screen corners around the roundabout and down to the trapezium.
+     - Complete closed oval roundabout ($C_x=500, C_y=185, R_x=345, R_y=88$), with inner island mask ($r_x=160, r_y=35$) and continuous inner and outer curbs (`#e1e6ec`, 5.5px).
+     - **Completely Unmerged from Trapezium**: The ring is distinct and closed with its bottom curb passing at $Y=273$, leaving a clean open park clearance (~47 viewBox units) above the trapezium top edge ($Y=320$). It is strictly not merged into the trapezium.
+   - Dual Feeder Roads from Device Sides:
+     - Feeder roads connect directly from the device screen sides ($X=-15$ to $X=1015$), spanning edge-to-edge across the screen without gaps or floating ends.
+     - Top curb: continuous curve from top-left screen corner across the ring top to top-right screen corner.
+     - Bottom curb: continuous curve from right device edge ($X=1015, Y=85$), sweeping smoothly around the bottom of the ring ($X=500, Y=273$), and curving out to the left device edge ($X=-15, Y=85$).
      - Road surface (`#7a7d90`) is one continuous solid polygon.
 
 4. **Chilbi ("Candy Bean") Characters Walking System (`#chilbi-characters-layer`)**:
@@ -108,6 +101,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 27 | 2026-11-19 | Adjusted camera to angled bottom-up perspective view and converted Chilbi characters to upright 2.5D beans with visible upright body, swinging side arms, stepping legs, and front-facing eyes when approaching the trapezium. |
 | 28 | 2026-11-19 | Reverted Chilbi characters back to original candy bean models, and changed the view angle of the scene with 3D perspective (25° tilt from bottom side) and lowered Three.js camera angle. |
 | 29 | 2026-11-19 | Reduced top-down view angle of the ring further to 38° tilt and lowered Three.js camera (camY=16, camZ=46), keeping original Chilbi path-facing heading. |
+| 30 | 2026-11-19 | Unmerged ring from trapezium to make ring a distinct closed oval, restored feeder roads connecting edge-to-edge from device screen sides, and removed CSS perspective/rotateX. |
 
 ---
 
