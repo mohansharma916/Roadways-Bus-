@@ -52,6 +52,21 @@ This document records the step-by-step progress, specifications, design guidelin
      - Curbs (`#e1e6ec`, 5.5px) flow continuously from screen corners around the roundabout and down to the trapezium.
      - Road surface (`#7a7d90`) is one continuous solid polygon.
 
+4. **Chilbi ("Candy Bean") Characters Walking System (`#chilbi-characters-layer`)**:
+   - Two distinct chibi bean characters based on the Unity RoundCharacterGenerator pipeline:
+     - **Red Chilbi**: Coral Red candy finish (`url(#chilbi-grad-red-body)` & `url(#chilbi-grad-red-head)`).
+     - **Cyan Chilbi**: Turquoise Cyan candy finish (`url(#chilbi-grad-cyan-body)` & `url(#chilbi-grad-cyan-head)`).
+   - Character Visuals: Rounded bean pill body, glossy head with 3D specular reflection, swinging stubby arms, stepping feet, and ground contact drop shadow.
+   - **Path Trajectory**:
+     - Red Chilbi starts at top-left screen corner ($X=-15, Y=37.5$) and walks along the left curved horn road.
+     - Cyan Chilbi starts at top-right screen corner ($X=1015, Y=37.5$) and walks along the right curved horn road.
+   - **Continuous Ring Orbit**:
+     - At $t=5.0\text{s}$, both characters reach the roundabout ring junctions ($X=281.3, Y=154.25$ and $X=718.7, Y=154.25$).
+     - They seamlessly transition onto the oval ring centerline ($C_x=500, C_y=185, R_x=252.5, R_y=61.5$) and circle counter-clockwise round and round continuously at $0.55\text{ rad/s}$ without colliding.
+   - **Procedural Waddle & Heading**:
+     - Tangent heading orientation: Dynamically calculates path velocity $(\Delta X, \Delta Y)$ to face forward along the curve.
+     - 60 FPS waddle animation: Procedural vertical bounce ($\pm 2.8\text{px}$), body tilt ($\pm 6.5^\circ$), squish-and-stretch, alternating feet stepping, and swinging arms.
+
 ---
 
 ## 2. Process & Commit History
@@ -82,6 +97,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 22 | 2026-11-19 | Created 8 additional identical angled rectangles (9 total) and adjusted them evenly inside the trapezium using an 82vw flex container. |
 | 23 | 2026-11-19 | Reduced gap between the 9 angled rectangles in the single row to a compact 12px flex gap (~6px perpendicular spacing) centered inside the trapezium. |
 | 24 | 2026-11-19 | Styled the 4th box from right with golden border (#ffd700) and tilted 'VIP' label, and the 3 rightmost boxes with green borders (#2ecc71) and green '+' symbols. |
+| 25 | 2026-11-19 | Implemented animated Chilbi (bean) characters: Red Chilbi entering from left road and Cyan Chilbi from right road, merging onto roundabout ring and looping round and round. |
 
 ---
 

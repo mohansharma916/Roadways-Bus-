@@ -178,6 +178,30 @@
           <rect width="1000" height="400" fill="white" />
           <ellipse cx="500" cy="185" rx="160" ry="35" fill="black" />
         </mask>
+
+        <!-- Red Chilbi Candy Bean Gradients -->
+        <linearGradient id="chilbi-grad-red-body" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ff6b81" />
+          <stop offset="60%" stop-color="#ee5253" />
+          <stop offset="100%" stop-color="#b71540" />
+        </linearGradient>
+        <radialGradient id="chilbi-grad-red-head" cx="35%" cy="30%" r="65%">
+          <stop offset="0%" stop-color="#ffb8b8" />
+          <stop offset="45%" stop-color="#ff4757" />
+          <stop offset="100%" stop-color="#b71540" />
+        </radialGradient>
+
+        <!-- Cyan Chilbi Candy Bean Gradients -->
+        <linearGradient id="chilbi-grad-cyan-body" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1dd1a1" />
+          <stop offset="55%" stop-color="#10ac84" />
+          <stop offset="100%" stop-color="#006266" />
+        </linearGradient>
+        <radialGradient id="chilbi-grad-cyan-head" cx="35%" cy="30%" r="65%">
+          <stop offset="0%" stop-color="#81ecec" />
+          <stop offset="45%" stop-color="#12cbc4" />
+          <stop offset="100%" stop-color="#006266" />
+        </radialGradient>
       </defs>
       
       <!-- Unified Road Surface Fill (#7a7d90) -->
@@ -204,6 +228,57 @@
 
       <!-- Inner Island Closed Ring Curb (#e1e6ec) -->
       <ellipse cx="500" cy="185" rx="160" ry="35" fill="none" stroke="#e1e6ec" stroke-width="5.5" />
+
+      <!-- Animated Chilbi ("Bean") Characters Layer -->
+      <g id="chilbi-characters-layer">
+        <!-- Left Chilbi Character (Coral Red Candy Bean) -->
+        <g id="chilbi-red" transform="translate(-100, -100)">
+          <!-- Ground Shadow -->
+          <ellipse class="chilbi-shadow" cx="0" cy="12" rx="13" ry="6" fill="rgba(15, 20, 35, 0.35)" />
+          <!-- Left Foot -->
+          <rect id="chilbi-red-foot-l" x="-9" y="5" width="6" height="11" rx="3" fill="#b71540" />
+          <!-- Right Foot -->
+          <rect id="chilbi-red-foot-r" x="3" y="5" width="6" height="11" rx="3" fill="#b71540" />
+          <!-- Body Group -->
+          <g id="chilbi-red-body-group">
+            <!-- Bean Capsule Body -->
+            <rect x="-12" y="-16" width="24" height="28" rx="12" fill="url(#chilbi-grad-red-body)" />
+            <!-- Head Dome -->
+            <circle cx="0" cy="-12" r="11" fill="url(#chilbi-grad-red-head)" />
+            <!-- 3D Gloss Highlight -->
+            <ellipse cx="-3.5" cy="-16" rx="4" ry="2.5" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 -3.5 -16)" />
+            <circle cx="3.5" cy="-12" r="1.2" fill="rgba(255, 255, 255, 0.5)" />
+            <!-- Left Arm -->
+            <rect id="chilbi-red-arm-l" x="-16" y="-8" width="5" height="13" rx="2.5" fill="#e55039" />
+            <!-- Right Arm -->
+            <rect id="chilbi-red-arm-r" x="11" y="-8" width="5" height="13" rx="2.5" fill="#e55039" />
+          </g>
+        </g>
+
+        <!-- Right Chilbi Character (Turquoise Cyan Candy Bean) -->
+        <g id="chilbi-cyan" transform="translate(-100, -100)">
+          <!-- Ground Shadow -->
+          <ellipse class="chilbi-shadow" cx="0" cy="12" rx="13" ry="6" fill="rgba(15, 20, 35, 0.35)" />
+          <!-- Left Foot -->
+          <rect id="chilbi-cyan-foot-l" x="-9" y="5" width="6" height="11" rx="3" fill="#006266" />
+          <!-- Right Foot -->
+          <rect id="chilbi-cyan-foot-r" x="3" y="5" width="6" height="11" rx="3" fill="#006266" />
+          <!-- Body Group -->
+          <g id="chilbi-cyan-body-group">
+            <!-- Bean Capsule Body -->
+            <rect x="-12" y="-16" width="24" height="28" rx="12" fill="url(#chilbi-grad-cyan-body)" />
+            <!-- Head Dome -->
+            <circle cx="0" cy="-12" r="11" fill="url(#chilbi-grad-cyan-head)" />
+            <!-- 3D Gloss Highlight -->
+            <ellipse cx="-3.5" cy="-16" rx="4" ry="2.5" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 -3.5 -16)" />
+            <circle cx="3.5" cy="-12" r="1.2" fill="rgba(255, 255, 255, 0.5)" />
+            <!-- Left Arm -->
+            <rect id="chilbi-cyan-arm-l" x="-16" y="-8" width="5" height="13" rx="2.5" fill="#12cbc4" />
+            <!-- Right Arm -->
+            <rect id="chilbi-cyan-arm-r" x="11" y="-8" width="5" height="13" rx="2.5" fill="#12cbc4" />
+          </g>
+        </g>
+      </g>
     </svg>
   </div>
 
@@ -1600,6 +1675,132 @@
 
     // Pure Static Render (No animation, No draggable interaction)
     renderStatic();
+
+    // =========================================================================
+    // --- CHILBI ("CANDY BEAN") CHARACTER WALKING ANIMATION SYSTEM ---
+    // Two Chibi characters:
+    //   1. Red Chilbi: Walks in from top-left screen corner via left horn road.
+    //   2. Cyan Chilbi: Walks in from top-right screen corner via right horn road.
+    // When each character reaches the roundabout, it continuously circles round
+    // and round the oval ring in a perpetual counter-clockwise loop with waddling bounce.
+    // =========================================================================
+    (function initChilbiWalkers() {
+      const redElem = document.getElementById('chilbi-red');
+      const redBody = document.getElementById('chilbi-red-body-group');
+      const redFootL = document.getElementById('chilbi-red-foot-l');
+      const redFootR = document.getElementById('chilbi-red-foot-r');
+      const redArmL = document.getElementById('chilbi-red-arm-l');
+      const redArmR = document.getElementById('chilbi-red-arm-r');
+
+      const cyanElem = document.getElementById('chilbi-cyan');
+      const cyanBody = document.getElementById('chilbi-cyan-body-group');
+      const cyanFootL = document.getElementById('chilbi-cyan-foot-l');
+      const cyanFootR = document.getElementById('chilbi-cyan-foot-r');
+      const cyanArmL = document.getElementById('chilbi-cyan-arm-l');
+      const cyanArmR = document.getElementById('chilbi-cyan-arm-r');
+
+      if (!redElem || !cyanElem) return;
+
+      const feederDuration = 5.0; // seconds to travel from screen corner to ring
+      const ringSpeed = 0.55;      // radians/second (~11.4 seconds per full ring loop)
+      const waddleFreq = 9.0;     // waddling frequency (steps/sec)
+
+      // Feeder Horn Bezier Control Points
+      // Left Feeder: corner (-15, 37.5) to ring junction (281.3, 154.25)
+      const pL0 = { x: -15, y: 37.5 }, pL1 = { x: 85, y: 75 }, pL2 = { x: 175, y: 120 }, pL3 = { x: 281.3, y: 154.25 };
+      // Right Feeder: corner (1015, 37.5) to ring junction (718.7, 154.25)
+      const pR0 = { x: 1015, y: 37.5 }, pR1 = { x: 915, y: 75 }, pR2 = { x: 825, y: 120 }, pR3 = { x: 718.7, y: 154.25 };
+
+      // Ring Ellipse: cx=500, cy=185, Rx=252.5, Ry=61.5
+      const ringCx = 500, ringCy = 185, ringRx = 252.5, ringRy = 61.5;
+      const thetaStartL = 3.665; // ~210 deg (top-left junction)
+      const thetaStartR = 5.760; // ~330 deg (top-right junction)
+
+      function getCubicBezier(p0, p1, p2, p3, u) {
+        const u2 = u * u, u3 = u2 * u;
+        const mt = 1 - u, mt2 = mt * mt, mt3 = mt2 * mt;
+        const x = mt3 * p0.x + 3 * mt2 * u * p1.x + 3 * mt * u2 * p2.x + u3 * p3.x;
+        const y = mt3 * p0.y + 3 * mt2 * u * p1.y + 3 * mt * u2 * p2.y + u3 * p3.y;
+        const dx = 3 * mt2 * (p1.x - p0.x) + 6 * mt * u * (p2.x - p1.x) + 3 * u2 * (p3.x - p2.x);
+        const dy = 3 * mt2 * (p1.y - p0.y) + 6 * mt * u * (p2.y - p1.y) + 3 * u2 * (p3.y - p2.y);
+        return { x, y, dx, dy };
+      }
+
+      const startTime = performance.now();
+
+      function updateChilbiFrame(now) {
+        const tSec = (now - startTime) / 1000;
+
+        // 1. UPDATE LEFT CHILBI (RED)
+        let redPos;
+        if (tSec < feederDuration) {
+          const u = tSec / feederDuration;
+          redPos = getCubicBezier(pL0, pL1, pL2, pL3, u);
+        } else {
+          const dt = tSec - feederDuration;
+          const theta = thetaStartL + dt * ringSpeed;
+          const x = ringCx + ringRx * Math.cos(theta);
+          const y = ringCy + ringRy * Math.sin(theta);
+          const dx = -ringRx * Math.sin(theta);
+          const dy = ringRy * Math.cos(theta);
+          redPos = { x, y, dx, dy };
+        }
+        const redHeading = Math.atan2(redPos.dy, redPos.dx) * (180 / Math.PI) + 90;
+        redElem.setAttribute('transform', `translate(${redPos.x.toFixed(2)}, ${redPos.y.toFixed(2)}) rotate(${redHeading.toFixed(1)})`);
+
+        // 2. UPDATE RIGHT CHILBI (CYAN)
+        let cyanPos;
+        if (tSec < feederDuration) {
+          const u = tSec / feederDuration;
+          cyanPos = getCubicBezier(pR0, pR1, pR2, pR3, u);
+        } else {
+          const dt = tSec - feederDuration;
+          const theta = thetaStartR + dt * ringSpeed;
+          const x = ringCx + ringRx * Math.cos(theta);
+          const y = ringCy + ringRy * Math.sin(theta);
+          const dx = -ringRx * Math.sin(theta);
+          const dy = ringRy * Math.cos(theta);
+          cyanPos = { x, y, dx, dy };
+        }
+        const cyanHeading = Math.atan2(cyanPos.dy, cyanPos.dx) * (180 / Math.PI) + 90;
+        cyanElem.setAttribute('transform', `translate(${cyanPos.x.toFixed(2)}, ${cyanPos.y.toFixed(2)}) rotate(${cyanHeading.toFixed(1)})`);
+
+        // 3. WADDLING BOUNCE & LIMB ANIMATION
+        const wPhaseRed = tSec * waddleFreq;
+        const bounceR = Math.abs(Math.sin(wPhaseRed)) * 2.8;
+        const tiltR = Math.sin(wPhaseRed) * 6.5;
+        const footLR = Math.sin(wPhaseRed) * 4.0;
+        const footRR = -footLR;
+        const armLR = Math.sin(wPhaseRed) * 22.0;
+        const armRR = -armLR;
+        const squishR = 1.0 + Math.sin(wPhaseRed * 2) * 0.04;
+
+        redBody.setAttribute('transform', `translate(0, ${-bounceR.toFixed(2)}) rotate(${tiltR.toFixed(1)}) scale(1, ${squishR.toFixed(3)})`);
+        redFootL.setAttribute('transform', `translate(0, ${footLR.toFixed(2)})`);
+        redFootR.setAttribute('transform', `translate(0, ${footRR.toFixed(2)})`);
+        redArmL.setAttribute('transform', `rotate(${armLR.toFixed(1)}, -13, -2)`);
+        redArmR.setAttribute('transform', `rotate(${armRR.toFixed(1)}, 13, -2)`);
+
+        const wPhaseCyan = tSec * waddleFreq + 1.2;
+        const bounceC = Math.abs(Math.sin(wPhaseCyan)) * 2.8;
+        const tiltC = Math.sin(wPhaseCyan) * 6.5;
+        const footLC = Math.sin(wPhaseCyan) * 4.0;
+        const footRC = -footLC;
+        const armLC = Math.sin(wPhaseCyan) * 22.0;
+        const armRC = -armLC;
+        const squishC = 1.0 + Math.sin(wPhaseCyan * 2) * 0.04;
+
+        cyanBody.setAttribute('transform', `translate(0, ${-bounceC.toFixed(2)}) rotate(${tiltC.toFixed(1)}) scale(1, ${squishC.toFixed(3)})`);
+        cyanFootL.setAttribute('transform', `translate(0, ${footLC.toFixed(2)})`);
+        cyanFootR.setAttribute('transform', `translate(0, ${footRC.toFixed(2)})`);
+        cyanArmL.setAttribute('transform', `rotate(${armLC.toFixed(1)}, -13, -2)`);
+        cyanArmR.setAttribute('transform', `rotate(${armRC.toFixed(1)}, 13, -2)`);
+
+        requestAnimationFrame(updateChilbiFrame);
+      }
+
+      requestAnimationFrame(updateChilbiFrame);
+    })();
   </script>
 </body>
 </html>
