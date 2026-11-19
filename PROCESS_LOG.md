@@ -40,6 +40,12 @@ This document records the step-by-step progress, specifications, design guidelin
      - Outer & Inner borders: 3D/curb stroke `#e1e6ec` (4.5px).
      - Road track surface: Filled with `#7a7d90` between outer and inner rings.
      - Central island: Hollow/empty (`mask="url(#roundabout-center-hole)"`), revealing the cherry blossom park surface underneath.
+4. **Cow-Horn Curved Feeder Roads (`.horns-container`)**:
+   - Structure: Two sweeping 40px wide roads shaped like cow's horns connecting the device screen corners into the oval roundabout at 30° angles.
+   - Left Horn: Starts at top-left screen corner $(0, 0)$, curves downward and inward into the left side of the oval at ~30° (`d="M -10,-5 C 20,60 80,140 152,180"`).
+   - Right Horn: Starts at top-right screen corner $(1000, 0)$, curves downward and inward into the right side of the oval at ~30° (`d="M 1010,-5 C 980,60 920,140 848,180"`).
+   - Road Width: Uniform 40px width (`stroke-width="53"`).
+   - Color & Borders: Asphalt surface filled with `#7a7d90`, bordered on both flanks with `#e1e6ec` curbs (`stroke-width="65"` underlay).
 
 ---
 
@@ -58,6 +64,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 9 | 2026-11-19 | Created oval roundabout with inner and outer rings (#e1e6ec / #7a7d90) and hollow center above trapezium. |
 | 10 | 2026-11-19 | Shifted roundabout toward trapezium and opened a ~35-40px entrance path in the outer border to merge the roads. |
 | 11 | 2026-11-19 | Increased ring thickness (gap between inner and outer) and expanded overall oval width/radius. |
+| 12 | 2026-11-19 | Added dual 40px cow-horn curved roads from top screen corners connecting to roundabout at 30°. |
 
 ---
 

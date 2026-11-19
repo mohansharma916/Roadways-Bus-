@@ -78,6 +78,23 @@
       pointer-events: none;
     }
 
+    /* Cow Horn Curved Roads Connecting Device Corners to Roundabout at 30° */
+    .horns-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 40%;
+      z-index: 3;
+      pointer-events: none;
+    }
+    .horns-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      filter: drop-shadow(0 3px 8px rgba(60, 70, 90, 0.22));
+    }
+
     /* Oval Roundabout Ring (Wider radius, thicker ring road, open entrance to trapezium) */
     .roundabout-container {
       position: absolute;
@@ -120,6 +137,21 @@
   <!-- 3D Canvas -->
   <div id="canvas-container"></div>
   <div class="watermark-pill">🌸 Plain Cherry Blossom Park &bull; Direct Top-Down View</div>
+
+  <!-- Cow Horn Curved 40px Roads starting from Screen Corners to 30° on Roundabout -->
+  <div class="horns-container">
+    <svg class="horns-svg" viewBox="0 0 1000 400" preserveAspectRatio="none">
+      <!-- Left Horn Curb Borders (#e1e6ec) -->
+      <path d="M -10,-5 C 20,60 80,140 152,180" fill="none" stroke="#e1e6ec" stroke-width="65" stroke-linecap="round" />
+      <!-- Left Horn Road Surface (#7a7d90, 40px equivalent width) -->
+      <path d="M -10,-5 C 20,60 80,140 152,180" fill="none" stroke="#7a7d90" stroke-width="53" stroke-linecap="round" />
+
+      <!-- Right Horn Curb Borders (#e1e6ec) -->
+      <path d="M 1010,-5 C 980,60 920,140 848,180" fill="none" stroke="#e1e6ec" stroke-width="65" stroke-linecap="round" />
+      <!-- Right Horn Road Surface (#7a7d90, 40px equivalent width) -->
+      <path d="M 1010,-5 C 980,60 920,140 848,180" fill="none" stroke="#7a7d90" stroke-width="53" stroke-linecap="round" />
+    </svg>
+  </div>
 
   <!-- Oval Roundabout (Wider radius, thicker ring road, hollow center island, open entrance) -->
   <div class="roundabout-container">
