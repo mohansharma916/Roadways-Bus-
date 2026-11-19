@@ -28,6 +28,10 @@ This document records the step-by-step progress, specifications, design guidelin
    - Fill color: `#7a7d90`.
    - Upper Width: Expanded to cover **80% of the screen width** at the top edge, leaving only a 10% margin on each side.
    - Bottom Width & Shape: Bottom corners extended so that **30% is off-screen/invisible on both the left and right sides** (`left: -30%`, `width: 160%`, `clip-path: polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%)`).
+   - **Internal Rectangular Box (`.trapezium-box`)**:
+     - Small rectangular box centered inside the trapezium (`width: 140px; height: 42px`).
+     - Border: `2px solid #626479`.
+     - Background: Transparent.
 3. **Unified Track & Roundabout Network (`.track-network-container`)**:
    - Layout Architecture: Merged into a unified SVG spanning the upper 40% of the screen (`viewBox="0 0 1000 400"`), eliminating sub-pixel CSS offsets and coordinate mismatches.
    - Oval Roundabout Dimensions:
@@ -64,6 +68,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 13 | 2026-11-19 | Shifted ring up by 30px, widened horn roads to ~65px, and removed ring borders at junctions for seamless merge. |
 | 14 | 2026-11-19 | Widened trapezium neck by +30px, reduced oval width from corners, expanded horn widths, and smoothed curves into a unified vector network. |
 | 15 | 2026-11-19 | Expanded connection width between ring and trapezium to 200 units (~145 screen px) for a wide road highway trunk. |
+| 16 | 2026-11-19 | Added centered small rectangular box (140x42px) with 2px #626479 border inside the trapezium. |
 
 ---
 

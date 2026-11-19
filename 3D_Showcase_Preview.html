@@ -77,6 +77,19 @@
       z-index: 4;
       pointer-events: none;
     }
+    /* Small Rectangular Box inside Trapezium with 2px #626479 border */
+    .trapezium-box {
+      position: absolute;
+      top: 52%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 140px;
+      height: 42px;
+      border: 2px solid #626479;
+      background: transparent;
+      box-sizing: border-box;
+      pointer-events: none;
+    }
 
     /* Unified Road Network Container (Horns + Oval Roundabout + Trapezium Neck) */
     .track-network-container {
@@ -159,7 +172,10 @@
   </div>
 
   <!-- Trapezium Shape (#7a7d90) directly above the 60% bottom panel -->
-  <div class="trapezium-panel"></div>
+  <div class="trapezium-panel">
+    <!-- Small Rectangular Box with 2px border #626479 -->
+    <div class="trapezium-box"></div>
+  </div>
 
   <!-- Bottom 60% Boundary Panel (#d3daed with 3D #e1e6ec top border) -->
   <div class="bottom-boundary-panel"></div>
