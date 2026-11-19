@@ -14,7 +14,8 @@ This document records the step-by-step progress, specifications, design guidelin
   - **Zero Obstacles/Vehicles/Characters**: Completely clean plane park surface.
 - **Camera Perspective & Scene View Angle**:
   - Three.js camera: Angled view looking into the cherry blossom park from the bottom side (`camY = 30, camZ = 42, targetZ = 8`, `camera.up.set(0, 1, 0)`). Mobile FOV set to 44° (landscape 38°).
-  - Overlay Track Network: Approach 1 implemented — 3D tilted view looking from the bottom side using `perspective: 1200px; transform: rotateX(24deg); transform-origin: 50% 85%;` on `.track-network-container`, keeping feeder roads attached to screen sides while providing an angled perspective of the ring and Chilbi characters.
+  - Overlay Track Network: Pure flat 2D screen overlay (`transform: none`, no `rotateX`), ensuring pixel-perfect screen-edge alignment without any distortion.
+  - Chilbi Characters: Upright 2.5D side-view character rigs viewed from a standing bottom-side vantage point. Characters stand upright on their ground shadows rather than spinning flat; when traversing the ring (such as near the trapezium), their side bodies, forward/backward swinging arms, stepping leg strides, and profile glance face the walk direction.
   - Completely **static**: No camera dragging, panning, orbit rotation, or idle bobbing/movement.
 
 ### B. UI Overlay Structure
@@ -108,6 +109,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 32 | 2026-11-20 | Set mobile camera field of view (FOV) to 90° for wider perspective view. |
 | 33 | 2026-11-20 | Reverted mobile camera field of view (FOV) back to 44° (landscape 38°). |
 | 34 | 2026-11-20 | Implemented Approach 1: applied CSS 3D perspective and rotateX(24deg) with bottom pivot (transform-origin: 50% 85%) on the track network container, providing an angled view looking at the ring and Chilbi from the bottom side without detaching feeder roads from device edges. Isolated Chilbi walk script. |
+| 35 | 2026-11-20 | Reverted ground/track container to pure flat 2D (no rotateX/distortion) and implemented upright 2.5D side-view Chilbi characters. Viewed from the bottom side at a standing height, characters stand upright on their ground shadows, showing their side profile body, swinging side arms, and stepping legs along their path. |
 
 ---
 
