@@ -30,7 +30,9 @@ This document records the step-by-step progress, specifications, design guidelin
    - Bottom Width & Shape: Bottom corners extended so that **30% is off-screen/invisible on both the left and right sides** (`left: -30%`, `width: 160%`).
    - **Rounded Top Corners**: Rendered with an SVG path (`preserveAspectRatio="none"`) using quadratic bezier curves (`Q 400,0 480,0` and `Q 1200,0 1272,180`) to provide a smooth, organic corner radius where the top edge bends into the diagonal sloped sides, eliminating sharp corners.
    - **Internal Rectangular Box (`.trapezium-box`)**:
-     - Vertical rectangular box centered inside the trapezium with width less than height (`width: 42px; height: 68px`).
+     - Vertical rectangular box centered inside the trapezium (`width: 42px; height: 68px`).
+     - Corner radius: `8px` rounded corners.
+     - Orientation: Tilted 30° towards the left (`transform: translate(-50%, -50%) rotate(-30deg)`).
      - Fill Color: `#626479`.
      - Border: `2px solid #ffffff` (white).
 3. **Unified Track & Roundabout Network (`.track-network-container`)**:
@@ -74,6 +76,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 18 | 2026-11-19 | Reshaped trapezium box to vertical orientation (width < height, 42px x 68px). |
 | 19 | 2026-11-19 | Expanded trapezium height 50px downwards (lowered bottom boundary to calc(60% - 50px)) and reduced bottom block height by 50px. |
 | 20 | 2026-11-19 | Added smooth corner radius to trapezium top corners where they bend into sloped sides using SVG quadratic beziers. |
+| 21 | 2026-11-19 | Added 8px corner radius to trapezium inner rectangular box and tilted it 30° towards the left. |
 
 ---
 

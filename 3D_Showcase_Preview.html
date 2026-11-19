@@ -84,16 +84,17 @@
       height: 100%;
       display: block;
     }
-    /* Vertical Rectangular Box inside Trapezium (width less than height: 42px x 68px, fill #626479 with 2px white border) */
+    /* Vertical Rectangular Box inside Trapezium (width less than height: 42px x 68px, fill #626479 with 2px white border, 8px corner radius, tilted left -30deg) */
     .trapezium-box {
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%) rotate(-30deg);
       width: 42px;
       height: 68px;
       background-color: #626479;
       border: 2px solid #ffffff;
+      border-radius: 8px;
       box-sizing: border-box;
       pointer-events: none;
     }
