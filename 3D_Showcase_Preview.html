@@ -136,7 +136,7 @@
       height: 40%;
       z-index: 4;
       pointer-events: none;
-      perspective: 900px;
+      perspective: 800px;
       perspective-origin: 50% 100%;
     }
     .track-network-svg {
@@ -145,7 +145,7 @@
       display: block;
       filter: drop-shadow(0 4px 10px rgba(60, 70, 90, 0.25));
       transform-origin: 50% 100%;
-      transform: rotateX(25deg);
+      transform: rotateX(38deg);
     }
     .watermark-pill {
       position: absolute;
@@ -1382,11 +1382,11 @@
     function updateTopDownCamera() {
       const isPortrait = window.innerHeight > window.innerWidth;
       camera.aspect = window.innerWidth / window.innerHeight;
-      camera.fov = isPortrait ? 45 : 38;
-      // Positioned low at South (+Z) looking forward (North) into the park from the bottom side
-      const camY = isPortrait ? 24 : 18;
-      const camZ = isPortrait ? 44 : 36;
-      const targetZ = isPortrait ? 6 : 2;
+      camera.fov = isPortrait ? 46 : 38;
+      // Positioned low at South (+Z) looking forward (North) into the park from the bottom side (angle from top strongly reduced)
+      const camY = isPortrait ? 16 : 12;
+      const camZ = isPortrait ? 46 : 38;
+      const targetZ = isPortrait ? 8 : 4;
       camera.position.set(0, camY, camZ);
       camera.lookAt(0, 0, targetZ);
       camera.updateProjectionMatrix();

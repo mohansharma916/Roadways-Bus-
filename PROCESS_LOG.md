@@ -13,10 +13,11 @@ This document records the step-by-step progress, specifications, design guidelin
   - **Zero Leaves**: Strictly no leaf particles or petal meshes on the ground or in the air.
   - **Zero Obstacles/Vehicles/Characters**: Completely clean plane park surface.
 - **Camera Perspective & Scene View Angle**:
-  - Angled view from the bottom side looking forward and slightly up into the scene:
-    - Three.js camera: `PerspectiveCamera(45)` positioned low at South (`camY = 24, camZ = 44`) looking forward at `(0, 0, 6)`.
-    - Track network perspective: `.track-network-container` styled with `perspective: 900px; perspective-origin: 50% 100%` and `.track-network-svg` tilted with `transform-origin: 50% 100%; transform: rotateX(25deg);`.
-    - Eliminates the flat perpendicular overhead view: the ring and feeder roads recede into the distance with authentic 3D depth, viewed from the player's bottom/trapezium vantage point.
+  - Angled view from the bottom side looking forward and up into the scene with strongly reduced top-down angle:
+    - Three.js camera: `PerspectiveCamera(46)` positioned low at South (`camY = 16, camZ = 46`) looking forward at `(0, 0, 8)`.
+    - Track network perspective: `.track-network-container` styled with `perspective: 800px; perspective-origin: 50% 100%` and `.track-network-svg` tilted with `transform-origin: 50% 100%; transform: rotateX(38deg);`.
+    - Strongly reduces the top-down viewing angle on the ring, flattening the apparent vertical profile to ~0.60 for a dramatic low-angle perspective while keeping the road network spanning seamlessly from top corners to the trapezium.
+    - Chilbi characters strictly maintain their natural tangent heading along the road path (`rotate(heading)`), with waddling bounce, stepping feet, and swinging arms.
   - Completely **static**: No camera dragging, panning, orbit rotation, or idle bobbing/movement.
 
 ### B. UI Overlay Structure
@@ -106,6 +107,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 26 | 2026-11-19 | Converted scene camera to true direct top-down OrthographicCamera, eliminating perspective distortion and removing the angled tilt towards the bottom side. |
 | 27 | 2026-11-19 | Adjusted camera to angled bottom-up perspective view and converted Chilbi characters to upright 2.5D beans with visible upright body, swinging side arms, stepping legs, and front-facing eyes when approaching the trapezium. |
 | 28 | 2026-11-19 | Reverted Chilbi characters back to original candy bean models, and changed the view angle of the scene with 3D perspective (25° tilt from bottom side) and lowered Three.js camera angle. |
+| 29 | 2026-11-19 | Reduced top-down view angle of the ring further to 38° tilt and lowered Three.js camera (camY=16, camZ=46), keeping original Chilbi path-facing heading. |
 
 ---
 
