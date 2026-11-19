@@ -65,15 +65,15 @@
       pointer-events: none;
     }
 
-    /* Trapezium Panel Above the 60% Bottom Panel (reduced height, widened with bottom corners off-screen by 30% on both sides) */
+    /* Trapezium Panel Above the 60% Bottom Panel (height: 10%, upper width wider at 80% screen width leaving 10% margins) */
     .trapezium-panel {
       position: absolute;
       bottom: 60%;
       left: -30%;
       width: 160%;
-      height: 12%;
+      height: 10%;
       background-color: #7a7d90;
-      clip-path: polygon(32% 0%, 68% 0%, 100% 100%, 0% 100%);
+      clip-path: polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%);
       z-index: 4;
       pointer-events: none;
     }

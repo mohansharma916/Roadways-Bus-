@@ -24,9 +24,10 @@ This document records the step-by-step progress, specifications, design guidelin
    - Top border: Thick 3D embossed border (`9px solid #e1e6ec`) with specular highlights and bevel shading.
 2. **Trapezium Panel (`.trapezium-panel`)**:
    - Sits directly above the bottom 60% panel (`bottom: 60%`).
-   - Reduced height: `12%` vertical coverage.
+   - Height: **10%** vertical coverage (reduced from initial 20% to exactly 10%).
    - Fill color: `#7a7d90`.
-   - Width & Shape: Bottom corners extended so that **30% is off-screen/invisible on both the left and right sides** (`left: -30%`, `width: 160%`, `clip-path: polygon(32% 0%, 68% 0%, 100% 100%, 0% 100%)`).
+   - Upper Width: Expanded to cover **80% of the screen width** at the top edge, leaving only a 10% margin on each side.
+   - Bottom Width & Shape: Bottom corners extended so that **30% is off-screen/invisible on both the left and right sides** (`left: -30%`, `width: 160%`, `clip-path: polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%)`).
 
 ---
 
@@ -41,6 +42,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 5 | 2026-11-19 | Added `#7a7d90` trapezium panel above the 60% boundary. |
 | 6 | 2026-11-19 | Adjusted trapezium: lowered height to 12%, expanded width with bottom corners cut off by 30% on both sides. |
 | 7 | 2026-11-19 | Initialized repository tracking, created `PROCESS_LOG.md`, and established per-turn commit routine. |
+| 8 | 2026-11-19 | Widened trapezium upper width to 80% screen width (10% margins) and set height coverage to exactly 10%. |
 
 ---
 
