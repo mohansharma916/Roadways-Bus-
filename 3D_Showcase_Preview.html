@@ -95,10 +95,10 @@
       filter: drop-shadow(0 3px 8px rgba(60, 70, 90, 0.22));
     }
 
-    /* Oval Roundabout Ring (Wider radius, thicker ring road, open entrance to trapezium) */
+    /* Oval Roundabout Ring (Shifted up 30px, merged horn roads with removed ring borders) */
     .roundabout-container {
       position: absolute;
-      bottom: 67.8%;
+      bottom: calc(67.8% + 30px);
       left: 50%;
       transform: translateX(-50%);
       width: 86%;
@@ -110,6 +110,7 @@
       width: 100%;
       height: 100%;
       display: block;
+      overflow: visible;
       filter: drop-shadow(0 3px 8px rgba(60, 70, 90, 0.22));
     }
     .watermark-pill {
@@ -138,38 +139,48 @@
   <div id="canvas-container"></div>
   <div class="watermark-pill">🌸 Plain Cherry Blossom Park &bull; Direct Top-Down View</div>
 
-  <!-- Cow Horn Curved 40px Roads starting from Screen Corners to 30° on Roundabout -->
+  <!-- Cow Horn Curved Roads (Wider Road ~65px, Merged with Removed Ring Borders at Junctions) -->
   <div class="horns-container">
     <svg class="horns-svg" viewBox="0 0 1000 400" preserveAspectRatio="none">
-      <!-- Left Horn Curb Borders (#e1e6ec) -->
-      <path d="M -10,-5 C 20,60 80,140 152,180" fill="none" stroke="#e1e6ec" stroke-width="65" stroke-linecap="round" />
-      <!-- Left Horn Road Surface (#7a7d90, 40px equivalent width) -->
-      <path d="M -10,-5 C 20,60 80,140 152,180" fill="none" stroke="#7a7d90" stroke-width="53" stroke-linecap="round" />
+      <!-- Left Horn Road Surface Fill (#7a7d90) extending into ring road -->
+      <path d="M -15,-10 C 20,40 80,110 158,152 L 185,168 L 101,180 C 60,130 10,70 -15,85 Z" fill="#7a7d90" />
+      <!-- Left Horn Outer Curb (#e1e6ec) connecting to Ring Top Arc -->
+      <path d="M -15,-10 C 20,40 80,110 158,152" fill="none" stroke="#e1e6ec" stroke-width="6" stroke-linecap="round" />
+      <!-- Left Horn Inner Curb (#e1e6ec) connecting to Ring Left Lower Arc -->
+      <path d="M -15,85 C 10,70 60,130 101,180" fill="none" stroke="#e1e6ec" stroke-width="6" stroke-linecap="round" />
 
-      <!-- Right Horn Curb Borders (#e1e6ec) -->
-      <path d="M 1010,-5 C 980,60 920,140 848,180" fill="none" stroke="#e1e6ec" stroke-width="65" stroke-linecap="round" />
-      <!-- Right Horn Road Surface (#7a7d90, 40px equivalent width) -->
-      <path d="M 1010,-5 C 980,60 920,140 848,180" fill="none" stroke="#7a7d90" stroke-width="53" stroke-linecap="round" />
+      <!-- Right Horn Road Surface Fill (#7a7d90) extending into ring road -->
+      <path d="M 1015,-10 C 980,40 920,110 842,152 L 815,168 L 899,180 C 940,130 990,70 1015,85 Z" fill="#7a7d90" />
+      <!-- Right Horn Outer Curb (#e1e6ec) connecting to Ring Top Arc -->
+      <path d="M 1015,-10 C 980,40 920,110 842,152" fill="none" stroke="#e1e6ec" stroke-width="6" stroke-linecap="round" />
+      <!-- Right Horn Inner Curb (#e1e6ec) connecting to Ring Right Lower Arc -->
+      <path d="M 1015,85 C 990,70 940,130 899,180" fill="none" stroke="#e1e6ec" stroke-width="6" stroke-linecap="round" />
     </svg>
   </div>
 
-  <!-- Oval Roundabout (Wider radius, thicker ring road, hollow center island, open entrance) -->
+  <!-- Oval Roundabout (Shifted up 30px, Open Junctions at Horns and Trapezium with Removed Ring Borders) -->
   <div class="roundabout-container">
     <svg class="roundabout-svg" viewBox="0 0 400 220" preserveAspectRatio="none">
       <defs>
         <!-- Mask for hollow center island: nothing inside -->
         <mask id="roundabout-center-hole">
-          <rect width="400" height="220" fill="white" />
+          <rect width="400" height="260" fill="white" />
           <ellipse cx="200" cy="110" rx="92" ry="40" fill="black" />
         </mask>
       </defs>
       <!-- Road Surface Ring (#7a7d90) with thicker road width and hollow center -->
       <ellipse cx="200" cy="110" rx="192" ry="100" fill="#7a7d90" mask="url(#roundabout-center-hole)" />
-      <!-- Road entrance connector into trapezium -->
-      <rect x="187" y="200" width="26" height="20" fill="#7a7d90" />
-      <!-- Outer Ring Border (#e1e6ec) with open entrance path (~35-40px gap) connecting to trapezium -->
-      <path d="M 213,220 L 213,209.8 A 192,100 0 1,0 187,209.8 L 187,220" fill="none" stroke="#e1e6ec" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
-      <!-- Inner Ring Border (#e1e6ec) -->
+      <!-- Road entrance connector extended down into trapezium to bridge 30px shift -->
+      <rect x="187" y="200" width="26" height="45" fill="#7a7d90" />
+      
+      <!-- Top Arc of Ring Border (from Left Horn to Right Horn) -->
+      <path d="M 40.9,54 A 192,100 0 0,1 359.1,54" fill="none" stroke="#e1e6ec" stroke-width="4.5" stroke-linecap="round" />
+      <!-- Right Lower Arc of Ring Border (from Right Horn to Bottom Trapezium) -->
+      <path d="M 385.4,84 A 192,100 0 0,1 213,209.8 L 213,245" fill="none" stroke="#e1e6ec" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+      <!-- Left Lower Arc of Ring Border (from Bottom Trapezium to Left Horn) -->
+      <path d="M 187,245 L 187,209.8 A 192,100 0 0,1 14.6,84" fill="none" stroke="#e1e6ec" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+      
+      <!-- Inner Ring Border (#e1e6ec, intact and closed) -->
       <ellipse cx="200" cy="110" rx="92" ry="40" fill="none" stroke="#e1e6ec" stroke-width="4.5" />
     </svg>
   </div>
