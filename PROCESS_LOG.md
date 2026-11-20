@@ -112,6 +112,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 35 | 2026-11-20 | Reverted ground/track container to pure flat 2D (no rotateX/distortion) and implemented upright 2.5D side-view Chilbi characters. Viewed from the bottom side at a standing height, characters stand upright on their ground shadows, showing their side profile body, swinging side arms, and stepping legs along their path. |
 | 36 | 2026-11-20 | Created 5 additional Red Chilbi (6 total in squad) walking together in a staggered V-formation; widened road width by +40% (outer Rx=355, Ry=96, inner rx=145, ry=22) and adjusted Chilbi scale (~0.75x) so all 6 walk together comfortably with generous curb clearance. |
 | 37 | 2026-11-20 | Configured Chilbi to span the full road width from border to border with zero empty gap. Added 7th Red Chilbi (7 total), distributed evenly from inner curb (w = -30) to outer curb (w = +30) in a staggered cascading sweep walking at the same forward speed with independent waddling animations. |
+| 38 | 2026-11-20 | Replaced abrupt straight turns / flips with continuous circular walk following the ring path tangent. Red squad (7 members) and Cyan Chilbi now smoothly rotate with `rotate(heading)` along concentric elliptical lanes ($R_{xi} = 145 + \alpha_i \times 210, R_{yi} = 22 + \alpha_i \times 74$), curving naturally 360° around the ring while spanning the entire road width from inner curb border to outer curb border. |
 
 ---
 
