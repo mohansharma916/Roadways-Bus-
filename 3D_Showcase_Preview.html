@@ -2222,13 +2222,22 @@
       const walkers = [];
       const frag = document.createDocumentFragment();
 
+      // Performance / Heat-Saver Mode:
+      // When enabled, only renders the single Lead Chilbi (Row 0, Center Col 3) in the DOM,
+      // while preserving 100% of the kinematic calculation, loop flow, and parade simulation logic.
+      const RENDER_ONLY_LEAD_CHILBI = true;
+
       let createdChilbis = 0;
-      // Build SVG elements for all 2,000 Chilbis across 286 rows (Matte, No Eyes, No Shininess)
+      // Build SVG elements (Heat-saver renders 1 Chilbi; flips to all 430 if RENDER_ONLY_LEAD_CHILBI is false)
       for (let r = 0; r < TOTAL_ROWS; r++) {
         const themeName = rowColors[r];
         const theme = colorThemes[themeName];
         const colsInThisRow = Math.min(COLS_PER_ROW, TOTAL_CHILBIS - createdChilbis);
         for (let c = 0; c < colsInThisRow; c++) {
+          createdChilbis++;
+          if (RENDER_ONLY_LEAD_CHILBI && !(r === 0 && c === 3)) {
+            continue;
+          }
           const id = `chilbi-r${r}-c${c}`;
           const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
           g.id = id;
@@ -2527,13 +2536,14 @@
         // Dynamic header status update
         const watermarkTitle = document.getElementById("watermark-title");
         if (watermarkTitle) {
+          const modeTag = RENDER_ONLY_LEAD_CHILBI ? " [Heat-Saver: 1 Chilbi]" : "";
           if (squadLeadDist < totalOccupiedLeadDist) {
             const pct = Math.min(100, Math.floor((squadLeadDist / totalOccupiedLeadDist) * 100));
-            watermarkTitle.textContent = `🌸 Ring Road Filling (${pct}%) • Sprinting (150 px/s)`;
+            watermarkTitle.textContent = `🌸 Ring Road Filling (${pct}%) • Sprinting (150 px/s)${modeTag}`;
           } else {
             const circuitCount = Math.min(TOTAL_CHILBIS, maxCircuitRows * COLS_PER_ROW);
             const queueCount = Math.max(0, TOTAL_CHILBIS - circuitCount);
-            watermarkTitle.textContent = `🌸 Ring Road Full • ${circuitCount} on Circuit | ${queueCount} Queued`;
+            watermarkTitle.textContent = `🌸 Ring Road Full • ${circuitCount} on Circuit | ${queueCount} Queued${modeTag}`;
           }
         }
 
