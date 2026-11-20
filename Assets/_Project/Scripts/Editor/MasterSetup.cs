@@ -27,6 +27,12 @@ namespace RoadwaysGame.Editor
             // 4. Phase 4 - Bus & Bays
             Phase4Setup.ExecutePhase4BusSetup();
 
+            // 5. Game UI Setup
+            GameObject uiRoot = GameObject.Find("--- [UI] ---");
+            if (uiRoot == null) uiRoot = new GameObject("--- [UI] ---");
+            GameUIController uiCtrl = uiRoot.GetComponent<GameUIController>() ?? uiRoot.AddComponent<GameUIController>();
+            uiCtrl.BuildUI();
+
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
             AssetDatabase.SaveAssets();

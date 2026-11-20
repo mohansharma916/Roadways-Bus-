@@ -1,0 +1,30 @@
+Unity Editor version:    2022.3.20f1 (61c2feb0970d)
+Branch:                  2022.3/release
+Build type:              Release
+Batch mode:              YES
+macOS version:           Version 27.0.1 (Build 26A434)
+Darwin version:          27.0.0
+Architecture:            arm64
+Running under Rosetta:   NO
+Available memory:        8192 MB
+[Licensing::Module] Trying to connect to existing licensing client channel...
+[Licensing::IpcConnector] Connection attempt to the License Client on channel: "LicenseClient-ramaera" failed because channel doesn't exist; code: "0x80000002"
+Launching external process: /Applications/Unity/Hub/Editor/2022.3.20f1/Unity.app/Contents/Frameworks/UnityLicensingClient.app/Contents/MacOS/Unity.Licensing.Client
+[Licensing::Module] Successfully launched the LicensingClient (PId: 71496)
+[Licensing::IpcConnector] Successfully connected to the License Client on channel: "LicenseClient-ramaera" at "2026-11-20T17:55:48.427062Z"
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.15.0+66d4389
+  Session Id:              ba88fe89dfe745b2bbac3112c276a04f
+  Correlation Id:          6cf9679c3caf8c59742c53dd2230777b
+  External correlation Id: 8742063919512258074
+  Machine Id:              Jx7kpf1q9GanbjdGZgpUPMSA5es=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-ramaera" (connect: 0.94s, validation: 0.06s, handshake: 0.35s)
+[Licensing::IpcConnector] Successfully connected to the License Notification on channel: "LicenseClient-ramaera-notifications" at "2026-11-20T17:55:48.835598Z"
+[Licensing::Module] Connected to LicensingClient (PId: 71496, launch time: 0.02, total connection time: 1.35s)
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Error: Code 500 while processing request (status: Unable to update licenses. Errors: No ULF license found.,Token not found in cache)
+[Licensing::Client] Error: Code 500 while updating license in client (status: Unable to update licenses. Errors: No ULF license found.,Token not found in cache)
+[Licensing::Client] Successfully resolved entitlements
+[Licensing::Module] Error: License is not active (com.unity.editor.headless). HasEntitlements will fail.
+Pro License: NO
+No valid Unity Editor license found. Please activate your license.

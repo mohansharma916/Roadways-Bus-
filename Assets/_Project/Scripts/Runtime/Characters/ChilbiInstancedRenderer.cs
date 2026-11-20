@@ -114,6 +114,11 @@ namespace RoadwaysGame
         public void RenderInstances(int count)
         {
             if (count <= 0) return;
+            if (!isInitialized || propBlock == null || bodyMatrices == null || baseColorArray == null)
+            {
+                isInitialized = false;
+                Initialize();
+            }
             count = Mathf.Min(count, bodyMatrices.Length);
 
             propBlock.SetVectorArray(baseColorId, baseColorArray);

@@ -1,0 +1,621 @@
+Unity Editor version:    6000.6.6f1 (d20c9ac777da)
+Branch:                  6000.6/staging
+Build type:              Release
+Batch mode:              YES
+macOS version:           Version 27.0.1 (Build 26A434)
+Darwin version:          27.0.0
+Architecture:            arm64
+Running under Rosetta:   NO
+Available memory:        8192 MB
+Date:                    2026-11-20T19:09:36Z
+VBCSCompilerPreWarmer: watching VBCSCompiler (PID 87057)
+VBCSCompilerPreWarmer: pre-warm launched (dotnet PID 87059)
+VBCSCompiler prewarm took 14.85 ms
+Launching external process: /Applications/Unity/Hub/Editor/6000.6.6f1/Unity.app/Contents/Helpers/UnityLicensingClient.app/Contents/MacOS/Unity.Licensing.Client
+[Licensing::Module] Trying to connect to existing licensing client channel...
+[Licensing::IpcConnector] Channel LicenseClient-ramaera doesn't exist
+[Licensing::Module] Successfully launched the LicensingClient (PId: 87060)
+Launching external process: /Applications/Unity/Hub/Editor/6000.6.6f1/Unity.app/Contents/Helpers/PackageManager/Server/UnityPackageManager
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-ramaera" at "2026-11-20T19:09:36.664405Z"
+
+COMMAND LINE ARGUMENTS:
+/Applications/Unity/Hub/Editor/6000.6.6f1/Unity.app/Contents/MacOS/Unity
+-batchmode
+-quit
+-projectPath
+.
+-executeMethod
+Roadways.Editor.HotReloadInspector.Inspect
+-logFile
+inspect_remote.log
+Successfully changed project path to: /Users/user/Documents/Projects/Games/Roadways Bus Game
+/Users/user/Documents/Projects/Games/Roadways Bus Game
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-remapper-allocator-initial-capacity=32768"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-main-allocator-mimalloc-enabled=1"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+Logging is directed to a specific file, skipping project log.
+Player connection [8662220672]  Target information:
+
+Player connection [8662220672]  * "[IP] 192.168.1.4 [Port] 55504 [Flags] 2 [Guid] 2717181405 [EditorId] 2717181405 [Version] 1048832 [Id] OSXEditor(0,Mohan.local) [Debug] 1 [PackageName] OSXEditor [ProjectName] Editor" 
+
+Player connection [8662220672] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [8662220672] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.18.3+d7ffd15
+  Session Id:              8c3c182d07b24f63aac6590339a7de07
+  Correlation Id:          0672b9d1ba94219b7e972352d5bfdf69
+  External correlation Id: 5300352569274765504
+  Machine Id:              Jx7kpf1q9GanbjdGZgpUPMSA5es=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-ramaera" (connect: 0.58s, validation: 0.07s, handshake: 0.48s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-ramaera-notifications" at "2026-11-20T19:09:37.218407Z"
+[Licensing::Module] Connected to LicensingClient (PId: 87060, launch time: 0.01, total connection time: 1.13s)
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: 13469670544047-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.01
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] Licensing Background thread has ended after 1.16s
+Initialising UDS system complete:
+  - System type: Client
+  - Resource namespace: ccfbead8ffe944ebf77c3825bac7b565
+  - Shared memory size: 1073741824
+  - Command buffer id: 1052672
+  - Command buffer size: 8192
+  - Hashmap size: 4194304
+  - Service connected: false
+[Package Manager] Connected to IPC stream "Upm-87047" after 0.6 seconds.
+[Licensing::Client] Successfully resolved entitlement details
+Library Redirect Path: Library/
+Launching Unity Data Store - /Applications/Unity/Hub/Editor/6000.6.6f1/Unity.app/Contents/Helpers/Unity.DataStore 
+Unity Data Store artifact dir = Library/DataStore, working dir = /Users/user/Documents/Projects/Games/Roadways Bus GameUnity Data Store running and initialised
+[Licensing::Client] Successfully resolved entitlement details
+[Physics::Module] Selected backend (deferred post-plugins).
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Initialize engine version: 6000.6.6f1 (d20c9ac777da)
+[EntityIdStore] init: VM path (explicit commit), pageSize=16384, blockCount=262144, entitiesPerBlock=1024, slots reserved=4294967296 bytes
+[Subsystems] Discovering subsystems at path /Applications/Unity/Hub/Editor/6000.6.6f1/Unity.app/Contents/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path /Users/user/Documents/Projects/Games/Roadways Bus Game/Assets
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+ preferred device: Apple M1 (high power)
+Metal devices available: 1
+0: Apple M1 (high power)
+Using device Apple M1 (high power)
+Initializing Metal device caps: Apple M1
+Mac GPU Family: 2
+Apple GPU Family: 7
+MSL Version: 3.0
+Has Float MSAA: 1
+Has Float Filtering: 1
+ReadWrite Texture Tier: 2
+Initialize mono
+Mono path[0] = '/Applications/Unity/Hub/Editor/6000.6.6f1/Unity.app/Contents/Resources/Scripting/Managed'
+Mono path[1] = '/Applications/Unity/Hub/Editor/6000.6.6f1/Unity.app/Contents/Resources/Scripting/BCLExtensions/runtime/netstandard2.1'
+Mono path[2] = '/Applications/Unity/Hub/Editor/6000.6.6f1/Unity.app/Contents/Resources/Scripting/MonoBleedingEdge/lib/mono/unityjit-macos'
+Mono config path = '/Applications/Unity/Hub/Editor/6000.6.6f1/Unity.app/Contents/Resources/Scripting/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56047
+CodeReloadManager initialized
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: /Applications/Unity/Hub/Editor/6000.6.6f1/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll
+Register platform support module: /Applications/Unity/Hub/Editor/6000.6.6f1/PlaybackEngines/MacStandaloneSupport/UnityEditor.OSXStandalone.Extensions.dll
+Register platform support module: /Applications/Unity/Hub/Editor/6000.6.6f1/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll
+Registered in 0.002296 seconds.
+Native extension for Android target not found
+Native extension for OSXStandalone target not found
+Native extension for WebGL target not found
+Package Manager log level set to [2]
+ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:False
+Scripting: successfully reloaded assembly
+- Finished resetting the current domain, in  0.981 seconds
+Domain Reload Profiling: 1430ms
+	BeginReloadAssembly (116ms)
+		CreateAndSetChildDomain (10ms)
+	RebuildCommonClasses (4ms)
+	RebuildNativeTypeToScriptingClass (17ms)
+	initialDomainReloadingComplete (49ms)
+	LoadAllAssembliesAndSetupDomain (262ms)
+		LoadAssemblies (107ms)
+		TypeCache.Refresh (189ms)
+			TypeCache.ScanAssembly (169ms)
+		AnalyzeDomain (1ms)
+	FinalizeReload (981ms)
+		SetupLoadedEditorAssemblies (0ms)
+			InitializePlatformSupportModulesInManaged (6ms)
+			BeforeProcessingInitializeOnLoad (70ms)
+			ProcessInitializeOnLoadAttributes (63ms)
+			ProcessInitializeOnLoadMethodAttributes (696ms)
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Client] Successfully resolved entitlement details
+Application.AssetDatabase Initial Refresh Start
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 41 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.inputsystem@1.20.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.inputsystem@7a4e1a2a8194)
+    com.unity.ide.visualstudio@2.0.29 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.ide.visualstudio@42af3a235209)
+    com.unity.ide.rider@3.0.40 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.ide.rider@e4950c6d131b)
+    com.unity.performance.profile-analyzer@1.4.2 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.performance.profile-analyzer@5491650411cd)
+    com.unity.testtools.codecoverage@1.3.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.testtools.codecoverage@19a841221620)
+    com.unity.splines@2.9.1 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.splines@edbe9aefec91)
+    com.unity.searcher@4.9.5 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.searcher@a463122f2c00)
+    com.unity.profiling.core@1.0.3 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.profiling.core@8a49f7027d06)
+    com.unity.settings-manager@2.1.1 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.settings-manager@0b8638c5ce86)
+    com.unity.nuget.mono-cecil@1.11.6 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.nuget.mono-cecil@ecb9724e46ff)
+  Built-in packages:
+    com.unity.cinemachine@6.6.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.cinemachine@ea71a007529e)
+    com.unity.feature.development@1.0.2 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.feature.development@767aadbc6eb7)
+    com.unity.render-pipelines.universal@17.6.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.render-pipelines.universal@9b1eb8be54e0)
+    com.unity.textmeshpro@5.0.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.textmeshpro@5861d0377263)
+    com.unity.timeline@6.6.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.timeline@4891807c6bd8)
+    com.unity.ugui@2.6.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.ugui@0b1771797efc)
+    com.unity.modules.ai@1.0.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.modules.ai)
+    com.unity.modules.animation@1.0.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.modules.animation)
+    com.unity.modules.audio@1.0.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.modules.audio)
+    com.unity.modules.imageconversion@1.0.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.modules.physics)
+    com.unity.modules.ui@1.0.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.modules.uielements)
+    com.unity.modules.hierarchycore@1.0.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.modules.hierarchycore)
+    com.unity.modules.physics2d@1.0.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.modules.physics2d)
+    com.unity.modules.director@1.0.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.modules.director)
+    com.unity.render-pipelines.core@17.6.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.render-pipelines.core@e18bd88df4e3)
+    com.unity.shadergraph@17.6.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.shadergraph@0de771837e0e)
+    com.unity.render-pipelines.universal-config@17.6.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.render-pipelines.universal-config@561422b74439)
+    com.unity.editorcoroutines@6.6.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.editorcoroutines@8cd72baa102a)
+    com.unity.test-framework@1.8.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.test-framework@80f691d4262b)
+    com.unity.modules.physicscore2d@1.0.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.modules.physicscore2d)
+    com.unity.graph-authoring@1.0.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.graph-authoring@cfd2588851ee)
+    com.unity.burst@2.0.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.burst@626e66ab421b)
+    com.unity.collections@6.6.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.collections@10fff0607388)
+    com.unity.ext.nunit@2.1.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.ext.nunit@0198eae3b53e)
+    com.unity.mathematics@1.4.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.mathematics@8306a64d0cd6)
+    com.unity.test-framework.performance@6.6.0 (location: /Users/user/Documents/Projects/Games/Roadways Bus Game/Library/PackageCache/com.unity.test-framework.performance@54c5bd86aedb)
+[Package Manager] com.unity.textmeshpro is deprecated: This package is no longer supported. TextMeshPro functionalities are now included in the com.unity.ugui package. To continue using them, consider adding it to your project dependencies.
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.01 seconds
+Assembly reference Packages/com.unity.cinemachine/Editor/Samples/ExposeHDRPInternals/HDRP-Editor-ref.asmref has no target assembly definition
+Assembly reference Packages/com.unity.cinemachine/Editor/Samples/ExposeHDRPInternals/HDRP-Editor-ref.asmref has no target assembly definition
+[ScriptCompilation] Requested script compilation because: AssetDatabase observed changes in script compilation related files
+Starting: /Applications/Unity/Hub/Editor/6000.6.6f1/Unity.app/Contents/Resources/BuildPipeline/bee_backend --ipc --defer-dag-verification --dagfile="Library/Bee/1300b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: /Users/user/Documents/Projects/Games/Roadways Bus Game
+DisplayProgressbar: Compiling Scripts
+ExitCode: 4 Duration: 0s205ms
+Rebuilding DAG because FileSignature timestamp changed: Library/Bee/1300b0aE-inputdata.json
+*** Tundra requires additional run (0.17 seconds), 0 items updated, 0 evaluated
+Starting: /Applications/Unity/Hub/Editor/6000.6.6f1/Unity.app/Contents/Resources/Scripting/DotNetSdk/dotnet "/Applications/Unity/Hub/Editor/6000.6.6f1/Unity.app/Contents/Resources/BuildPipeline/ScriptCompilationBuildProgram.exe" "Library/Bee/1300b0aE.dag.json" "Library/Bee/1300b0aE-inputdata.json" "Library/Bee/buildprogram0.traceevents"
+WorkingDir: /Users/user/Documents/Projects/Games/Roadways Bus Game
+ExitCode: 0 Duration: 1s259ms
+Starting: /Applications/Unity/Hub/Editor/6000.6.6f1/Unity.app/Contents/Resources/BuildPipeline/bee_backend --ipc --defer-dag-verification --dagfile="Library/Bee/1300b0aE.dag" --continue-on-failure --dagfilejson="Library/Bee/1300b0aE.dag.json" --profile="Library/Bee/backend2.traceevents" ScriptAssemblies
+WorkingDir: /Users/user/Documents/Projects/Games/Roadways Bus Game
+warn: Unity.ILPP.Runner.PostProcessingAssemblyLoadContext[0]
+      Assembly system.runtime.interopservices.windowsruntime has duplicate hint path. Ignoring "/Applications/Unity/Hub/Editor/6000.6.6f1/Unity.app/Contents/Resources/Scripting/UnityReferenceAssemblies/unity-4.8-api/Facades/System.Runtime.InteropServices.WindowsRuntime.dll" in favor of "/Applications/Unity/Hub/Editor/6000.6.6f1/Unity.app/Contents/Resources/Scripting/NetStandard/Extensions/2.0.0/System.Runtime.InteropServices.WindowsRuntime.dll"
+warn: Unity.ILPP.Runner.PostProcessingAssemblyLoadContext[0]
+      Assembly system.componentmodel.composition has duplicate hint path. Ignoring "/Applications/Unity/Hub/Editor/6000.6.6f1/Unity.app/Contents/Resources/Scripting/UnityReferenceAssemblies/unity-4.8-api/System.ComponentModel.Composition.dll" in favor of "/Applications/Unity/Hub/Editor/6000.6.6f1/Unity.app/Contents/Resources/Scripting/NetStandard/compat/2.1.0/shims/netfx/System.ComponentModel.Composition.dll"
+ExitCode: 0 Duration: 1s241ms
+Finished compiling graph: 842 nodes, 16534 flattened edges (13752 ToBuild, 136 ToUse), maximum node priority 998
+[440/839    0s] WriteText Library/Bee/artifacts/1300b0aE.dag/Assembly-CSharp-Editor.rsp
+[641/839    0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[831/839    0s] Csc Library/Bee/artifacts/1300b0aE.dag/Assembly-CSharp.dll (+2 others)
+Assets/_Project/Scripts/Runtime/Bus/BusFleetController.cs(66,50): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+Assets/_Project/Scripts/Runtime/Bus/BusFleetController.cs(67,54): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+Assets/_Project/Scripts/Runtime/Characters/ChilbiFormationManager.cs(66,54): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+Assets/_Project/Scripts/Runtime/Characters/ChilbiFormationManager.cs(143,39): warning CS0219: The variable 'state' is assigned but its value is never used
+Assets/_Project/Scripts/Runtime/Bus/BusFleetController.cs(171,54): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+Assets/_Project/Scripts/Runtime/Characters/ChilbiFormationManager.cs(43,40): warning CS0414: The field 'ChilbiFormationManager.leadDistance' is assigned but its value is never used
+Assets/_Project/Scripts/Runtime/Bus/ParkingBayManager.cs(36,40): warning CS0414: The field 'ParkingBayManager.baySpacing' is assigned but its value is never used
+[832/839    0s] Csc Library/Bee/artifacts/1300b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
+Assets/_Project/Scripts/Editor/Phase1Setup.cs(37,13): warning CS0618: 'PlayerSettings.SetApplicationIdentifier(BuildTargetGroup, string)' is obsolete: 'Use SetApplicationIdentifier(NamedBuildTarget buildTarget, string identifier) instead'
+Assets/_Project/Scripts/Editor/Phase1Setup.cs(46,13): warning CS0618: 'PlayerSettings.useAnimatedAutorotation' is obsolete: 'No longer relevant, will be removed in the future release.'
+Assets/_Project/Scripts/Editor/Phase1Setup.cs(53,13): warning CS0618: 'PlayerSettings.SetScriptingBackend(BuildTargetGroup, ScriptingImplementation)' is obsolete: 'Use SetScriptingBackend(NamedBuildTarget buildTarget, ScriptingImplementation backend) instead'
+Assets/_Project/Scripts/Editor/AndroidBuildScript.cs(65,52): warning CS0618: 'AndroidSdkVersions.AndroidApiLevel24' is obsolete: 'Minimum supported Android API level is 26 (Android 8.0). Please use AndroidApiLevel26 or higher. This warning will become an error on a next release.'
+[833/839    0s] ILPostProcess Library/Bee/artifacts/1300b0aE.dag/post-processed/Assembly-CSharp.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1300b0aE.dag/Assembly-CSharp.dll, with 156 defines and 324 references
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+1 processor(s) skipped this assembly
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+[834/839    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp.pdb
+[835/839    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp.dll
+[836/839    0s] ILPostProcess Library/Bee/artifacts/1300b0aE.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1300b0aE.dag/Assembly-CSharp-Editor.dll, with 154 defines and 365 references
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+1 processor(s) skipped this assembly
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+[837/839    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+[838/839    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+*** Tundra build success (1.22 seconds), 10 items updated, 839 evaluated
+Assets/_Project/Scripts/Runtime/Bus/BusFleetController.cs(66,50): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+Assets/_Project/Scripts/Runtime/Bus/BusFleetController.cs(67,54): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+Assets/_Project/Scripts/Runtime/Characters/ChilbiFormationManager.cs(66,54): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+Assets/_Project/Scripts/Runtime/Characters/ChilbiFormationManager.cs(143,39): warning CS0219: The variable 'state' is assigned but its value is never used
+Assets/_Project/Scripts/Runtime/Bus/BusFleetController.cs(171,54): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+Assets/_Project/Scripts/Runtime/Characters/ChilbiFormationManager.cs(43,40): warning CS0414: The field 'ChilbiFormationManager.leadDistance' is assigned but its value is never used
+Assets/_Project/Scripts/Runtime/Bus/ParkingBayManager.cs(36,40): warning CS0414: The field 'ParkingBayManager.baySpacing' is assigned but its value is never used
+Assets/_Project/Scripts/Editor/Phase1Setup.cs(37,13): warning CS0618: 'PlayerSettings.SetApplicationIdentifier(BuildTargetGroup, string)' is obsolete: 'Use SetApplicationIdentifier(NamedBuildTarget buildTarget, string identifier) instead'
+Assets/_Project/Scripts/Editor/Phase1Setup.cs(46,13): warning CS0618: 'PlayerSettings.useAnimatedAutorotation' is obsolete: 'No longer relevant, will be removed in the future release.'
+Assets/_Project/Scripts/Editor/Phase1Setup.cs(53,13): warning CS0618: 'PlayerSettings.SetScriptingBackend(BuildTargetGroup, ScriptingImplementation)' is obsolete: 'Use SetScriptingBackend(NamedBuildTarget buildTarget, ScriptingImplementation backend) instead'
+Assets/_Project/Scripts/Editor/AndroidBuildScript.cs(65,52): warning CS0618: 'AndroidSdkVersions.AndroidApiLevel24' is obsolete: 'Minimum supported Android API level is 26 (Android 8.0). Please use AndroidApiLevel26 or higher. This warning will become an error on a next release.'
+Assets/_Project/Scripts/Runtime/Characters/ChilbiFormationManager.cs(66,54): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+Assets/_Project/Scripts/Runtime/Characters/ChilbiFormationManager.cs(143,39): warning CS0219: The variable 'state' is assigned but its value is never used
+Assets/_Project/Scripts/Runtime/Bus/BusFleetController.cs(171,54): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+Assets/_Project/Scripts/Runtime/Characters/ChilbiFormationManager.cs(43,40): warning CS0414: The field 'ChilbiFormationManager.leadDistance' is assigned but its value is never used
+Assets/_Project/Scripts/Runtime/Bus/ParkingBayManager.cs(36,40): warning CS0414: The field 'ParkingBayManager.baySpacing' is assigned but its value is never used
+Assets/_Project/Scripts/Editor/Phase1Setup.cs(53,13): warning CS0618: 'PlayerSettings.SetScriptingBackend(BuildTargetGroup, ScriptingImplementation)' is obsolete: 'Use SetScriptingBackend(NamedBuildTarget buildTarget, ScriptingImplementation backend) instead'
+Assets/_Project/Scripts/Editor/AndroidBuildScript.cs(65,52): warning CS0618: 'AndroidSdkVersions.AndroidApiLevel24' is obsolete: 'Minimum supported Android API level is 26 (Android 8.0). Please use AndroidApiLevel26 or higher. This warning will become an error on a next release.'
+AssetDatabase: script compilation time: 3.658810s
+Total cache size 268199770
+Total cache size after purge 268199770, took 00:00:00.2639794
+Begin MonoManager ReloadAssembly
+Assembly reference Packages/com.unity.cinemachine/Editor/Samples/ExposeHDRPInternals/HDRP-Editor-ref.asmref has no target assembly definition
+'Packages/com.unity.cinemachine/Editor/Editors/CinemachineVirtualCameraBaseEditor.cs' contains partial class of Unity.Object, exactly 1 of the partial classes needs to be in a file with the same filename. This is to know the one that can be referenced from ie. GameObjects
+'Packages/com.unity.render-pipelines.core/Editor/Deprecated.cs' contains partial class of Unity.Object, exactly 1 of the partial classes needs to be in a file with the same filename. This is to know the one that can be referenced from ie. GameObjects
+'Packages/com.unity.render-pipelines.core/Editor/Deprecated.cs' contains partial class of Unity.Object, exactly 1 of the partial classes needs to be in a file with the same filename. This is to know the one that can be referenced from ie. GameObjects
+'Packages/com.unity.cinemachine/Editor/Obsolete/CinemachineVirtualCameraBaseEditor.cs' contains partial class of Unity.Object, exactly 1 of the partial classes needs to be in a file with the same filename. This is to know the one that can be referenced from ie. GameObjects
+Native extension for Android target not found
+Native extension for OSXStandalone target not found
+Native extension for WebGL target not found
+ScheduleIndexationOnStartup MainProcess:True IndexOnStartup:True
+Scripting: successfully reloaded assembly
+- Finished resetting the current domain, in  1.616 seconds
+Domain Reload Profiling: 2616ms
+	BeginReloadAssembly (449ms)
+		DisableScriptedObjects (25ms)
+		CreateAndSetChildDomain (144ms)
+	RebuildCommonClasses (9ms)
+	RebuildNativeTypeToScriptingClass (14ms)
+	initialDomainReloadingComplete (42ms)
+	LoadAllAssembliesAndSetupDomain (480ms)
+		LoadAssemblies (385ms)
+		TypeCache.Refresh (133ms)
+			TypeCache.ScanAssembly (108ms)
+		AnalyzeDomain (38ms)
+			BuildScriptInfoCaches (30ms)
+			ResolveRequiredComponents (6ms)
+	FinalizeReload (1622ms)
+		SetupLoadedEditorAssemblies (0ms)
+			InitializePlatformSupportModulesInManaged (10ms)
+			BeforeProcessingInitializeOnLoad (125ms)
+			ProcessInitializeOnLoadAttributes (479ms)
+			ProcessInitializeOnLoadMethodAttributes (210ms)
+			AfterProcessingInitializeOnLoad (4ms)
+			EditorAssembliesLoaded (19ms)
+		ExecutionOrderSort2 (5ms)
+		AwakeInstancesAfterBackupRestoration (70ms)
+Default Renderer is missing, make sure there is a Renderer assigned as the default on the current Universal RP asset:Mobile_URP_Asset
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at /Users/bokken/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:23)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object,UnityEngine.Object)
+UnityEngine.Debug:LogError (object,UnityEngine.Object)
+UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset:CreatePipeline () (at ./Library/PackageCache/com.unity.render-pipelines.universal@9b1eb8be54e0/Runtime/Data/UniversalRenderPipelineAsset.cs:801)
+UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset:get_scriptableRendererData () (at ./Library/PackageCache/com.unity.render-pipelines.universal@9b1eb8be54e0/Runtime/Data/UniversalRenderPipelineAsset.cs:942)
+UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset:get_defaultShader () (at ./Library/PackageCache/com.unity.render-pipelines.universal@9b1eb8be54e0/Runtime/Data/UniversalRenderPipelineAsset.DefaultResources.cs:117)
+UnityEngine.Rendering.GraphicsSettings:GetDefaultShader (UnityEngine.Rendering.DefaultShaderType) (at /Users/bokken/build/output/unity/unity/Runtime/Export/Graphics/GraphicsSettings.bindings.cs:135)
+
+(Filename: ./Library/PackageCache/com.unity.render-pipelines.universal@9b1eb8be54e0/Runtime/Data/UniversalRenderPipelineAsset.cs Line: 801)
+
+Default Renderer is missing, make sure there is a Renderer assigned as the default on the current Universal RP asset:Mobile_URP_Asset
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at /Users/bokken/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:23)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object,UnityEngine.Object)
+UnityEngine.Debug:LogError (object,UnityEngine.Object)
+UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset:CreatePipeline () (at ./Library/PackageCache/com.unity.render-pipelines.universal@9b1eb8be54e0/Runtime/Data/UniversalRenderPipelineAsset.cs:801)
+UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset:get_scriptableRendererData () (at ./Library/PackageCache/com.unity.render-pipelines.universal@9b1eb8be54e0/Runtime/Data/UniversalRenderPipelineAsset.cs:942)
+UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset:GetMaterial (UnityEngine.Rendering.Universal.DefaultMaterialType) (at ./Library/PackageCache/com.unity.render-pipelines.universal@9b1eb8be54e0/Runtime/Data/UniversalRenderPipelineAsset.DefaultResources.cs:25)
+UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset:get_defaultMaterial () (at ./Library/PackageCache/com.unity.render-pipelines.universal@9b1eb8be54e0/Runtime/Data/UniversalRenderPipelineAsset.DefaultResources.cs:54)
+UnityEngine.Rendering.GraphicsSettings:GetDefaultMaterial (UnityEngine.Rendering.DefaultMaterialType) (at /Users/bokken/build/output/unity/unity/Runtime/Export/Graphics/GraphicsSettings.bindings.cs:159)
+
+(Filename: ./Library/PackageCache/com.unity.render-pipelines.universal@9b1eb8be54e0/Runtime/Data/UniversalRenderPipelineAsset.cs Line: 801)
+
+Default Renderer is missing, make sure there is a Renderer assigned as the default on the current Universal RP asset:Mobile_URP_Asset
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at /Users/bokken/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:23)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object,UnityEngine.Object)
+UnityEngine.Debug:LogError (object,UnityEngine.Object)
+UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset:CreatePipeline () (at ./Library/PackageCache/com.unity.render-pipelines.universal@9b1eb8be54e0/Runtime/Data/UniversalRenderPipelineAsset.cs:801)
+UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset:get_scriptableRendererData () (at ./Library/PackageCache/com.unity.render-pipelines.universal@9b1eb8be54e0/Runtime/Data/UniversalRenderPipelineAsset.cs:942)
+UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset:get_defaultShader () (at ./Library/PackageCache/com.unity.render-pipelines.universal@9b1eb8be54e0/Runtime/Data/UniversalRenderPipelineAsset.DefaultResources.cs:117)
+UnityEngine.Rendering.GraphicsSettings:GetDefaultShader (UnityEngine.Rendering.DefaultShaderType) (at /Users/bokken/build/output/unity/unity/Runtime/Export/Graphics/GraphicsSettings.bindings.cs:135)
+
+(Filename: ./Library/PackageCache/com.unity.render-pipelines.universal@9b1eb8be54e0/Runtime/Data/UniversalRenderPipelineAsset.cs Line: 801)
+
+Default Renderer is missing, make sure there is a Renderer assigned as the default on the current Universal RP asset:Mobile_URP_Asset
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at /Users/bokken/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:23)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object,UnityEngine.Object)
+UnityEngine.Debug:LogError (object,UnityEngine.Object)
+UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset:CreatePipeline () (at ./Library/PackageCache/com.unity.render-pipelines.universal@9b1eb8be54e0/Runtime/Data/UniversalRenderPipelineAsset.cs:801)
+UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset:get_scriptableRendererData () (at ./Library/PackageCache/com.unity.render-pipelines.universal@9b1eb8be54e0/Runtime/Data/UniversalRenderPipelineAsset.cs:942)
+UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset:GetMaterial (UnityEngine.Rendering.Universal.DefaultMaterialType) (at ./Library/PackageCache/com.unity.render-pipelines.universal@9b1eb8be54e0/Runtime/Data/UniversalRenderPipelineAsset.DefaultResources.cs:25)
+UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset:get_defaultMaterial () (at ./Library/PackageCache/com.unity.render-pipelines.universal@9b1eb8be54e0/Runtime/Data/UniversalRenderPipelineAsset.DefaultResources.cs:54)
+UnityEngine.Rendering.GraphicsSettings:GetDefaultMaterial (UnityEngine.Rendering.DefaultMaterialType) (at /Users/bokken/build/output/unity/unity/Runtime/Export/Graphics/GraphicsSettings.bindings.cs:159)
+
+(Filename: ./Library/PackageCache/com.unity.render-pipelines.universal@9b1eb8be54e0/Runtime/Data/UniversalRenderPipelineAsset.cs Line: 801)
+
+Starting new worker id: 0 with log in /Users/user/Documents/Projects/Games/Roadways Bus Game/Logs/AssetImportWorkerHW0.log
+
+Asset Pipeline Refresh (id=0a90fdad3cea84b5d89834da131093ec): Total: 8.145 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	(Values over 0.05ms)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=2754 ms
+		Asset DB Callback time: managed=602 ms, native=30 ms
+		Scripting: domain reloads=1, domain reload time=1060 ms, compile time=3662 ms, other=35 ms
+		Project Asset Count: scripts=1058, non-scripts=1902
+		Asset File Changes: new=1, changed=2, moved=0, deleted=0
+		Scan Filter Count: 1
+	InvokeCustomDependenciesCallbacks: 0.071ms
+	InvokePackagesCallback: 19.124ms
+	ApplyChangesToAssetFolders: 0.613ms
+	Scan: 609.205ms
+	Collect global state as custom dependencies: 53.625ms
+	OnSourceAssetsModified: 1.597ms
+	CategorizeScriptCompilationAssets: 32.664ms
+	ProcessAssetsWithTransientArtifactChanges: 46.894ms
+	CategorizeAssets: 195.955ms
+	CompileScripts: 3661.844ms
+	ImportOutOfDateAssets: 1668.063ms (1638.617ms without children)
+		ReloadNativeAssets: 0.413ms
+		UnloadImportedAssets: 13.507ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 0.828ms
+		ImportSchedulerStart: 13.818ms
+	PostProcessAllAssets: 607.826ms
+		VCAutoAddAssetPostprocess 2.968ms
+		PostProcessCallbackCreateDeferredMaterials 0.581ms
+		WindowTitlePostprocess 0.154ms
+		XRBuildSystem.XRAssetImported 0.080ms
+		MonoPostProcessAllAssets: 600.508ms
+			AssetPostprocessor.OnPostprocessAllAssets 342.005ms
+			SyncVS.PostprocessSyncProject 172.277ms
+			StyleCatalogPostProcessor.OnPostprocessAllAssets 30.631ms
+			UniversalRenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 17.574ms
+			BuilderAssetPostprocessor.OnPostprocessAllAssets 5.797ms
+			WindowAssetPostprocessingWatcher.OnPostprocessAllAssets 2.315ms
+			AssetChangedListener.OnPostprocessAllAssets 1.943ms
+			SpeedTree9Postprocessor.OnPostprocessAllAssets 1.669ms
+			RetainedModeAssetPostprocessor.OnPostprocessAllAssets 1.609ms
+			ShaderGraphAssetPostProcessor.OnPostprocessAllAssets 1.531ms
+			EditModeScopePostprocessor.OnPostprocessAllAssets 1.081ms
+			ArtifactBrowserPostProcessor.OnPostprocessAllAssets 0.765ms
+			MaterialPostprocessor.OnPostprocessAllAssets 0.714ms
+			RenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 0.689ms
+			AudioMixerPostprocessor.OnPostprocessAllAssets 0.672ms
+			InputActionAssetPostprocessor.OnPostprocessAllAssets 0.522ms
+			PostProcessor.OnPostprocessAllAssets 0.484ms
+			ShaderReflectionAssetPostProcessor.OnPostprocessAllAssets 0.468ms
+			CinemachineSettings.OnPostprocessAllAssets 0.400ms
+			TextAssetPostProcessor.OnPostprocessAllAssets 0.338ms
+			TMPro_TexturePostProcessor.OnPostprocessAllAssets 0.315ms
+			ProjectSettingsPostprocessor.OnPostprocessAllAssets 0.264ms
+			ReferencedClipsPostProcessor.OnPostprocessAllAssets 0.247ms
+			InputActionJsonNameModifierAssetProcessor.OnPostprocessAllAssets 0.238ms
+			TerrainToolbarOverlayPostProcessor.OnPostprocessAllAssets 0.235ms
+			DomainReloadProcessor.OnPostprocessAllAssets 0.222ms
+			SamplePostprocessor.OnPostprocessAllAssets 0.208ms
+			AssetEvents.OnPostprocessAllAssets 0.198ms
+			AssetDatabaseCallbacks.OnPostprocessAllAssets 0.186ms
+			ThemePostprocessor.OnPostprocessAllAssets 0.156ms
+			SpeedTreePostProcessor.OnPostprocessAllAssets 0.127ms
+			ScenarioDriftAssetsTracker.OnPostprocessAllAssets 0.099ms
+			ConfigAssetsTracker.OnPostprocessAllAssets 0.092ms
+			AudioContainerPostProcessor.OnPostprocessAllAssets 0.057ms
+	PostAssetChangesProfiler: 12.397ms
+	UnloadStreamsBegin: 1.692ms
+	PersistCurrentRevisions: 0.085ms
+	GenerateScriptTypeHashes: 4.954ms
+	GenerateScriptTypeSerializationHashes: 5.867ms
+	Untracked: 1229.274ms
+
+Application.AssetDatabase Initial Refresh End
+Shader Hidden/ChartRasterizerHardware is not supported: GPU does not support conservative rasterization
+Launching external process: /Applications/Unity/Hub/Editor/6000.6.6f1/Unity.app/Contents/Helpers/UnityShaderCompiler
+Launched and connected shader compiler UnityShaderCompiler after 0.09 seconds
+Shader Hidden/ChartRasterizerHardware is not supported: GPU does not support conservative rasterization
+Scanning for USB devices : 0.631ms
+Initializing Unity extensions:
+2026-11-21 00:39:48.582 Unity[87047:8771773] NSEventModifierFlagFunction specified to -setKeyEquivalentModifierMask: for item <NSMenuItem: 0x785c2f8be0 SDF, ke='Command-F12'>, but is only supported for system-provided menu items; will not be used
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-Roadways Bus Game
+2026-11-21 00:39:48.822 Unity[87047:8771773] NSEventModifierFlagFunction specified to -setKeyEquivalentModifierMask: for item <NSMenuItem: 0x785c2f12c0 SDF, ke='Command-F12'>, but is only supported for system-provided menu items; will not be used
+Unloading 70 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 4640 unused Assets / (8.3 MB). Loaded Objects now: 5599.
+Memory consumption went from 238.4 MB to 230.1 MB.
+Total: 16.484959 ms (FindLiveObjects: 1.065125 ms CreateObjectMapping: 0.153750 ms MarkObjects: 10.114625 ms  DeleteObjects: 5.010459 ms)
+
+--- Inspecting EditorSettings for Unity Remote ---
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at /Users/bokken/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:23)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+Roadways.Editor.HotReloadInspector:Inspect () (at Assets/_Project/Scripts/Editor/HotReloadInspector.cs:13)
+
+(Filename: Assets/_Project/Scripts/Editor/HotReloadInspector.cs Line: 13)
+
+EditorSettings.unityRemoteDevice = 
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at /Users/bokken/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:23)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+Roadways.Editor.HotReloadInspector:Inspect () (at Assets/_Project/Scripts/Editor/HotReloadInspector.cs:20)
+
+(Filename: Assets/_Project/Scripts/Editor/HotReloadInspector.cs Line: 20)
+
+EditorSettings.unityRemoteCompression = 
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at /Users/bokken/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:23)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+Roadways.Editor.HotReloadInspector:Inspect () (at Assets/_Project/Scripts/Editor/HotReloadInspector.cs:20)
+
+(Filename: Assets/_Project/Scripts/Editor/HotReloadInspector.cs Line: 20)
+
+EditorSettings.unityRemoteResolution = 
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at /Users/bokken/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:23)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+Roadways.Editor.HotReloadInspector:Inspect () (at Assets/_Project/Scripts/Editor/HotReloadInspector.cs:20)
+
+(Filename: Assets/_Project/Scripts/Editor/HotReloadInspector.cs Line: 20)
+
+EditorSettings.unityRemoteJoystickSource = 
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at /Users/bokken/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:23)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+Roadways.Editor.HotReloadInspector:Inspect () (at Assets/_Project/Scripts/Editor/HotReloadInspector.cs:20)
+
+(Filename: Assets/_Project/Scripts/Editor/HotReloadInspector.cs Line: 20)
+
+--- Inspecting BuildOptions ---
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at /Users/bokken/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:23)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+Roadways.Editor.HotReloadInspector:Inspect () (at Assets/_Project/Scripts/Editor/HotReloadInspector.cs:29)
+
+(Filename: Assets/_Project/Scripts/Editor/HotReloadInspector.cs Line: 29)
+
+BuildOptions.ForceOptimizeScriptCompilation
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at /Users/bokken/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:23)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+Roadways.Editor.HotReloadInspector:Inspect () (at Assets/_Project/Scripts/Editor/HotReloadInspector.cs:34)
+
+(Filename: Assets/_Project/Scripts/Editor/HotReloadInspector.cs Line: 34)
+
+BuildOptions.AutoRunPlayer
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at /Users/bokken/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:23)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+Roadways.Editor.HotReloadInspector:Inspect () (at Assets/_Project/Scripts/Editor/HotReloadInspector.cs:34)
+
+(Filename: Assets/_Project/Scripts/Editor/HotReloadInspector.cs Line: 34)
+
+BuildOptions.BuildScriptsOnly
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at /Users/bokken/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:23)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+Roadways.Editor.HotReloadInspector:Inspect () (at Assets/_Project/Scripts/Editor/HotReloadInspector.cs:34)
+
+(Filename: Assets/_Project/Scripts/Editor/HotReloadInspector.cs Line: 34)
+
+BuildOptions.PatchPackage
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace () (at /Users/bokken/build/output/unity/unity/Runtime/Export/Scripting/StackTrace.cs:23)
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+Roadways.Editor.HotReloadInspector:Inspect () (at Assets/_Project/Scripts/Editor/HotReloadInspector.cs:34)
+
+(Filename: Assets/_Project/Scripts/Editor/HotReloadInspector.cs Line: 34)
+
+Thread 0x7117c1f000 may have been prematurely finalized
+Batchmode quit successfully invoked - shutting down!
+Curl error 42: Callback aborted
+Curl error 42: Callback aborted
+Thread 0x7117f07000 may have been prematurely finalized
+Killing ADB server in 0.362632 seconds.
+Input System module state changed to: ShutdownInProgress.
+Input Polling Thread exited.
+Input System module state changed to: Shutdown.
+Thread 0x16ba83000 may have been prematurely finalized
+Thread 0x16bb0f000 may have been prematurely finalized
+Thread 0x16bb9b000 may have been prematurely finalized
+Thread 0x16bdcb000 may have been prematurely finalized
+Thread 0x16bc27000 may have been prematurely finalized
+Thread 0x16bd3f000 may have been prematurely finalized
+Thread 0x16bcb3000 may have been prematurely finalized
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+[Licensing::IpcConnector] LicenseClient-ramaera-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-ramaera channel disconnected successfully.
+Unity Data Store service was successfully shut down
+UDS shutting down local client system
+Shut down UDS service system complete
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+CodeReloadManager destroyed
+debugger-agent: Unable to listen on 42
+Exiting batchmode successfully now!
+[ExitDontLaunchBugReporter] Exiting without the bug reporter. Application will exit with return code 0
+[Package Manager] Server process was shutdown
