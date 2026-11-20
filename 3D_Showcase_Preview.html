@@ -2683,24 +2683,79 @@
       } catch (e) { }
     }
 
-    function playDockLatchSound() {
+    function playAirBrakeSound() {
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtx) return;
         const ctx = new AudioCtx();
         const now = ctx.currentTime;
-        const osc = ctx.createOscillator();
+        
+        // 1. Pneumatic Air Release Hiss (pssshh)
+        const bufferSize = Math.floor(ctx.sampleRate * 0.18);
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1;
+        }
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        
+        const filter = ctx.createBiquadFilter();
+        filter.type = "bandpass";
+        filter.frequency.setValueAtTime(1600, now);
+        filter.frequency.exponentialRampToValueAtTime(500, now + 0.16);
+        filter.Q.setValueAtTime(2.5, now);
+
         const gain = ctx.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(659, now);
-        osc.frequency.exponentialRampToValueAtTime(880, now + 0.06);
-        gain.gain.setValueAtTime(0.16, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-        osc.connect(gain);
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(0.18, now + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.17);
+
+        noise.connect(filter);
+        filter.connect(gain);
         gain.connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.12);
+        noise.start(now);
+
+        // 2. Parking pawl mechanical latch click
+        const osc = ctx.createOscillator();
+        const clickGain = ctx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(750, now + 0.08);
+        osc.frequency.exponentialRampToValueAtTime(320, now + 0.14);
+        clickGain.gain.setValueAtTime(0, now + 0.08);
+        clickGain.gain.linearRampToValueAtTime(0.20, now + 0.09);
+        clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+        osc.connect(clickGain);
+        clickGain.connect(ctx.destination);
+        osc.start(now + 0.08);
+        osc.stop(now + 0.17);
       } catch (e) { }
+    }
+
+    // Cubic Hermite Spline calculation with true velocity tangent heading
+    function hermiteInterpolate(p0, t0, p1, t1, t) {
+      const t2 = t * t;
+      const t3 = t2 * t;
+      const h00 = 2 * t3 - 3 * t2 + 1;
+      const h10 = t3 - 2 * t2 + t;
+      const h01 = -2 * t3 + 3 * t2;
+      const h11 = t3 - t2;
+
+      const px = h00 * p0[0] + h10 * t0[0] + h01 * p1[0] + h11 * t1[0];
+      const py = h00 * p0[1] + h10 * t0[1] + h01 * p1[1] + h11 * t1[1];
+
+      // Derivative (Velocity vector for tangent heading)
+      const dh00 = 6 * t2 - 6 * t;
+      const dh10 = 3 * t2 - 4 * t + 1;
+      const dh01 = -6 * t2 + 6 * t;
+      const dh11 = 3 * t2 - 2 * t;
+
+      const vx = dh00 * p0[0] + dh10 * t0[0] + dh01 * p1[0] + dh11 * t1[0];
+      const vy = dh00 * p0[1] + dh10 * t0[1] + dh01 * p1[1] + dh11 * t1[1];
+
+      // Heading in degrees: 0 is straight UP (0, -1), negative is turning left, positive is turning right
+      const heading = Math.atan2(vx, -vy) * (180 / Math.PI);
+      return { px, py, vx, vy, heading };
     }
 
     function playBlockedWiggle(elem) {
@@ -2713,7 +2768,7 @@
     function dispatchBusToTrapezium(elem, freq) {
       const targetBoxes = document.querySelectorAll(".trapezium-box");
       if (!targetBoxes || targetBoxes.length === 0) return;
-      const targetBox = targetBoxes[0]; // first rectangle box in trapezium
+      const targetBox = targetBoxes[0]; // first rectangle box in trapezium (the parking spot)
 
       isBusDispatchedInFlight = true;
       playBusHonk(freq);
@@ -2757,56 +2812,100 @@
       // Hide original depot slot
       elem.style.visibility = "hidden";
 
-      // Forward drive distance in arrow direction (straight up)
-      const forwardDriveDist = Math.max(70, Math.min(130, (startCY - targetCY) * 0.42));
-      const p1X = startCX;
-      const p1Y = startCY - forwardDriveDist;
+      // Bay geometry:
+      // Tilted at -30deg. Forward unit vector pointing INTO the bay: (sin(-30), -cos(-30)) = (-0.5, -0.866025)
+      const bayDirX = -0.5;
+      const bayDirY = -0.866025;
 
-      // Arc curve control point towards first box
-      const p2X = targetCX + (startCX - targetCX) * 0.15;
-      const p2Y = targetCY + 50;
+      // Bay entrance mouth: 55px outside along bay centerline
+      const entryDist = 55.0;
+      const pEntryX = targetCX - entryDist * bayDirX;
+      const pEntryY = targetCY - entryDist * bayDirY;
 
-      const p3X = targetCX;
-      const p3Y = targetCY;
+      // Road distance from start to entrance mouth
+      const roadDx = pEntryX - startCX;
+      const roadDy = pEntryY - startCY;
+      const roadDist = Math.hypot(roadDx, roadDy);
 
-      const duration = 1150; // ms
+      // Hermite boundary vectors:
+      // P0: Starts at depot (startCX, startCY) facing strictly UP (0, -roadDist * 0.85) in arrow direction
+      // P_entry: Arrives at bay mouth (pEntryX, pEntryY) with tangent pointing directly INTO bay (bayDirX * roadDist * 0.85, bayDirY * roadDist * 0.85)
+      const p0 = [startCX, startCY];
+      const t0 = [0, -roadDist * 0.85];
+      const p1 = [pEntryX, pEntryY];
+      const t1 = [bayDirX * roadDist * 0.85, bayDirY * roadDist * 0.85];
+
+      const duration = 1400; // ms
       const startTime = performance.now();
 
       function animateDispatch(now) {
         const elapsed = now - startTime;
         const progress = Math.min(1.0, elapsed / duration);
 
-        let curX, curY, curAngle;
+        let curX, curY, curAngle, scaleX = 1.0, scaleY = 1.0;
 
-        if (progress <= 0.32) {
-          // Phase 1: Straight acceleration in arrow direction (straight UP)
-          const u = progress / 0.32;
+        if (progress <= 0.65) {
+          // ===================================================================
+          // PHASE 1: Real Vehicular Roadway Drive from Depot to Bay Entrance
+          // Heading follows true velocity tangent (steering wheels point where car moves!)
+          // ===================================================================
+          const u = progress / 0.65;
           const ease = u * u * (3 - 2 * u); // smoothstep
-          curX = startCX;
-          curY = startCY - forwardDriveDist * ease;
-          curAngle = 0;
-        } else {
-          // Phase 2: Arc glide and rotation towards first box (-30deg)
-          const u = (progress - 0.32) / 0.68;
-          const ease = 1 - Math.pow(1 - u, 3); // cubic ease-out
+          const sample = hermiteInterpolate(p0, t0, p1, t1, ease);
+          curX = sample.px;
+          curY = sample.py;
+          curAngle = sample.heading;
 
-          const inv = 1 - ease;
-          curX = inv * inv * p1X + 2 * inv * ease * p2X + ease * ease * p3X;
-          curY = inv * inv * p1Y + 2 * inv * ease * p2Y + ease * ease * p3Y;
-          curAngle = -30 * ease;
+          // Subtle acceleration squat at startup (forward stretch)
+          if (u < 0.22) {
+            const squat = Math.sin((u / 0.22) * Math.PI) * 0.035;
+            scaleX = 1.0 - squat * 0.6;
+            scaleY = 1.0 + squat;
+          }
+        } else if (progress <= 0.94) {
+          // ===================================================================
+          // PHASE 2: Driving Straight IN into the Parking Spot along -30deg Bay Axis
+          // The bus penetrates into the box through its mouth and drives forward inside!
+          // ===================================================================
+          const u = (progress - 0.65) / 0.29;
+          const ease = 1 - Math.pow(1 - u, 2.4); // smooth deceleration
+
+          curX = pEntryX + (targetCX - pEntryX) * ease;
+          curY = pEntryY + (targetCY - pEntryY) * ease;
+          curAngle = -30.0; // Locked strictly to the bay axis!
+
+          // Subtle braking compression (nose dip under brake pressure)
+          const dip = Math.sin(u * Math.PI) * 0.03;
+          scaleX = 1.0 + dip * 0.7;
+          scaleY = 1.0 - dip;
+        } else {
+          // ===================================================================
+          // PHASE 3: Final Braking Settle & Air-Brake Release
+          // Rebounds to normal scale, settles in bay, air brake releases!
+          // ===================================================================
+          const u = (progress - 0.94) / 0.06;
+          curX = targetCX;
+          curY = targetCY;
+          curAngle = -30.0;
+
+          const rebound = Math.sin(u * Math.PI) * 0.015;
+          scaleX = 1.0 - rebound;
+          scaleY = 1.0 + rebound;
         }
 
-        traveler.style.transform = `translate(-50%, -50%) translate(${curX.toFixed(2)}px, ${curY.toFixed(2)}px) rotate(${curAngle.toFixed(2)}deg)`;
+        traveler.style.transform = `translate(-50%, -50%) translate(${curX.toFixed(2)}px, ${curY.toFixed(2)}px) rotate(${curAngle.toFixed(2)}deg) scale(${scaleX.toFixed(3)}, ${scaleY.toFixed(3)})`;
 
         if (progress < 1.0) {
           requestAnimationFrame(animateDispatch);
         } else {
-          // Finished: Dock on first rectangle box in that shape (-30deg)
-          traveler.style.transform = `translate(-50%, -50%) translate(${p3X.toFixed(2)}px, ${p3Y.toFixed(2)}px) rotate(-30deg)`;
+          // Finished: Docked firmly in the parking spot in that shape (-30deg)
+          traveler.style.transform = `translate(-50%, -50%) translate(${targetCX.toFixed(2)}px, ${targetCY.toFixed(2)}px) rotate(-30deg) scale(1, 1)`;
           isBusDispatchedInFlight = false;
           activeTrapeziumOccupant = elem.id;
           dockedTravelerElement = traveler;
-          playDockLatchSound();
+
+          // Play pneumatic air brake release ("pssshh-clack!")
+          playAirBrakeSound();
 
           // Arrow disappears when bus reaches the parking spot
           traveler.classList.add("arrow-hidden");
@@ -2834,25 +2933,53 @@
       const targetBox = targetBoxes[0];
       const targetRect = targetBox.getBoundingClientRect();
 
-      const startCX = targetRect.left + targetRect.width / 2;
-      const startCY = targetRect.top + targetRect.height / 2;
+      const targetCX = targetRect.left + targetRect.width / 2;
+      const targetCY = targetRect.top + targetRect.height / 2;
 
       const destCX = elemRect.left + elemRect.width / 2;
       const destCY = elemRect.top + elemRect.height / 2;
 
-      const duration = 850; // ms
+      // Bay geometry for reverse exit:
+      const bayDirX = -0.5;
+      const bayDirY = -0.866025;
+      const entryDist = 55.0;
+      const pEntryX = targetCX - entryDist * bayDirX;
+      const pEntryY = targetCY - entryDist * bayDirY;
+
+      const roadDx = destCX - pEntryX;
+      const roadDy = destCY - pEntryY;
+      const roadDist = Math.hypot(roadDx, roadDy);
+
+      const p0 = [pEntryX, pEntryY];
+      const t0 = [-bayDirX * roadDist * 0.85, -bayDirY * roadDist * 0.85];
+      const p1 = [destCX, destCY];
+      const t1 = [0, roadDist * 0.85];
+
+      const duration = 1100; // ms
       const startTime = performance.now();
 
       function animateReturn(now) {
         const elapsed = now - startTime;
         const progress = Math.min(1.0, elapsed / duration);
-        const ease = progress < 0.5
-          ? 2 * progress * progress
-          : 1 - Math.pow(-2 * progress + 2, 2) / 2;
 
-        const curX = startCX + (destCX - startCX) * ease;
-        const curY = startCY + (destCY - startCY) * ease;
-        const curAngle = -30 * (1 - ease);
+        let curX, curY, curAngle;
+
+        if (progress <= 0.28) {
+          // Reversing straight out of the bay along -30deg axis
+          const u = progress / 0.28;
+          const ease = u * u * (3 - 2 * u);
+          curX = targetCX + (pEntryX - targetCX) * ease;
+          curY = targetCY + (pEntryY - targetCY) * ease;
+          curAngle = -30.0;
+        } else {
+          // Driving forward back into depot slot
+          const u = (progress - 0.28) / 0.72;
+          const ease = 1 - Math.pow(1 - u, 2.5);
+          const sample = hermiteInterpolate(p0, t0, p1, t1, ease);
+          curX = sample.px;
+          curY = sample.py;
+          curAngle = -30.0 * (1 - ease);
+        }
 
         traveler.style.transform = `translate(-50%, -50%) translate(${curX.toFixed(2)}px, ${curY.toFixed(2)}px) rotate(${curAngle.toFixed(2)}deg)`;
 
@@ -2869,7 +2996,7 @@
 
       requestAnimationFrame(animateReturn);
     }
-
+    
     function onBusClick(elem, freq) {
       // Check if another bus is already present in the way (in the first rectangle box or in flight)
       if (isBusDispatchedInFlight || activeTrapeziumOccupant !== null) {
