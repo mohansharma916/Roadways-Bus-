@@ -314,7 +314,26 @@
       transform: scale(0.92);
       background: rgba(65, 80, 120, 1.0);
     }
-  </style>
+  
+    /* Bus Blocked / Shake Feedback */
+    @keyframes busBlockedWiggle {
+      0% { transform: translateX(0); }
+      20% { transform: translateX(-4px); }
+      40% { transform: translateX(4px); }
+      60% { transform: translateX(-3px); }
+      80% { transform: translateX(3px); }
+      100% { transform: translateX(0); }
+    }
+    .bus-fleet-item.bus-blocked {
+      animation: busBlockedWiggle 0.35s ease-in-out !important;
+    }
+    .dispatched-traveler-bus {
+      transition: filter 0.15s ease;
+    }
+    .dispatched-traveler-bus:hover {
+      filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.7));
+    }
+</style>
 </head>
 
 <body>
@@ -511,7 +530,9 @@
           <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
-          <path d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
+          <path
+            d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z"
+            fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
         </svg></div>
       <div class="bus-fleet-item" id="bus-yellow" onclick="onBusClick(this, 392)" title="Amber School Buggy"><svg
           viewBox="0 0 25 50" width="25" height="50" style="display:block;">
@@ -527,7 +548,9 @@
           <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
           <line x1="3" y1="12" x2="22" y2="12" stroke="#1e2430" stroke-width="0.9" opacity="0.45" />
-          <path d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
+          <path
+            d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z"
+            fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
         </svg></div>
       <div class="bus-fleet-item" id="bus-blue" onclick="onBusClick(this, 494)" title="Cobalt Commuter"><svg
           viewBox="0 0 25 50" width="25" height="50" style="display:block;">
@@ -542,7 +565,9 @@
           <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
-          <path d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
+          <path
+            d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z"
+            fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
         </svg></div>
       <div class="bus-fleet-item" id="bus-green" onclick="onBusClick(this, 523)" title="Emerald Eco"><svg
           viewBox="0 0 25 50" width="25" height="50" style="display:block;">
@@ -557,7 +582,9 @@
           <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
-          <path d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
+          <path
+            d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z"
+            fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
         </svg></div>
       <div class="bus-fleet-item" id="bus-purple" onclick="onBusClick(this, 587)" title="Royal Violet"><svg
           viewBox="0 0 25 50" width="25" height="50" style="display:block;">
@@ -572,7 +599,9 @@
           <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
-          <path d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
+          <path
+            d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z"
+            fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
         </svg></div>
       <div class="bus-fleet-item" id="bus-orange" onclick="onBusClick(this, 622)" title="Tangerine Transit"><svg
           viewBox="0 0 25 50" width="25" height="50" style="display:block;">
@@ -587,7 +616,9 @@
           <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
-          <path d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
+          <path
+            d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z"
+            fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
         </svg></div>
       <div class="bus-fleet-item" id="bus-pink" onclick="onBusClick(this, 659)" title="Bubblegum Shuttle"><svg
           viewBox="0 0 25 50" width="25" height="50" style="display:block;">
@@ -602,7 +633,9 @@
           <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
-          <path d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
+          <path
+            d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z"
+            fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
         </svg></div>
       <div class="bus-fleet-item" id="bus-cyan" onclick="onBusClick(this, 740)" title="Cyan Deck-Master"><svg
           viewBox="0 0 25 50" width="25" height="50" style="display:block;">
@@ -617,7 +650,9 @@
           <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
-          <path d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
+          <path
+            d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z"
+            fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
         </svg></div>
     </div>
   </div>
@@ -2117,15 +2152,10 @@
       // Color Themes for Candy Bean rigs derived directly from MASTER_COLOR_PALETTES
       const colorThemes = MASTER_COLOR_PALETTES;
 
-      // 430 Chilbis Formation Specification:
-      // - Exactly 430 Chilbis in 7-abreast rows across 62 rows (61 rows of 7 + 1 row of 3)
-      // - STRICTLY ONE COLOR PER ROW!
-      // - Alternating 8-color repeating blocks:
-      //   5 rows Red -> 7 rows Yellow -> 4 rows Blue -> 8 rows Green
-      //   -> 6 rows Purple -> 5 rows Orange -> 6 rows Pink -> 5 rows Cyan
-      const TOTAL_CHILBIS = 430;
+
+      const TOTAL_CHILBIS = 7;
       const COLS_PER_ROW = 7;
-      const TOTAL_ROWS = Math.ceil(TOTAL_CHILBIS / COLS_PER_ROW); // 62 rows
+      const TOTAL_ROWS = Math.ceil(TOTAL_CHILBIS / COLS_PER_ROW); // 1 rows
 
       const rowBlockDefs = [
         { color: "red", count: 5 },
@@ -2158,7 +2188,7 @@
       // Performance / Heat-Saver Mode:
       // When enabled, only renders the single Lead Chilbi (Row 0, Center Col 3) in the DOM,
       // while preserving 100% of the kinematic calculation, loop flow, and parade simulation logic.
-      const RENDER_ONLY_LEAD_CHILBI = true;
+      const RENDER_ONLY_LEAD_CHILBI = false;
 
       let createdChilbis = 0;
       // Build SVG elements (Heat-saver renders 1 Chilbi; flips to all 430 if RENDER_ONLY_LEAD_CHILBI is false)
@@ -2606,11 +2636,231 @@
       } catch (e) { }
     }
 
-    function onBusClick(elem, freq) {
-      elem.classList.remove('bus-honking');
-      void elem.offsetWidth; // re-trigger animation
-      elem.classList.add('bus-honking');
+        // =========================================================================
+    // --- BUS FLEET DISPATCH & PARKING SYSTEM ---
+    // When clicking any bus:
+    // 1. Checks if path is clear (no other bus present in the way / in box 0)
+    // 2. Drives in arrow direction (straight UP)
+    // 3. Glides smoothly to the first rectangle box in trapezium
+    // 4. Rotates to -30deg and stops on it in that shape
+    // 5. Clicking parked bus returns it to depot, freeing box 0
+    // =========================================================================
+    let activeTrapeziumOccupant = null; // busId if docked in box 0
+    let isBusDispatchedInFlight = false;
+    let dockedTravelerElement = null;
+
+    function playWarningHorn() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const now = ctx.currentTime;
+        [0, 0.11].forEach(delay => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "sawtooth";
+          osc.frequency.setValueAtTime(220, now + delay);
+          gain.gain.setValueAtTime(0, now + delay);
+          gain.gain.linearRampToValueAtTime(0.12, now + delay + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.08);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + delay);
+          osc.stop(now + delay + 0.09);
+        });
+      } catch (e) { }
+    }
+
+    function playDockLatchSound() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(659, now);
+        osc.frequency.exponentialRampToValueAtTime(880, now + 0.06);
+        gain.gain.setValueAtTime(0.16, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.12);
+      } catch (e) { }
+    }
+
+    function playBlockedWiggle(elem) {
+      elem.classList.remove("bus-blocked");
+      void elem.offsetWidth;
+      elem.classList.add("bus-blocked");
+      playWarningHorn();
+    }
+
+    function dispatchBusToTrapezium(elem, freq) {
+      const targetBoxes = document.querySelectorAll(".trapezium-box");
+      if (!targetBoxes || targetBoxes.length === 0) return;
+      const targetBox = targetBoxes[0]; // first rectangle box in trapezium
+
+      isBusDispatchedInFlight = true;
       playBusHonk(freq);
+
+      const elemRect = elem.getBoundingClientRect();
+      const targetRect = targetBox.getBoundingClientRect();
+
+      const startCX = elemRect.left + elemRect.width / 2;
+      const startCY = elemRect.top + elemRect.height / 2;
+
+      const targetCX = targetRect.left + targetRect.width / 2;
+      const targetCY = targetRect.top + targetRect.height / 2;
+
+      let layer = document.getElementById("dispatched-bus-layer");
+      if (!layer) {
+        layer = document.createElement("div");
+        layer.id = "dispatched-bus-layer";
+        layer.style.cssText = "position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:200;";
+        document.body.appendChild(layer);
+      }
+
+      const traveler = document.createElement("div");
+      traveler.className = "dispatched-traveler-bus";
+      traveler.id = "traveler-" + elem.id;
+      traveler.innerHTML = elem.innerHTML;
+      traveler.style.cssText = `
+        position: fixed;
+        width: 25px;
+        height: 50px;
+        left: 0;
+        top: 0;
+        transform-origin: center center;
+        pointer-events: auto;
+        cursor: pointer;
+        z-index: 210;
+        will-change: transform;
+        transform: translate(-50%, -50%) translate(${startCX}px, ${startCY}px) rotate(0deg);
+      `;
+      layer.appendChild(traveler);
+
+      // Hide original depot slot
+      elem.style.visibility = "hidden";
+
+      // Forward drive distance in arrow direction (straight up)
+      const forwardDriveDist = Math.max(70, Math.min(130, (startCY - targetCY) * 0.42));
+      const p1X = startCX;
+      const p1Y = startCY - forwardDriveDist;
+
+      // Arc curve control point towards first box
+      const p2X = targetCX + (startCX - targetCX) * 0.15;
+      const p2Y = targetCY + 50;
+
+      const p3X = targetCX;
+      const p3Y = targetCY;
+
+      const duration = 1150; // ms
+      const startTime = performance.now();
+
+      function animateDispatch(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(1.0, elapsed / duration);
+
+        let curX, curY, curAngle;
+
+        if (progress <= 0.32) {
+          // Phase 1: Straight acceleration in arrow direction (straight UP)
+          const u = progress / 0.32;
+          const ease = u * u * (3 - 2 * u); // smoothstep
+          curX = startCX;
+          curY = startCY - forwardDriveDist * ease;
+          curAngle = 0;
+        } else {
+          // Phase 2: Arc glide and rotation towards first box (-30deg)
+          const u = (progress - 0.32) / 0.68;
+          const ease = 1 - Math.pow(1 - u, 3); // cubic ease-out
+
+          const inv = 1 - ease;
+          curX = inv * inv * p1X + 2 * inv * ease * p2X + ease * ease * p3X;
+          curY = inv * inv * p1Y + 2 * inv * ease * p2Y + ease * ease * p3Y;
+          curAngle = -30 * ease;
+        }
+
+        traveler.style.transform = `translate(-50%, -50%) translate(${curX.toFixed(2)}px, ${curY.toFixed(2)}px) rotate(${curAngle.toFixed(2)}deg)`;
+
+        if (progress < 1.0) {
+          requestAnimationFrame(animateDispatch);
+        } else {
+          // Finished: Dock on first rectangle box in that shape (-30deg)
+          traveler.style.transform = `translate(-50%, -50%) translate(${p3X.toFixed(2)}px, ${p3Y.toFixed(2)}px) rotate(-30deg)`;
+          isBusDispatchedInFlight = false;
+          activeTrapeziumOccupant = elem.id;
+          dockedTravelerElement = traveler;
+          playDockLatchSound();
+
+          // Clicking the docked bus returns it to depot
+          traveler.onclick = function() {
+            returnBusToDepot(elem, traveler, freq);
+          };
+        }
+      }
+
+      requestAnimationFrame(animateDispatch);
+    }
+
+    function returnBusToDepot(elem, traveler, freq) {
+      if (isBusDispatchedInFlight) return;
+      isBusDispatchedInFlight = true;
+      playBusHonk(freq);
+
+      const elemRect = elem.getBoundingClientRect();
+      const targetBoxes = document.querySelectorAll(".trapezium-box");
+      const targetBox = targetBoxes[0];
+      const targetRect = targetBox.getBoundingClientRect();
+
+      const startCX = targetRect.left + targetRect.width / 2;
+      const startCY = targetRect.top + targetRect.height / 2;
+
+      const destCX = elemRect.left + elemRect.width / 2;
+      const destCY = elemRect.top + elemRect.height / 2;
+
+      const duration = 850; // ms
+      const startTime = performance.now();
+
+      function animateReturn(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(1.0, elapsed / duration);
+        const ease = progress < 0.5
+          ? 2 * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+        const curX = startCX + (destCX - startCX) * ease;
+        const curY = startCY + (destCY - startCY) * ease;
+        const curAngle = -30 * (1 - ease);
+
+        traveler.style.transform = `translate(-50%, -50%) translate(${curX.toFixed(2)}px, ${curY.toFixed(2)}px) rotate(${curAngle.toFixed(2)}deg)`;
+
+        if (progress < 1.0) {
+          requestAnimationFrame(animateReturn);
+        } else {
+          traveler.remove();
+          elem.style.visibility = "visible";
+          isBusDispatchedInFlight = false;
+          activeTrapeziumOccupant = null;
+          dockedTravelerElement = null;
+        }
+      }
+
+      requestAnimationFrame(animateReturn);
+    }
+
+    function onBusClick(elem, freq) {
+      // Check if another bus is already present in the way (in the first rectangle box or in flight)
+      if (isBusDispatchedInFlight || activeTrapeziumOccupant !== null) {
+        playBlockedWiggle(elem);
+        return;
+      }
+
+      // Path is clear! Dispatch this bus!
+      dispatchBusToTrapezium(elem, freq);
     }
   </script>
 </body>
