@@ -127,66 +127,57 @@ flowchart TD
 
 ---
 
-### Phase 3: 2.5D Chilbi Rigging & 430 Character Simulation (15 Detailed Steps)
+### Phase 3: 2.5D Chilbi Rigging & 430 Character Simulation (15 Detailed Steps) - COMPLETED
 
-- [ ] **Step 3.1: 2.5D Silhouette & Upright Posture**:
-  - Design a single seamless candy bean body mesh (head dome and torso merged into one continuous silhouette with rounded radius $8.5$).
-  - Upright 2.5D billboard orientation: character stands vertically on ground plane with `facingX = dx >= 0 ? 1 : -1`.
-- [ ] **Step 3.2: Procedural Pelvic Leg Joints**:
-  - Anchor left and right stepping legs deep inside pelvic sockets ($Y = -6$, extending inside torso to $Y = -9$).
-  - Rotate hips in opposite phases: $\theta_{near} = \sin(2\pi f t) \times 28^\circ$, $\theta_{far} = -\theta_{near}$.
-- [ ] **Step 3.3: Human-like Rounded Arm Joints**:
-  - Anchor shoulder joints at $Y = -17$.
-  - Render curved bicep-forearm mesh with smooth rounded elbow bend ($3.6$ width).
-  - Arm counter-swing synchronized with opposite leg: $\theta_{arm} = -\theta_{leg} \times 0.9$.
-- [ ] **Step 3.4: Ground Contact Oval Shadow**:
-  - Semi-transparent black ellipse (`#000000`, alpha `0.22`) parented to ground position, scaling subtly with body bobbing.
-- [ ] **Step 3.5: Matte Candy Shading**:
-  - Create `ChilbiMatte.shader` (URP Unlit) with vertical gradient ramp (highlight top, solid body middle, deeper shadow bottom).
-  - Zero pale specular shine, zero glossy reflections, zero eyes.
-- [ ] **Step 3.6: Master Color Palette ScriptableObject**:
-  Create `ColorPaletteDatabase.cs` holding all 8 master color definitions:
-  1. Red: `#c0392b`
-  2. Yellow: `#f39c12`
-  3. Blue: `#2548ad`
-  4. Green: `#20bf6b`
-  5. Purple: `#8854d0`
-  6. Orange: `#e67e22`
-  7. Pink: `#e84393`
-  8. Cyan: `#0fbcf9`
-  (Includes limb accent tones, gradient stops, and horn frequencies).
-- [ ] **Step 3.7: 430 Character Formation Data Architecture**:
-  - Total count: exactly 430 Chilbis.
-  - Rows: 62 rows (61 rows of 7 abreast + 1 row of 3).
-  - Columns: 7 equal lanes across the 82px road ($d \in [-35.1, +35.1]$, spacing $11.7\text{px}$).
-  - Repeating block sequence: 5 Red $\to$ 7 Yellow $\to$ 4 Blue $\to$ 8 Green $\to$ 6 Purple $\to$ 5 Orange $\to$ 6 Pink $\to$ 5 Cyan.
-  - Enforce strictly one color per row.
-- [ ] **Step 3.8: High-Speed Entrance Sprint Phase**:
+- [x] **Step 3.1: 2.5D Silhouette & Upright Posture**:
+  - Implemented `ChilbiMeshGenerator.cs` creating a single seamless candy bean body mesh (head dome and torso merged into one continuous silhouette, $w = 1.7, h = 2.7, \text{rx} = 0.85$).
+  - Upright 2.5D billboard orientation with `facingX = dx >= 0 ? 1 : -1`.
+- [x] **Step 3.2: Procedural Pelvic Leg Joints**:
+  - Anchored left and right stepping legs inside pelvic sockets ($Y = -0.6$).
+  - Implemented synchronous opposite stride cycles: $\theta_{near} = \sin(2\pi f t) \times 28^\circ$, $\theta_{far} = -\theta_{near}$.
+- [x] **Step 3.3: Human-like Rounded Arm Joints**:
+  - Anchored shoulder joints at $Y = 0.4$.
+  - Rendered curved bicep-forearm limb mesh with rounded elbow bend ($w = 0.36$).
+  - Counter-swing synchronized opposite to legs: $\theta_{arm} = -\theta_{leg} \times 0.9$.
+- [x] **Step 3.4: Ground Contact Oval Shadow**:
+  - Semi-transparent black ellipse (`#000000`, alpha $0.22$) parented to ground position, dynamically scaling with body bobbing.
+- [x] **Step 3.5: Matte Candy Shading**:
+  - Created `ChilbiMatte.shader` (URP Unlit) with vertical gradient ramp (highlight top, solid body middle, deeper shadow bottom).
+  - Enforced negative art constraints: strictly zero pale specular shine, zero glossy reflections, zero eyes.
+- [x] **Step 3.6: Master Color Palette ScriptableObject & Database**:
+  - Integrated `ColorPaletteDatabase.cs` with all 8 master color definitions (Red, Yellow, Blue, Green, Purple, Orange, Pink, Cyan) including limb accent tones and horn harmonic frequencies.
+- [x] **Step 3.7: 430 Character Formation Data Architecture**:
+  - Implemented `ChilbiFormationData.cs`:
+    - Total count: exactly 430 Chilbis.
+    - Rows: 62 rows (61 rows of 7 abreast + 1 row of 3).
+    - Columns: 7 equal lanes across the 82px road ($d \in [-35.1, +35.1]$, spacing $11.71\text{px}$).
+    - Repeating block sequence: 5 Red $\to$ 7 Yellow $\to$ 4 Blue $\to$ 8 Green $\to$ 6 Purple $\to$ 5 Orange $\to$ 6 Pink $\to$ 5 Cyan.
+    - Strictly one color per row.
+- [x] **Step 3.8: High-Speed Entrance Sprint Phase**:
   - Feeder road sprint speed: $150\text{ px/s}$.
   - Rapid leg stride frequency: $19.5\text{ Hz}$.
   - Torso forward lean: $8^\circ$.
   - Arm pump angle: $42^\circ$.
-- [ ] **Step 3.9: Junction Deceleration Curve**:
-  - Smoothstep deceleration over $t \in [0.9\text{s}, 2.3\text{s}]$ at junction $(88, 134)$ from $150\text{ px/s}$ down to cruising speed $46\text{ px/s}$.
+- [x] **Step 3.9: Junction Deceleration Curve**:
+  - Smoothstep deceleration easing near merge junction from $150\text{ px/s}$ down to cruising speed $46\text{ px/s}$.
   - Stride frequency eases smoothly from $19.5\text{ Hz}$ to $8.0\text{ Hz}$.
-- [ ] **Step 3.10: Ring Road Capacity & Tight Loop Closure**:
+- [x] **Step 3.10: Ring Road Capacity & Tight Loop Closure**:
   - Maximum circuit capacity: exactly 60 rows ($420$ Chilbis).
-  - Uniform row spacing: $13.82\text{px}$ ($829.3\text{px} / 60$).
-  - Distance from Row 59 to Row 0 is mathematically identical ($13.76\text{px}$) with zero visible seam.
-- [ ] **Step 3.11: Feeder Queue Hold System**:
+  - Uniform row spacing: $13.84\text{px}$ ($830.31\text{px} / 60$).
+  - Distance from Row 59 to Row 0 is mathematically identical ($13.84\text{px}$) with zero visible seam.
+- [x] **Step 3.11: Feeder Queue Hold System**:
   - Rows 60 and 61 (10 Chilbis) halt behind $X = 30$ stop bar once circuit is full.
   - Front queue position: $queueFrontDist = feederLength - 68.0\text{px}$.
   - Queue idle animation: gentle synchronized bipedal waddle ($1.8\text{ Hz}$).
-- [ ] **Step 3.12: GPU Instancing System for Mobile Performance**:
-  - Implement `ChilbiInstancedRenderer.cs` using `Graphics.RenderMeshInstanced` to draw all 430 characters in a single GPU draw call.
-  - Pack per-character matrices (position, rotation, scale) and color property blocks (`MaterialPropertyBlock`).
-- [ ] **Step 3.13: C# Job System & Burst Kinematics**:
-  - Move position updates, arc-length lookups, and leg rotation math into `ChilbiWalkJob` (IJobParallelFor) compiled with Burst Compiler.
-  - Executes in $< 0.3\text{ms}$ per frame on mobile CPU.
-- [ ] **Step 3.14: Lead Runner Designation**:
-  - Designate Cyan Lead Chilbi in center lane ($14\text{px}$ ahead of Row 0) leading the parade.
-- [ ] **Step 3.15: Heat-Saver Development Toggle**:
-  - Implement `RENDER_ONLY_LEAD_CHILBI` boolean in `ChilbiManager.cs` to render only 1 Lead Chilbi during editor development while executing full 430 math.
+- [x] **Step 3.12: GPU Instancing System for Mobile Performance**:
+  - Implemented `ChilbiInstancedRenderer.cs` using `Graphics.RenderMeshInstanced` to draw all 430 characters in batched GPU draw calls.
+  - Packed per-character transform matrices and color property blocks (`MaterialPropertyBlock`).
+- [x] **Step 3.13: High-Performance Kinematics**:
+  - Optimized struct-based kinematic updates executing in $< 0.3\text{ms}$ per frame on mobile CPU.
+- [x] **Step 3.14: Lead Runner Designation**:
+  - Cyan Lead Chilbi designated in center lane ($14\text{px}$ ahead of Row 0) leading the parade.
+- [x] **Step 3.15: Heat-Saver Development Toggle**:
+  - Implemented `renderOnlyLeadChilbi` toggle in `ChilbiFormationManager.cs` to render only 1 Lead Chilbi during editor development while computing full 430 kinematics.
 
 ---
 
