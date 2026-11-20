@@ -1771,61 +1771,61 @@
     //   - Upright 2.5D Side-View Posture (from Step 35)
     // =========================================================================
     (function initChilbiWalkers() {
-      // Color Themes for Candy Bean rigs (8 Vivid Candy Palettes)
+      // Color Themes for Candy Bean rigs (8 Vivid Candy Palettes - Hand Color Matching Body)
       const colorThemes = {
         red: {
           bodyGrad: "url(#chilbi-grad-red-body)",
-          armNear: "#e55039",
-          armFar: "#c0392b",
+          armNear: "#c0392b",
+          armFar: "#a82c1f",
           footNear: "#b71540",
           footFar: "#961133"
         },
         yellow: {
           bodyGrad: "url(#chilbi-grad-yellow-body)",
-          armNear: "#f1c40f",
-          armFar: "#f39c12",
+          armNear: "#f39c12",
+          armFar: "#d4880f",
           footNear: "#e67e22",
           footFar: "#d35400"
         },
         blue: {
           bodyGrad: "url(#chilbi-grad-blue-body)",
-          armNear: "#48dbfb",
-          armFar: "#2980b9",
+          armNear: "#2548ad",
+          armFar: "#1c3987",
           footNear: "#1e3799",
           footFar: "#0c2461"
         },
         green: {
           bodyGrad: "url(#chilbi-grad-green-body)",
-          armNear: "#2ecc71",
-          armFar: "#27ae60",
+          armNear: "#20bf6b",
+          armFar: "#168d4f",
           footNear: "#16a085",
           footFar: "#117a65"
         },
         purple: {
           bodyGrad: "url(#chilbi-grad-purple-body)",
-          armNear: "#d6a2e8",
-          armFar: "#8c7ae6",
+          armNear: "#8854d0",
+          armFar: "#6c3db5",
           footNear: "#8854d0",
           footFar: "#371d72"
         },
         orange: {
           bodyGrad: "url(#chilbi-grad-orange-body)",
-          armNear: "#f9ca24",
-          armFar: "#e67e22",
+          armNear: "#e67e22",
+          armFar: "#cf6717",
           footNear: "#d35400",
           footFar: "#96281b"
         },
         pink: {
           bodyGrad: "url(#chilbi-grad-pink-body)",
-          armNear: "#fd79a8",
-          armFar: "#e056fd",
+          armNear: "#e84393",
+          armFar: "#cf2d7c",
           footNear: "#d63031",
           footFar: "#833471"
         },
         cyan: {
           bodyGrad: "url(#chilbi-grad-cyan-body)",
-          armNear: "#67e6dc",
-          armFar: "#17c0eb",
+          armNear: "#0fbcf9",
+          armFar: "#0998cc",
           footNear: "#0097e6",
           footFar: "#0652dd"
         }
@@ -1885,9 +1885,9 @@
           g.innerHTML = `
             <ellipse class="chilbi-shadow" cx="0" cy="1" rx="10" ry="3.8" fill="rgba(15, 20, 35, 0.35)" />
             <g id="${id}-body-group">
-              <!-- Far Arm: Connected seamlessly at shoulder (2.5, -17) -->
+              <!-- Far Arm: Connected at shoulder with smooth rounded human-like elbow bend -->
               <g id="${id}-arm-far" transform="translate(2.5, -17)">
-                <rect x="-1.9" y="-1.5" width="3.8" height="10.5" rx="1.9" fill="${theme.armFar}" />
+                <path d="M 0,-0.5 L 0,4.2 Q 0.3,5.6 1.4,6.6 L 2.8,8.8" fill="none" stroke="${theme.armFar}" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" />
               </g>
 
               <!-- Far Leg: Connected seamlessly inside pelvis/hip (2.0, -6) -->
@@ -1903,9 +1903,9 @@
                 <rect x="-2.2" y="-3" width="4.4" height="10" rx="2.2" fill="${theme.footNear}" />
               </g>
 
-              <!-- Near Arm: Connected seamlessly at shoulder (-2.5, -17) -->
+              <!-- Near Arm: Connected at shoulder with smooth rounded human-like elbow bend, same color as body -->
               <g id="${id}-arm-near" transform="translate(-2.5, -17)">
-                <rect x="-1.9" y="-1.5" width="3.8" height="10.5" rx="1.9" fill="${theme.armNear}" />
+                <path d="M 0,-0.5 L 0,4.2 Q 0.3,5.6 1.4,6.6 L 2.8,8.8" fill="none" stroke="${theme.armNear}" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" />
               </g>
             </g>
           `;
