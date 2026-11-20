@@ -194,10 +194,10 @@
   <div class="track-network-container">
     <svg class="track-network-svg" viewBox="0 0 1000 400" preserveAspectRatio="none">
       <defs>
-        <!-- Mask for hollow center island: nothing inside (Constant 70px road width throughout entire ring) -->
+        <!-- Mask for hollow center island: race track stadium shape -->
         <mask id="roundabout-island-hole">
           <rect width="1000" height="400" fill="white" />
-          <ellipse cx="500" cy="185" rx="200" ry="35" fill="black" />
+          <path d="M 350,150 L 650,150 A 35,35 0 0,1 650,220 L 350,220 A 35,35 0 0,1 350,150 Z" fill="black" />
         </mask>
 
         <!-- Red Chilbi Candy Bean Gradients -->
@@ -225,28 +225,39 @@
         </radialGradient>
       </defs>
 
-      <!-- Unified Road Surface Fill (#7a7d90) (Uniform 70px Road Width: Rx=270, Ry=105, rx=200, ry=35) -->
-      <path d="M -15,-10 C 60,30 160,75 278.8,124.8 A 270,105 0 0,1 721.2,124.8 C 840,75 940,30 1015,-10 
+      <!-- Unified Road Surface Fill (#7a7d90) (Uniform 70px Race Track Road Network) -->
+      <path d="M -15,-10 C 60,20 180,80 350,80 L 650,80 C 820,80 940,20 1015,-10 
                L 1015,60 
-               C 940,100 840,140 760.8,212.2 A 270,105 0 0,1 600,282.5 L 600,320 
-               L 400,320 
-               L 400,282.5 A 270,105 0 0,1 239.2,212.2 C 160,140 60,100 -15,60 
+               C 920,80 820,130 755,185 A 105,105 0 0,1 650,290 L 610,290 L 610,320 
+               L 390,320 
+               L 390,290 L 350,290 A 105,105 0 0,1 245,185 C 180,130 80,80 -15,60 
                Z" fill="#7a7d90" mask="url(#roundabout-island-hole)" />
 
-      <!-- Top Continuous Curb Line (#e1e6ec) spanning left horn, ring top, and right horn -->
-      <path d="M -15,-10 C 60,30 160,75 278.8,124.8 A 270,105 0 0,1 721.2,124.8 C 840,75 940,30 1015,-10" fill="none"
+      <!-- Race Track Circular Lane Divider Lines (Crisp dashed white lane markings) -->
+      <g id="race-track-lanes" stroke="rgba(255, 255, 255, 0.40)" stroke-width="1.6" stroke-dasharray="10 8" fill="none">
+        <path d="M 350,140 L 650,140 A 45,45 0 0,1 650,230 L 350,230 A 45,45 0 0,1 350,140 Z" />
+        <path d="M 350,130 L 650,130 A 55,55 0 0,1 650,240 L 350,240 A 55,55 0 0,1 350,130 Z" />
+        <path d="M 350,120 L 650,120 A 65,65 0 0,1 650,250 L 350,250 A 65,65 0 0,1 350,120 Z" />
+        <path d="M 350,110 L 650,110 A 75,75 0 0,1 650,260 L 350,260 A 75,75 0 0,1 350,110 Z" />
+        <path d="M 350,100 L 650,100 A 85,85 0 0,1 650,270 L 350,270 A 85,85 0 0,1 350,100 Z" />
+        <path d="M 350,90 L 650,90 A 95,95 0 0,1 650,280 L 350,280 A 95,95 0 0,1 350,90 Z" />
+      </g>
+
+      <!-- Top Continuous Curb Line (#e1e6ec) spanning left horn, top straight, and right horn -->
+      <path d="M -15,-10 C 60,20 180,80 350,80 L 650,80 C 820,80 940,20 1015,-10" fill="none"
         stroke="#e1e6ec" stroke-width="5.5" stroke-linecap="round" />
 
-      <!-- Right Lower Curb Line (#e1e6ec) curving from right corner into roundabout and down into trapezium (wide opening) -->
-      <path d="M 1015,60 C 940,100 840,140 760.8,212.2 A 270,105 0 0,1 600,282.5 L 600,320" fill="none" stroke="#e1e6ec"
+      <!-- Right Lower Curb Line (#e1e6ec) curving from right corner through circular turn and into trapezium -->
+      <path d="M 1015,60 C 920,80 820,130 755,185 A 105,105 0 0,1 650,290 L 610,290 L 610,320" fill="none" stroke="#e1e6ec"
         stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
 
-      <!-- Left Lower Curb Line (#e1e6ec) curving from trapezium up through roundabout and out to left corner (wide opening) -->
-      <path d="M 400,320 L 400,282.5 A 270,105 0 0,1 239.2,212.2 C 160,140 60,100 -15,60" fill="none" stroke="#e1e6ec"
+      <!-- Left Lower Curb Line (#e1e6ec) curving from trapezium through circular turn and out to left corner -->
+      <path d="M 390,320 L 390,290 L 350,290 A 105,105 0 0,1 245,185 C 180,130 80,80 -15,60" fill="none" stroke="#e1e6ec"
         stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
 
-      <!-- Inner Island Closed Ring Curb (#e1e6ec) (Even 70px road gap all around) -->
-      <ellipse cx="500" cy="185" rx="200" ry="35" fill="none" stroke="#e1e6ec" stroke-width="5.5" />
+      <!-- Inner Island Closed Race Track Curb (#e1e6ec) (Even 70px road gap all around) -->
+      <path d="M 350,150 L 650,150 A 35,35 0 0,1 650,220 L 350,220 A 35,35 0 0,1 350,150 Z" fill="none"
+        stroke="#e1e6ec" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
 
       <!-- Animated Chilbi ("Bean") Characters Layer (Concentric Circular Walk Squad) -->
       <g id="chilbi-characters-layer">
@@ -1786,14 +1797,18 @@
       // 7 Red Chilbi Squad Members spanning Full Road Width with ZERO GAP
       // Exact normal offsets: -27px (inner curb) to +27px (outer curb)
       // Spacing between adjacent members is ALWAYS 9.0px (completely constant, zero squeezing!)
+      // 7 Red Chilbi Squad Members - 1 in each of the 7 marked Race Track Lanes
+      // Road inner curb: r=35, outer curb: r=105, uniform road width = 70px everywhere!
+      // Lanes divided by 6 circular lines at r=[45, 55, 65, 75, 85, 95]
+      // Each Chilbi walks at r = [40, 50, 60, 70, 80, 90, 100] with exact 10.0px spacing
       const redSquad = [
-        { id: 1, d: -27, phase: 0.0 }, // Directly on Inner Road Border
-        { id: 2, d: -18, phase: 0.7 }, // Lane 2
-        { id: 3, d:  -9, phase: 1.4 }, // Lane 3
-        { id: 4, d:   0, phase: 2.1 }, // Center Road Lane
-        { id: 5, d:   9, phase: 2.8 }, // Lane 5
-        { id: 6, d:  18, phase: 3.5 }, // Lane 6
-        { id: 7, d:  27, phase: 4.2 }  // Directly on Outer Road Border
+        { id: 1, r:  40, phase: 0.0 }, // Lane 1 (Inner Border)
+        { id: 2, r:  50, phase: 0.7 }, // Lane 2
+        { id: 3, r:  60, phase: 1.4 }, // Lane 3
+        { id: 4, r:  70, phase: 2.1 }, // Lane 4 (Center Lane)
+        { id: 5, r:  80, phase: 2.8 }, // Lane 5
+        { id: 6, r:  90, phase: 3.5 }, // Lane 6
+        { id: 7, r: 100, phase: 4.2 }  // Lane 7 (Outer Border)
       ].map(m => ({
         ...m,
         elem: document.getElementById('chilbi-red-' + m.id),
@@ -1814,149 +1829,129 @@
 
       if (!redSquad[0].elem) return;
 
-      const feederDuration = 5.0; // seconds to travel from screen corner to ring
-      const linearSpeed = 85.0;   // CONSTANT linear speed: 85 px/sec everywhere (no running on corners!)
-      const waddleFreq = 8.0;     // calm, steady waddle frequency (steps/sec)
+      const feederDuration = 4.0; // seconds to travel from screen corner to ring
+      const baseSpeed = 85.0;     // constant center lane speed (85 px/s)
+      const waddleFreq = 8.0;     // calm, steady waddle frequency (steps/s)
 
-      // Ring Centerline Ellipse: cx=500, cy=185
-      // Outer curb: Rx=270, Ry=105; Inner curb: rx=200, ry=35
-      // Centerline: Rcx=235, Rcy=70. Uniform 70px road width throughout entire ring!
-      const ringCx = 500, ringCy = 185;
-      const Rcx = 235, Rcy = 70;
-      const thetaStartL = 3.752; // ~215 deg (top-left feeder junction)
-      const thetaStartR = 5.672; // ~325 deg (top-right feeder junction)
+      // Stadium Race Track Geometry:
+      // Straight section: x from 350 to 650 (length L = 300)
+      // Right circular turn: center (650, 185), radius r, angle -pi/2 to +pi/2 (arc length pi*r)
+      // Bottom straight section: x from 650 to 350 (length L = 300)
+      // Left circular turn: center (350, 185), radius r, angle +pi/2 to +3pi/2 (arc length pi*r)
+      const straightL = 300.0;
+      const centerR = 70.0;
+      const centerArc = Math.PI * centerR; // ~219.91px
+      const centerPerimeter = 2 * straightL + 2 * centerArc; // ~1039.82px
 
-      // Precompute Arc-Length Lookup Table for 100% Constant Linear Speed (No speed surges on corners)
-      const LUT_SIZE = 512;
-      const cumS = new Float32Array(LUT_SIZE + 1);
-      const dth = (Math.PI * 2) / LUT_SIZE;
-      cumS[0] = 0;
-      for (let i = 0; i < LUT_SIZE; i++) {
-        const th = i * dth;
-        const ds = Math.hypot(-Rcx * Math.sin(th), Rcy * Math.cos(th)) * dth;
-        cumS[i + 1] = cumS[i] + ds;
-      }
-      const ringPerimeter = cumS[LUT_SIZE];
+      // Sample position and heading on the stadium race track at center-lane progress s and lane radius r
+      function getStadiumTrackSample(s, r) {
+        // Normalize s to [0, centerPerimeter)
+        const trackS = ((s % centerPerimeter) + centerPerimeter) % centerPerimeter;
 
-      // Arc length at start of left feeder junction
-      let sAtThetaStartL = 0;
-      for (let i = 0; i < LUT_SIZE; i++) {
-        if (i * dth <= thetaStartL && (i + 1) * dth > thetaStartL) {
-          const frac = (thetaStartL - i * dth) / dth;
-          sAtThetaStartL = cumS[i] + frac * (cumS[i + 1] - cumS[i]);
-          break;
+        if (trackS < straightL) {
+          // 1. TOP STRAIGHTAWAY (x: 350 -> 650, y = 185 - r)
+          const u = trackS / straightL;
+          const x = 350 + trackS;
+          const y = 185 - r;
+          return { x, y, dx: 1, dy: 0, heading: 90 };
+        } else if (trackS < straightL + centerArc) {
+          // 2. RIGHT CIRCULAR TURN (Center: 650, 185; angle from -pi/2 to +pi/2)
+          const arcFraction = (trackS - straightL) / centerArc;
+          const theta = -Math.PI / 2 + arcFraction * Math.PI; // -pi/2 to +pi/2
+          const x = 650 + r * Math.cos(theta);
+          const y = 185 + r * Math.sin(theta);
+          // Tangent vector
+          const dx = -Math.sin(theta);
+          const dy = Math.cos(theta);
+          const heading = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+          return { x, y, dx, dy, heading };
+        } else if (trackS < 2 * straightL + centerArc) {
+          // 3. BOTTOM STRAIGHTAWAY (x: 650 -> 350, y = 185 + r)
+          const straightS = trackS - (straightL + centerArc);
+          const x = 650 - straightS;
+          const y = 185 + r;
+          return { x, y, dx: -1, dy: 0, heading: 270 };
+        } else {
+          // 4. LEFT CIRCULAR TURN (Center: 350, 185; angle from +pi/2 to +3pi/2)
+          const arcFraction = (trackS - (2 * straightL + centerArc)) / centerArc;
+          const theta = Math.PI / 2 + arcFraction * Math.PI; // +pi/2 to +3pi/2
+          const x = 350 + r * Math.cos(theta);
+          const y = 185 + r * Math.sin(theta);
+          // Tangent vector
+          const dx = -Math.sin(theta);
+          const dy = Math.cos(theta);
+          const heading = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+          return { x, y, dx, dy, heading };
         }
       }
 
-      function getThetaForArcLength(s) {
-        let remS = ((s % ringPerimeter) + ringPerimeter) % ringPerimeter;
-        let low = 0, high = LUT_SIZE - 1;
-        while (low <= high) {
-          const mid = (low + high) >> 1;
-          if (cumS[mid] <= remS && remS < cumS[mid + 1]) {
-            const frac = (remS - cumS[mid]) / (cumS[mid + 1] - cumS[mid]);
-            return (mid + frac) * dth;
-          } else if (cumS[mid] > remS) {
-            high = mid - 1;
-          } else {
-            low = mid + 1;
-          }
-        }
-        return 0;
-      }
-
-      // Right Feeder Horn Bezier Control Points
-      const pR0 = { x: 1015, y: 30 }, pR1 = { x: 915, y: 65 }, pR2 = { x: 825, y: 105 }, pR3 = { x: 721.2, y: 124.8 };
-
+      // Cubic Bezier helper for feeder paths
       function getCubicBezier(p0, p1, p2, p3, u) {
-        const u2 = u * u, u3 = u2 * u;
         const mt = 1 - u, mt2 = mt * mt, mt3 = mt2 * mt;
+        const u2 = u * u, u3 = u2 * u;
         const x = mt3 * p0.x + 3 * mt2 * u * p1.x + 3 * mt * u2 * p2.x + u3 * p3.x;
         const y = mt3 * p0.y + 3 * mt2 * u * p1.y + 3 * mt * u2 * p2.y + u3 * p3.y;
         const dx = 3 * mt2 * (p1.x - p0.x) + 6 * mt * u * (p2.x - p1.x) + 3 * u2 * (p3.x - p2.x);
         const dy = 3 * mt2 * (p1.y - p0.y) + 6 * mt * u * (p2.y - p1.y) + 3 * u2 * (p3.y - p2.y);
-        return { x, y, dx, dy };
+        const heading = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+        return { x, y, dx, dy, heading };
       }
 
       function getRedMemberSample(t, m) {
         if (t < feederDuration) {
           const u = Math.max(0, Math.min(1, t / feederDuration));
-          const p0 = { x: -15, y: 25 - m.d };
-          const p3 = {
-            x: ringCx + (Rcx + m.d * 0.8) * Math.cos(thetaStartL),
-            y: ringCy + (Rcy + m.d * 0.8) * Math.sin(thetaStartL)
-          };
-          const p1 = { x: p0.x + 0.35 * (p3.x - p0.x) + 15, y: p0.y + 0.35 * (p3.y - p0.y) + 15 };
-          const p2 = { x: p0.x + 0.70 * (p3.x - p0.x) + 10, y: p0.y + 0.70 * (p3.y - p0.y) + 10 };
+          const p0 = { x: -15, y: 25 - (m.r - 70) * 0.5 };
+          const p3 = { x: 350, y: 185 - m.r };
+          const p1 = { x: 100, y: 45 - (m.r - 70) * 0.4 };
+          const p2 = { x: 230, y: 185 - m.r };
           return getCubicBezier(p0, p1, p2, p3, u);
         } else {
-          // CONSTANT LINEAR SPEED WALK VIA ARC LENGTH LOOKUP:
           const dt = t - feederDuration;
-          const currentS = sAtThetaStartL + dt * linearSpeed;
-          const theta = getThetaForArcLength(currentS);
-
-          // Centerline position & tangent
-          const xc = ringCx + Rcx * Math.cos(theta);
-          const yc = ringCy + Rcy * Math.sin(theta);
-          const dx = -Rcx * Math.sin(theta);
-          const dy = Rcy * Math.cos(theta);
-
-          // Outward unit normal vector (strictly perpendicular to track tangent)
-          const len = Math.hypot(dx, dy) || 1;
-          const nx = dy / len;
-          const ny = -dx / len;
-
-          // Member position: exact constant Euclidean offset d along the normal
-          // Distance between adjacent members is ALWAYS exactly 9.0px (zero squeeze on corners!)
-          const px = xc + m.d * nx;
-          const py = yc + m.d * ny;
-
-          return { x: px, y: py, dx, dy };
+          const s = dt * baseSpeed;
+          return getStadiumTrackSample(s, m.r);
         }
       }
 
       function getCyanSample(t) {
         if (t < feederDuration) {
           const u = Math.max(0, Math.min(1, t / feederDuration));
-          return getCubicBezier(pR0, pR1, pR2, pR3, u);
+          const p0 = { x: 1015, y: 30 };
+          const p3 = { x: 650, y: 185 + 70 };
+          const p1 = { x: 880, y: 70 };
+          const p2 = { x: 750, y: 220 };
+          return getCubicBezier(p0, p1, p2, p3, u);
         } else {
           const dt = t - feederDuration;
-          const s = dt * linearSpeed;
-          const theta = getThetaForArcLength(s + ringPerimeter * 0.55);
-          const x = ringCx + Rcx * Math.cos(theta);
-          const y = ringCy + Rcy * Math.sin(theta);
-          const dx = -Rcx * Math.sin(theta);
-          const dy = Rcy * Math.cos(theta);
-          return { x, y, dx, dy };
+          // Offset by half a lap so Cyan is on the opposite side
+          const s = dt * baseSpeed + centerPerimeter * 0.5;
+          return getStadiumTrackSample(s, 70);
         }
       }
 
-      const startTime = performance.now() - 6500;
+      const startTime = performance.now() - 5000;
 
       function updateChilbiFrame(now) {
         const tSec = (now - startTime) / 1000;
 
-        // 1. UPDATE 7 RED CHILBI SQUAD MEMBERS - TOGETHER AT CONSTANT NORMAL SPEED WITH ZERO SQUEEZING
+        // 1. UPDATE 7 RED CHILBI SQUAD MEMBERS - TOGETHER AT UNIFORM SPEED ALONG RACE TRACK LANES
         for (let i = 0; i < redSquad.length; i++) {
           const m = redSquad[i];
           if (!m.elem) continue;
 
           const pos = getRedMemberSample(tSec, m);
 
-          // Path tangent heading: smoothly curves along the track
-          const heading = Math.atan2(pos.dy, pos.dx) * (180 / Math.PI) + 90;
+          // Depth perspective scale: slightly larger near bottom (y~285), slightly smaller near top (y~85)
+          const depth = Math.max(0.82, Math.min(1.08, 0.86 + ((pos.y - 85) / 200) * 0.20));
 
-          // Depth perspective scale: slightly larger near bottom/trapezium, smaller at top
-          const depth = Math.max(0.82, Math.min(1.08, 0.85 + ((pos.y - 120) / 130) * 0.22));
+          m.elem.setAttribute('transform', `translate(${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}) rotate(${pos.heading.toFixed(1)}) scale(${depth.toFixed(3)})`);
 
-          m.elem.setAttribute('transform', `translate(${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}) rotate(${heading.toFixed(1)}) scale(${depth.toFixed(3)})`);
-
-          // Calm, steady waddling stride at uniform speed (no frantic running on corners!)
-          const wPhase = tSec * waddleFreq + m.phase;
-          const bounce = Math.abs(Math.sin(wPhase)) * 2.3;
-          const tilt = Math.sin(wPhase) * 4.8;
-          const footStride = Math.sin(wPhase) * 3.4;
-          const armSwing = Math.sin(wPhase) * 18.0;
+          // Calm, steady waddling stride synchronized with speed and lane radius
+          const wPhase = tSec * 8.0 + m.phase;
+          const strideScale = m.r / 70.0;
+          const bounce = Math.abs(Math.sin(wPhase)) * 2.2;
+          const tilt = Math.sin(wPhase) * 4.5;
+          const footStride = Math.sin(wPhase) * (3.2 * strideScale);
+          const armSwing = Math.sin(wPhase) * (17.0 * strideScale);
 
           if (m.body) m.body.setAttribute('transform', `translate(0, ${-bounce.toFixed(2)}) rotate(${tilt.toFixed(1)})`);
           if (m.footL) m.footL.setAttribute('transform', `translate(0, ${footStride.toFixed(2)})`);
@@ -1968,7 +1963,7 @@
         // 2. UPDATE CYAN CHILBI
         if (cyanElem) {
           const cyanPos = getCyanSample(tSec);
-          const headingCyan = Math.atan2(cyanPos.dy, cyanPos.dx) * (180 / Math.PI) + 90;
+          const headingCyan = cyanPos.heading;
           const depthCyan = Math.max(0.82, Math.min(1.10, 0.85 + ((cyanPos.y - 120) / 130) * 0.22));
           cyanElem.setAttribute('transform', `translate(${cyanPos.x.toFixed(2)}, ${cyanPos.y.toFixed(2)}) rotate(${headingCyan.toFixed(1)}) scale(${depthCyan.toFixed(3)})`);
 
