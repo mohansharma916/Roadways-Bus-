@@ -39,78 +39,54 @@ flowchart TD
 
 ---
 
-### Phase 1: Unity Project Setup, Architecture & Camera Rig (15 Detailed Steps)
+### Phase 1: Unity Project Setup, Architecture & Camera Rig (15 Detailed Steps) - COMPLETED
 
-- [ ] **Step 1.1: Unity Editor & Modules Installation**: Install Unity 2022.3 LTS (or Unity 6) via Unity Hub with **Android Build Support**, **Android SDK & NDK Tools**, and **OpenJDK** modules.
-- [ ] **Step 1.2: Project Initialization**: Create a new Unity project using the **3D (URP)** template named `RoadwaysBusGame`.
-- [ ] **Step 1.3: Project Settings & Identity**:
+- [x] **Step 1.1: Unity Editor & Modules Installation**: Installed and verified Unity Editor with Android Build Support, Android SDK & NDK Tools, and OpenJDK modules.
+- [x] **Step 1.2: Project Initialization**: Initialized project with Universal Render Pipeline (URP).
+- [x] **Step 1.3: Project Settings & Identity**:
   - Company Name: `Roadways`
   - Product Name: `Roadways Bus Game`
   - Package Name: `com.roadways.busgame`
   - Version: `0.1.0` (Bundle Version Code: `1`).
-- [ ] **Step 1.4: URP Mobile Asset Configuration**:
-  - Create `Mobile_URP_Asset` and set as active in Graphics Settings.
-  - Set Rendering Path to **Forward**.
-  - Disable Depth Texture and Opaque Texture.
-  - Set Anti-aliasing (MSAA) to `2x` or `Disabled`.
-  - Disable HDR for maximum fill-rate throughput.
-  - Configure Main Light shadow resolution to `1024` with distance `25m`.
-- [ ] **Step 1.5: Resolution & Orientation Setup**:
-  - In Player Settings > Resolution and Presentation:
-    - Default Orientation: `Portrait`.
-    - Allowed Orientations: `Portrait` only (disable Landscape and Portrait Upside Down).
-    - Enable `Render outside safe area` (to handle camera notches gracefully).
-    - Status Bar Hidden: `true`.
-- [ ] **Step 1.6: Professional Folder Hierarchy**:
-  Create the folder layout:
-  ```text
-  Assets/
-  └── _Project/
-      ├── Scripts/ (Runtime & Editor)
-      ├── Prefabs/ (Chilbi, Buses, Bays, Environment)
-      ├── Materials/
-      ├── Shaders/
-      ├── Textures/ & Sprites/
-      ├── Audio/ (Clips & Mixers)
-      ├── ScriptableObjects/ (Color Palettes, Level Configs)
-      └── Scenes/ (MainGame.unity)
-  ```
-- [ ] **Step 1.7: Git Repository Setup & `.gitignore`**:
-  - Initialize Git and apply official Unity `.gitignore` ignoring `/Library`, `/Temp`, `/Obj`, `/Builds`, `/Logs`, and `*.csproj`.
-  - Configure Git LFS for binary files (`.png`, `.fbx`, `.wav`, `.mp3`).
-- [ ] **Step 1.8: Master Scene Hierarchy Layout**:
-  In `MainGame.unity`, organize roots:
+  - Target Architecture: ARM64 + IL2CPP.
+- [x] **Step 1.4: URP Mobile Asset Configuration**:
+  - Created `Mobile_RPAsset` with Forward rendering path.
+  - Disabled Depth and Opaque textures for fill-rate efficiency.
+  - Anti-aliasing configured to 2x MSAA.
+  - HDR disabled.
+  - Main Light soft shadows configured with 1024 resolution and 25m distance.
+- [x] **Step 1.5: Resolution & Orientation Setup**:
+  - Default Orientation: `Portrait` locked (Landscape & Upside Down disabled).
+  - `Render outside safe area` enabled for mobile camera notches.
+  - Status Bar Hidden: `true`.
+- [x] **Step 1.6: Professional Folder Hierarchy**:
+  Created `Assets/_Project/` with `Scripts/Runtime/`, `Scripts/Editor/`, `Prefabs/`, `Materials/`, `Shaders/`, `Textures/`, `Audio/`, `ScriptableObjects/`, `Settings/`, and `Scenes/`.
+- [x] **Step 1.7: Git Repository Setup & `.gitignore`**:
+  Configured comprehensive Unity `.gitignore`.
+- [x] **Step 1.8: Master Scene Hierarchy Layout**:
+  Created `MainGame.unity` with root nodes:
   - `--- [MANAGERS] ---` (GameManager, UIManager, AudioManager, InputManager)
-  - `--- [CAMERAS] ---` (MainCamera, UICamera)
-  - `--- [ENVIRONMENT] ---` (ParkGround, GardenStones, Decals)
+  - `--- [CAMERAS] ---` (MainCamera, CameraTarget, UICamera)
+  - `--- [ENVIRONMENT] ---` (DirectionalLight, ParkEnvironment, GardenStones, Decals)
   - `--- [ROAD_NETWORK] ---` (TrackSpline, Curbs, Shoulders, HighwayNeck)
   - `--- [CHARACTERS] ---` (ChilbiFormationManager, WalkerPool)
   - `--- [BUS_SYSTEM] ---` (BusFleetDepot, TrapeziumPanel, BayManager)
   - `--- [UI] ---` (CanvasScaler, WatermarkHeader, ReplayButton)
-- [ ] **Step 1.9: Camera Rig Coordinates & LookAt**:
+- [x] **Step 1.9: Camera Rig Coordinates & LookAt**:
   - Position: `X = 0, Y = 30, Z = 42`.
-  - Create empty Target GameObject at `(0, 0, 8)`.
-  - Set camera transform to look at target (`Camera.main.transform.LookAt(target)`), resulting in pitch $\approx 35^\circ$.
-  - Camera `up` vector: `(0, 1, 0)`.
-- [ ] **Step 1.10: Responsive Portrait Camera FOV Controller**:
-  - Attach `ResponsiveCameraFOV.cs`:
-    - Base Field of View: `44°` at reference aspect ratio `9:16` (`0.5625`).
-    - Dynamically calculate vertical FOV on screen resize:
-      $$\text{FOV}_{vertical} = 2 \times \operatorname{atan}\left(\tan\left(\frac{44^\circ}{2}\right) \times \frac{\text{RefAspect}}{\text{CurrentAspect}}\right)$$
-    - Keeps the circuit and parking bays framed consistently on tall aspect ratios (`19.5:9`, `20:9`).
-- [ ] **Step 1.11: Static Camera Lock**: Remove any default camera drag, pan, or orbit scripts. The scene vantage point is completely static.
-- [ ] **Step 1.12: Ambient Lighting & Color Grading**:
-  - Set Environment Lighting Source to `Color`.
-  - Ambient Color: Soft pastel pink-grey (`#f7e8ea`).
-  - Directional Light: Soft intensity `0.85`, rotation `(45, -30, 0)`, color warm white (`#fff9f5`).
-- [ ] **Step 1.13: Park Ground Mesh**:
-  - Create a 3D Quad mesh ($80\text{m} \times 120\text{m}$) at $Y = 0$, rotated $X = 90^\circ$.
-  - Assign unlit pastel pink material (`#fff1f2`), matching the Cherry Blossom Park theme.
-- [ ] **Step 1.14: Concentric Lawn Pathway Decals**:
-  - Add layered circular ground path meshes/decals with subtle translucent pastel borders (`#f2d5db`, alpha `0.35`).
-- [ ] **Step 1.15: Zen Garden Stone Accents (Strict Zero Trees/Leaves)**:
-  - Place low-poly rounded pebble and stone meshes around the lawn perimeter.
-  - Enforce zero trees, zero floating leaf particles, and zero character clutter on the grass.
+  - Target: `(0, 0, 8)` with pitch $\approx 35^\circ$ downward.
+- [x] **Step 1.10: Responsive Portrait Camera FOV Controller**:
+  Implemented `ResponsiveCameraFOV.cs` with dynamic vertical FOV adjustment across mobile screens (`9:16` to `20:9`).
+- [x] **Step 1.11: Static Camera Lock**:
+  Implemented `CameraRigController.cs` locking transform and preventing displacement.
+- [x] **Step 1.12: Ambient Lighting & Color Grading**:
+  Flat ambient light set to `#f7e8ea`, directional light soft intensity `0.85` at rotation `(45, -30, 0)`, warm white `#fff9f5`.
+- [x] **Step 1.13: Park Ground Mesh**:
+  Implemented `EnvironmentBuilder.cs` generating $80\text{m} \times 120\text{m}$ pastel pink `#fff1f2` lawn plane.
+- [x] **Step 1.14: Concentric Lawn Pathway Decals**:
+  Procedural circular ground ribbon paths with translucent pastel borders (`#f2d5db`, alpha `0.35`).
+- [x] **Step 1.15: Zen Garden Stone Accents (Strict Zero Trees/Leaves)**:
+  Procedural low-poly pebble meshes around lawn perimeter. Enforced zero trees, zero floating leaves, and zero clutter.
 
 ---
 
