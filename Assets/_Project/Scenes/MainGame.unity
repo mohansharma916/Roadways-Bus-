@@ -1206,8 +1206,8 @@ Transform:
   m_GameObject: {fileID: 600000000}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 8}
+  m_LocalScale: {x: 0.1, y: 1, z: -0.1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 600000011}
@@ -1224,6 +1224,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 600000011}
+  - component: {fileID: 600000012}
   m_Layer: 0
   m_Name: BusFleetDepot
   m_TagString: Untagged
@@ -1246,6 +1247,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 600000001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &600000012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 600000010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 506637b9d78d089cf789d49c3b614627, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  depotOriginZ: 520
+  busSpacing: 34
+  depotCenter: {x: 250, y: 0, z: 520}
+  bayManager: {fileID: 600000022}
 --- !u!1 &600000020
 GameObject:
   m_ObjectHideFlags: 0
@@ -1255,6 +1272,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 600000021}
+  - component: {fileID: 600000022}
   m_Layer: 0
   m_Name: TrapeziumPanel
   m_TagString: Untagged
@@ -1277,6 +1295,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 600000001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &600000022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 600000020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4cfb93c1e106a618b92de7bf8942739, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  totalBays: 9
+  bayWidth: 25
+  bayLength: 50
+  baySpacing: 8
+  bayAngleDeg: -30
+  entryCorridorDist: 55
+  firstBayCenter: {x: 118, y: 0, z: 320.8}
 --- !u!1 &600000030
 GameObject:
   m_ObjectHideFlags: 0

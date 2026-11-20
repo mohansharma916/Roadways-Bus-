@@ -183,59 +183,59 @@ flowchart TD
 
 ### Phase 4: Top-Down Bus Fleet & Parking Bays (14 Detailed Steps)
 
-- [ ] **Step 4.1: Trapezium Base Panel Mesh**:
+- [x] **Step 4.1: Trapezium Base Panel Mesh**:
   - Polygon mesh covering bottom area with rounded top corners ($Y = 180$ to $Y = 1000$).
   - Material: Slate grey (`#525769`), matching asphalt surface.
-- [ ] **Step 4.2: 9 Angled Trapezium Parking Bays**:
+- [x] **Step 4.2: 9 Angled Trapezium Parking Bays**:
   - Arrange 9 rectangular slots tilted at **`-30°`** in a centered single row:
     - 5 Standard Bays (left): `2px` solid white border (`#ffffff`).
     - 1 VIP Bay (4th from right): `2px` solid gold border (`#ffd700`) with tilted gold "VIP" text.
     - 3 Unlock Bays (right): `2px` solid green border (`#2ecc71`) with centered bold `+` symbol.
   - Dimensions: $25\text{px} \times 50\text{px}$, corner radius $5.5\text{px}$, spacing gap $8\text{px}$.
-- [ ] **Step 4.3: Top-Down Bus Mesh & Materials**:
+- [x] **Step 4.3: Top-Down Bus Mesh & Materials**:
   - Create flat 2D/3D bus model matching exact parking bay dimensions ($25\text{px} \times 50\text{px}$, `rx = 5.5`).
   - Dark tinted front windshield visor (`#1e2430`), rear window, and side window cutouts.
   - Solid matte body color (Red, Yellow, Blue, Green, Purple, Orange, Pink, Cyan) matching `MasterColorPalettes`.
   - Zero specular shine, zero drop shadows.
-- [ ] **Step 4.4: Forward Directional Roof Arrow**:
+- [x] **Step 4.4: Forward Directional Roof Arrow**:
   - Model crisp white arrow on bus roof pointing forward in vehicle travel direction:
     - Vector: `M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z`.
     - Rounded corners (`stroke-linejoin="round"`, `width = 1.0`).
-- [ ] **Step 4.5: Fleet Depot Layout**:
+- [x] **Step 4.5: Fleet Depot Layout**:
   - Arrange all 8 matching buses in a single horizontal row inside the bottom boundary panel (`#d3daed`).
   - Responsive horizontal spacing (`gap = clamp(10px, 2.5vw, 16px)`) fitting all mobile screen widths without wrapping.
-- [ ] **Step 4.6: Touch Input & Selection System**:
+- [x] **Step 4.6: Touch Input & Selection System**:
   - Raycast / 2D Collider on each depot bus.
   - Handle mobile touch events using Unity New Input System (`EnhancedTouch.Touch`).
-- [ ] **Step 4.7: Path Clearance & State Verification**:
+- [x] **Step 4.7: Path Clearance & State Verification**:
   - In `BusFleetController.cs`:
     - Check if target parking bay (Bay 0) is occupied.
     - Check if another bus is currently in transit.
     - If blocked: trigger rejection wiggle and warning audio.
     - If clear: proceed with dispatch.
-- [ ] **Step 4.8: Rejection Wiggle Feedback**:
+- [x] **Step 4.8: Rejection Wiggle Feedback**:
   - Animate horizontal shake: $X \to -4\text{px} \to +4\text{px} \to -3\text{px} \to 0$ over $0.35\text{s}$.
   - Play dual low buzz warning horn sound ($220\text{ Hz}$).
-- [ ] **Step 4.9: Cubic Hermite Spline Kinematics**:
+- [x] **Step 4.9: Cubic Hermite Spline Kinematics**:
   - Implement `HermiteKinematics.cs` calculating position and velocity:
     $$\vec{P}(t) = h_{00}(t)\vec{P}_0 + h_{10}(t)\vec{T}_0 + h_{01}(t)\vec{P}_1 + h_{11}(t)\vec{T}_1$$
     $$\vec{V}(t) = \vec{P}'(t)$$
   - Calculate vehicle heading strictly from velocity tangent:
     $$\theta(t) = \operatorname{atan2}(V_x, -V_y) \times \frac{180}{\pi}$$
-- [ ] **Step 4.10: Dedicated Head-First Bay Entry Corridor**:
+- [x] **Step 4.10: Dedicated Head-First Bay Entry Corridor**:
   - Define bay approach mouth waypoint at $(145.5, 368.4)$ ($55\text{px}$ outside bay along $-30^\circ$ centerline).
   - Phase 1: Accelerate forward out of depot in arrow direction (straight UP, $0^\circ$).
   - Phase 2: Follow velocity-tangent curve to approach mouth.
   - Phase 3: Lock heading strictly to **`-30.0°`** and drive straight forward through the bay mouth into the stall.
-- [ ] **Step 4.11: Suspension Physics & Braking Dynamics**:
+- [x] **Step 4.11: Suspension Physics & Braking Dynamics**:
   - Startup forward stretch: `scale(0.98, 1.025)`.
   - Braking compression inside bay: nose-dip `scale(1.02, 0.975)`.
   - Rebound settle back to `scale(1.0, 1.0)` as vehicle locks into bay.
-- [ ] **Step 4.12: Pneumatic Air-Brake Audio Trigger**:
+- [x] **Step 4.12: Pneumatic Air-Brake Audio Trigger**:
   - On final settle, trigger pneumatic air release hiss ("pssshh-clack!") and parking latch click.
-- [ ] **Step 4.13: Roof Arrow Smooth Disappearance**:
+- [x] **Step 4.13: Roof Arrow Smooth Disappearance**:
   - Fade out roof arrow mesh (`alpha: 1.0 -> 0.0`) and scale down to `0.3` over $0.28\text{s}$ upon docking.
-- [ ] **Step 4.14: Reverse Back-Out Depot Return**:
+- [x] **Step 4.14: Reverse Back-Out Depot Return**:
   - Tapping parked bus reverses it straight out along $-30^\circ$ axis, re-enables arrow, and drives back into depot slot.
 
 ---
