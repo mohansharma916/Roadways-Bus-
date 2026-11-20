@@ -113,6 +113,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 36 | 2026-11-20 | Created 5 additional Red Chilbi (6 total in squad) walking together in a staggered V-formation; widened road width by +40% (outer Rx=355, Ry=96, inner rx=145, ry=22) and adjusted Chilbi scale (~0.75x) so all 6 walk together comfortably with generous curb clearance. |
 | 37 | 2026-11-20 | Configured Chilbi to span the full road width from border to border with zero empty gap. Added 7th Red Chilbi (7 total), distributed evenly from inner curb (w = -30) to outer curb (w = +30) in a staggered cascading sweep walking at the same forward speed with independent waddling animations. |
 | 38 | 2026-11-20 | Replaced abrupt straight turns / flips with continuous circular walk following the ring path tangent. Red squad (7 members) and Cyan Chilbi now smoothly rotate with `rotate(heading)` along concentric elliptical lanes ($R_{xi} = 145 + \alpha_i \times 210, R_{yi} = 22 + \alpha_i \times 74$), curving naturally 360° around the ring while spanning the entire road width from inner curb border to outer curb border. |
+| 39 | 2026-11-20 | Calibrated ring width ($R_x=320, R_y=82$, inner $r_x=180, r_y=42$, width 140px/40px) and synchronized angular velocity so the 7 Red Chilbi form a gapless, seamless line spanning border to border. Position-based linear speed scaling enables outer members to travel with extra speed ($v_{out} \approx 1.7 \times v_{in}$) and take faster/larger strides, so all members stay perfectly together in lockstep without lagging. |
 
 ---
 
