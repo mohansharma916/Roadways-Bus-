@@ -194,10 +194,10 @@
   <div class="track-network-container">
     <svg class="track-network-svg" viewBox="0 0 1000 400" preserveAspectRatio="none">
       <defs>
-        <!-- Mask for hollow center island: nothing inside (Calibrated road width for gapless squad walking) -->
+        <!-- Mask for hollow center island: nothing inside (Constant 70px road width throughout entire ring) -->
         <mask id="roundabout-island-hole">
           <rect width="1000" height="400" fill="white" />
-          <ellipse cx="500" cy="185" rx="180" ry="42" fill="black" />
+          <ellipse cx="500" cy="185" rx="200" ry="35" fill="black" />
         </mask>
 
         <!-- Red Chilbi Candy Bean Gradients -->
@@ -225,28 +225,28 @@
         </radialGradient>
       </defs>
 
-      <!-- Unified Road Surface Fill (#7a7d90) (Calibrated Road Width for Gapless Squad Walking) -->
-      <path d="M -15,-10 C 60,35 140,75 222.9,144 A 320,82 0 0,1 777.1,144 C 860,75 940,35 1015,-10 
-               L 1015,85 
-               C 940,110 875,135 796.7,215.7 A 320,82 0 0,1 610,262 L 610,320 
-               L 390,320 
-               L 390,262 A 320,82 0 0,1 203.3,215.7 C 125,135 60,110 -15,85 
+      <!-- Unified Road Surface Fill (#7a7d90) (Uniform 70px Road Width: Rx=270, Ry=105, rx=200, ry=35) -->
+      <path d="M -15,-10 C 60,30 160,75 278.8,124.8 A 270,105 0 0,1 721.2,124.8 C 840,75 940,30 1015,-10 
+               L 1015,60 
+               C 940,100 840,140 760.8,212.2 A 270,105 0 0,1 600,282.5 L 600,320 
+               L 400,320 
+               L 400,282.5 A 270,105 0 0,1 239.2,212.2 C 160,140 60,100 -15,60 
                Z" fill="#7a7d90" mask="url(#roundabout-island-hole)" />
 
       <!-- Top Continuous Curb Line (#e1e6ec) spanning left horn, ring top, and right horn -->
-      <path d="M -15,-10 C 60,35 140,75 222.9,144 A 320,82 0 0,1 777.1,144 C 860,75 940,35 1015,-10" fill="none"
+      <path d="M -15,-10 C 60,30 160,75 278.8,124.8 A 270,105 0 0,1 721.2,124.8 C 840,75 940,30 1015,-10" fill="none"
         stroke="#e1e6ec" stroke-width="5.5" stroke-linecap="round" />
 
       <!-- Right Lower Curb Line (#e1e6ec) curving from right corner into roundabout and down into trapezium (wide opening) -->
-      <path d="M 1015,85 C 940,110 875,135 796.7,215.7 A 320,82 0 0,1 610,262 L 610,320" fill="none" stroke="#e1e6ec"
+      <path d="M 1015,60 C 940,100 840,140 760.8,212.2 A 270,105 0 0,1 600,282.5 L 600,320" fill="none" stroke="#e1e6ec"
         stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
 
       <!-- Left Lower Curb Line (#e1e6ec) curving from trapezium up through roundabout and out to left corner (wide opening) -->
-      <path d="M 390,320 L 390,262 A 320,82 0 0,1 203.3,215.7 C 125,135 60,110 -15,85" fill="none" stroke="#e1e6ec"
+      <path d="M 400,320 L 400,282.5 A 270,105 0 0,1 239.2,212.2 C 160,140 60,100 -15,60" fill="none" stroke="#e1e6ec"
         stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
 
-      <!-- Inner Island Closed Ring Curb (#e1e6ec) -->
-      <ellipse cx="500" cy="185" rx="180" ry="42" fill="none" stroke="#e1e6ec" stroke-width="5.5" />
+      <!-- Inner Island Closed Ring Curb (#e1e6ec) (Even 70px road gap all around) -->
+      <ellipse cx="500" cy="185" rx="200" ry="35" fill="none" stroke="#e1e6ec" stroke-width="5.5" />
 
       <!-- Animated Chilbi ("Bean") Characters Layer (Concentric Circular Walk Squad) -->
       <g id="chilbi-characters-layer">
@@ -1776,24 +1776,24 @@
 
     // =========================================================================
     // --- CHILBI ("CANDY BEAN") CHARACTER WALKING ANIMATION SYSTEM ---
-    // Squad of 7 Red Chilbis + 1 Cyan Chilbi following continuous circular walk:
-    //   - Concentric lanes calibrated to road width so they span edge-to-edge with ZERO GAP
-    //   - Synchronized squad angle: outer line travels with extra linear speed, inner with less
-    //   - Outer characters take faster/larger strides so the squad always stays together
-    //   - Continuous path-tangent orientation: smooth 360-degree circular flow
+    // Squad of 7 Red Chilbis + 1 Cyan Chilbi:
+    //   - 100% Constant Linear Speed via Arc-Length LUT: No running or surging on corners!
+    //   - Exact Normal Offsets: Spacing between members is exactly 9.0px everywhere (no squeezing!)
+    //   - Uniform 70px Road Width: Even width throughout entire ring
+    //   - Calm, rhythmic waddling strides at steady pace
     // =========================================================================
     (function initChilbiWalkers() {
       // 7 Red Chilbi Squad Members spanning Full Road Width with ZERO GAP
-      // Concentric elliptical lanes: alpha=0.071 (inner curb) to alpha=0.929 (outer curb)
-      // dTheta = 0: All 7 members share the exact same squad angle and stay TOGETHER side-by-side
+      // Exact normal offsets: -27px (inner curb) to +27px (outer curb)
+      // Spacing between adjacent members is ALWAYS 9.0px (completely constant, zero squeezing!)
       const redSquad = [
-        { id: 1, alpha: 0.071, phase: 0.0 }, // Directly on Inner Road Border
-        { id: 2, alpha: 0.214, phase: 0.7 }, // Lane 2
-        { id: 3, alpha: 0.357, phase: 1.4 }, // Lane 3
-        { id: 4, alpha: 0.500, phase: 2.1 }, // Center Road Lane
-        { id: 5, alpha: 0.643, phase: 2.8 }, // Lane 5
-        { id: 6, alpha: 0.786, phase: 3.5 }, // Lane 6
-        { id: 7, alpha: 0.929, phase: 4.2 }  // Directly on Outer Road Border
+        { id: 1, d: -27, phase: 0.0 }, // Directly on Inner Road Border
+        { id: 2, d: -18, phase: 0.7 }, // Lane 2
+        { id: 3, d:  -9, phase: 1.4 }, // Lane 3
+        { id: 4, d:   0, phase: 2.1 }, // Center Road Lane
+        { id: 5, d:   9, phase: 2.8 }, // Lane 5
+        { id: 6, d:  18, phase: 3.5 }, // Lane 6
+        { id: 7, d:  27, phase: 4.2 }  // Directly on Outer Road Border
       ].map(m => ({
         ...m,
         elem: document.getElementById('chilbi-red-' + m.id),
@@ -1815,19 +1815,58 @@
       if (!redSquad[0].elem) return;
 
       const feederDuration = 5.0; // seconds to travel from screen corner to ring
-      const ringSpeed = 0.55;      // radians/second (~11.4 seconds per full ring loop)
-      const waddleFreq = 8.5;     // base waddling frequency (steps/sec)
+      const linearSpeed = 85.0;   // CONSTANT linear speed: 85 px/sec everywhere (no running on corners!)
+      const waddleFreq = 8.0;     // calm, steady waddle frequency (steps/sec)
 
       // Ring Centerline Ellipse: cx=500, cy=185
-      // Calibrated road width: Inner island rx=180, ry=42; Outer curb Rx=320, Ry=82 (zero gap for 7 members)
+      // Outer curb: Rx=270, Ry=105; Inner curb: rx=200, ry=35
+      // Centerline: Rcx=235, Rcy=70. Uniform 70px road width throughout entire ring!
       const ringCx = 500, ringCy = 185;
-      const innerRx = 180, innerRy = 42;
-      const roadDeltaRx = 140, roadDeltaRy = 40; // 320 - 180 = 140, 82 - 42 = 40
-      const thetaStartL = 3.665; // ~210 deg (top-left junction)
-      const thetaStartR = 5.760; // ~330 deg (top-right junction)
+      const Rcx = 235, Rcy = 70;
+      const thetaStartL = 3.752; // ~215 deg (top-left feeder junction)
+      const thetaStartR = 5.672; // ~325 deg (top-right feeder junction)
+
+      // Precompute Arc-Length Lookup Table for 100% Constant Linear Speed (No speed surges on corners)
+      const LUT_SIZE = 512;
+      const cumS = new Float32Array(LUT_SIZE + 1);
+      const dth = (Math.PI * 2) / LUT_SIZE;
+      cumS[0] = 0;
+      for (let i = 0; i < LUT_SIZE; i++) {
+        const th = i * dth;
+        const ds = Math.hypot(-Rcx * Math.sin(th), Rcy * Math.cos(th)) * dth;
+        cumS[i + 1] = cumS[i] + ds;
+      }
+      const ringPerimeter = cumS[LUT_SIZE];
+
+      // Arc length at start of left feeder junction
+      let sAtThetaStartL = 0;
+      for (let i = 0; i < LUT_SIZE; i++) {
+        if (i * dth <= thetaStartL && (i + 1) * dth > thetaStartL) {
+          const frac = (thetaStartL - i * dth) / dth;
+          sAtThetaStartL = cumS[i] + frac * (cumS[i + 1] - cumS[i]);
+          break;
+        }
+      }
+
+      function getThetaForArcLength(s) {
+        let remS = ((s % ringPerimeter) + ringPerimeter) % ringPerimeter;
+        let low = 0, high = LUT_SIZE - 1;
+        while (low <= high) {
+          const mid = (low + high) >> 1;
+          if (cumS[mid] <= remS && remS < cumS[mid + 1]) {
+            const frac = (remS - cumS[mid]) / (cumS[mid + 1] - cumS[mid]);
+            return (mid + frac) * dth;
+          } else if (cumS[mid] > remS) {
+            high = mid - 1;
+          } else {
+            low = mid + 1;
+          }
+        }
+        return 0;
+      }
 
       // Right Feeder Horn Bezier Control Points
-      const pR0 = { x: 1015, y: 37.5 }, pR1 = { x: 915, y: 70 }, pR2 = { x: 825, y: 115 }, pR3 = { x: 777.1, y: 144.0 };
+      const pR0 = { x: 1015, y: 30 }, pR1 = { x: 915, y: 65 }, pR2 = { x: 825, y: 105 }, pR3 = { x: 721.2, y: 124.8 };
 
       function getCubicBezier(p0, p1, p2, p3, u) {
         const u2 = u * u, u3 = u2 * u;
@@ -1840,29 +1879,39 @@
       }
 
       function getRedMemberSample(t, m) {
-        const laneRx = innerRx + m.alpha * roadDeltaRx;
-        const laneRy = innerRy + m.alpha * roadDeltaRy;
-
         if (t < feederDuration) {
           const u = Math.max(0, Math.min(1, t / feederDuration));
-          // Left Feeder horn bezier interpolated to this specific concentric lane
-          const p0 = { x: -15, y: 85 - m.alpha * 95 };
+          const p0 = { x: -15, y: 25 - m.d };
           const p3 = {
-            x: ringCx + laneRx * Math.cos(thetaStartL),
-            y: ringCy + laneRy * Math.sin(thetaStartL)
+            x: ringCx + (Rcx + m.d * 0.8) * Math.cos(thetaStartL),
+            y: ringCy + (Rcy + m.d * 0.8) * Math.sin(thetaStartL)
           };
-          const p1 = { x: p0.x + 0.35 * (p3.x - p0.x) + 15, y: p0.y + 0.35 * (p3.y - p0.y) + 20 };
-          const p2 = { x: p0.x + 0.70 * (p3.x - p0.x) + 10, y: p0.y + 0.70 * (p3.y - p0.y) + 15 };
+          const p1 = { x: p0.x + 0.35 * (p3.x - p0.x) + 15, y: p0.y + 0.35 * (p3.y - p0.y) + 15 };
+          const p2 = { x: p0.x + 0.70 * (p3.x - p0.x) + 10, y: p0.y + 0.70 * (p3.y - p0.y) + 10 };
           return getCubicBezier(p0, p1, p2, p3, u);
         } else {
-          // Continuous circular walk: all 7 members share exact same squad angle theta so they always stay together
+          // CONSTANT LINEAR SPEED WALK VIA ARC LENGTH LOOKUP:
           const dt = t - feederDuration;
-          const theta = thetaStartL + dt * ringSpeed;
-          const x = ringCx + laneRx * Math.cos(theta);
-          const y = ringCy + laneRy * Math.sin(theta);
-          const dx = -laneRx * Math.sin(theta);
-          const dy = laneRy * Math.cos(theta);
-          return { x, y, dx, dy, laneRx, laneRy };
+          const currentS = sAtThetaStartL + dt * linearSpeed;
+          const theta = getThetaForArcLength(currentS);
+
+          // Centerline position & tangent
+          const xc = ringCx + Rcx * Math.cos(theta);
+          const yc = ringCy + Rcy * Math.sin(theta);
+          const dx = -Rcx * Math.sin(theta);
+          const dy = Rcy * Math.cos(theta);
+
+          // Outward unit normal vector (strictly perpendicular to track tangent)
+          const len = Math.hypot(dx, dy) || 1;
+          const nx = dy / len;
+          const ny = -dx / len;
+
+          // Member position: exact constant Euclidean offset d along the normal
+          // Distance between adjacent members is ALWAYS exactly 9.0px (zero squeeze on corners!)
+          const px = xc + m.d * nx;
+          const py = yc + m.d * ny;
+
+          return { x: px, y: py, dx, dy };
         }
       }
 
@@ -1872,11 +1921,12 @@
           return getCubicBezier(pR0, pR1, pR2, pR3, u);
         } else {
           const dt = t - feederDuration;
-          const theta = thetaStartR + dt * ringSpeed;
-          const x = ringCx + 250 * Math.cos(theta);
-          const y = ringCy + 62 * Math.sin(theta);
-          const dx = -250 * Math.sin(theta);
-          const dy = 62 * Math.cos(theta);
+          const s = dt * linearSpeed;
+          const theta = getThetaForArcLength(s + ringPerimeter * 0.55);
+          const x = ringCx + Rcx * Math.cos(theta);
+          const y = ringCy + Rcy * Math.sin(theta);
+          const dx = -Rcx * Math.sin(theta);
+          const dy = Rcy * Math.cos(theta);
           return { x, y, dx, dy };
         }
       }
@@ -1886,32 +1936,27 @@
       function updateChilbiFrame(now) {
         const tSec = (now - startTime) / 1000;
 
-        // 1. UPDATE 7 RED CHILBI SQUAD MEMBERS - TOGETHER IN RADIAL FORMATION WITH SPEED SCALING
+        // 1. UPDATE 7 RED CHILBI SQUAD MEMBERS - TOGETHER AT CONSTANT NORMAL SPEED WITH ZERO SQUEEZING
         for (let i = 0; i < redSquad.length; i++) {
           const m = redSquad[i];
           if (!m.elem) continue;
 
           const pos = getRedMemberSample(tSec, m);
 
-          // Path tangent heading: smoothly curves with the ring ellipse
+          // Path tangent heading: smoothly curves along the track
           const heading = Math.atan2(pos.dy, pos.dx) * (180 / Math.PI) + 90;
 
           // Depth perspective scale: slightly larger near bottom/trapezium, smaller at top
-          const depth = Math.max(0.82, Math.min(1.10, 0.85 + ((pos.y - 120) / 130) * 0.22));
+          const depth = Math.max(0.82, Math.min(1.08, 0.85 + ((pos.y - 120) / 130) * 0.22));
 
           m.elem.setAttribute('transform', `translate(${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}) rotate(${heading.toFixed(1)}) scale(${depth.toFixed(3)})`);
 
-          // Linear speed scaling: outer line has larger perimeter, so it travels with extra linear speed
-          const curV = Math.hypot(pos.dx, pos.dy) || 120;
-          const speedRatio = curV / 160;
-
-          // Outer member steps faster with slightly larger stride to keep in step with the squad
-          const mFreq = waddleFreq * (0.75 + 0.35 * speedRatio);
-          const wPhase = tSec * mFreq + m.phase;
-          const bounce = Math.abs(Math.sin(wPhase)) * (2.0 + 0.8 * speedRatio);
-          const tilt = Math.sin(wPhase) * (4.2 + 1.2 * speedRatio);
-          const footStride = Math.sin(wPhase) * (3.0 * speedRatio);
-          const armSwing = Math.sin(wPhase) * (16.0 + 5.0 * speedRatio);
+          // Calm, steady waddling stride at uniform speed (no frantic running on corners!)
+          const wPhase = tSec * waddleFreq + m.phase;
+          const bounce = Math.abs(Math.sin(wPhase)) * 2.3;
+          const tilt = Math.sin(wPhase) * 4.8;
+          const footStride = Math.sin(wPhase) * 3.4;
+          const armSwing = Math.sin(wPhase) * 18.0;
 
           if (m.body) m.body.setAttribute('transform', `translate(0, ${-bounce.toFixed(2)}) rotate(${tilt.toFixed(1)})`);
           if (m.footL) m.footL.setAttribute('transform', `translate(0, ${footStride.toFixed(2)})`);
@@ -1920,7 +1965,7 @@
           if (m.armR) m.armR.setAttribute('transform', `rotate(${-armSwing.toFixed(1)}, 11, -6)`);
         }
 
-        // 2. UPDATE CYAN CHILBI (RIGHT FEEDER WALKER)
+        // 2. UPDATE CYAN CHILBI
         if (cyanElem) {
           const cyanPos = getCyanSample(tSec);
           const headingCyan = Math.atan2(cyanPos.dy, cyanPos.dx) * (180 / Math.PI) + 90;
@@ -1928,11 +1973,11 @@
           cyanElem.setAttribute('transform', `translate(${cyanPos.x.toFixed(2)}, ${cyanPos.y.toFixed(2)}) rotate(${headingCyan.toFixed(1)}) scale(${depthCyan.toFixed(3)})`);
 
           const wPhaseCyan = tSec * waddleFreq + 1.2;
-          const bounceC = Math.abs(Math.sin(wPhaseCyan)) * 2.5;
-          const tiltC = Math.sin(wPhaseCyan) * 5.0;
-          const footLC = Math.sin(wPhaseCyan) * 3.8;
+          const bounceC = Math.abs(Math.sin(wPhaseCyan)) * 2.3;
+          const tiltC = Math.sin(wPhaseCyan) * 4.8;
+          const footLC = Math.sin(wPhaseCyan) * 3.4;
           const footRC = -footLC;
-          const armLC = Math.sin(wPhaseCyan) * 20.0;
+          const armLC = Math.sin(wPhaseCyan) * 18.0;
           const armRC = -armLC;
 
           if (cyanBody) cyanBody.setAttribute('transform', `translate(0, ${-bounceC.toFixed(2)}) rotate(${tiltC.toFixed(1)})`);
