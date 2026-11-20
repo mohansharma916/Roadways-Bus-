@@ -73,18 +73,21 @@
       border-radius: 4px;
     }
 
-    .bus-fleet-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px 14px;
+    .bus-fleet-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
       width: 100%;
-      max-width: 410px;
-      margin: 0 auto;
-      padding: 18px 8px 24px 8px;
+      height: 100%;
       box-sizing: border-box;
+      padding: 10px 10px 20px 10px;
     }
 
     .bus-fleet-item {
+      width: 25px;
+      height: 50px;
+      flex-shrink: 0;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -94,23 +97,46 @@
       transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
+    .bus-fleet-item.angled {
+      transform: rotate(-30deg);
+    }
+
     .bus-fleet-item:hover {
-      transform: translateY(-3px) scale(1.05);
+      transform: scale(1.12);
+    }
+
+    .bus-fleet-item.angled:hover {
+      transform: rotate(-30deg) scale(1.12);
     }
 
     .bus-fleet-item:active {
-      transform: scale(0.94);
+      transform: scale(0.92);
+    }
+
+    .bus-fleet-item.angled:active {
+      transform: rotate(-30deg) scale(0.92);
     }
 
     @keyframes busHonkBounce {
-      0% { transform: scale(1) translateY(0); }
-      40% { transform: scale(1.08) translateY(-6px); }
-      75% { transform: scale(0.96) translateY(1px); }
-      100% { transform: scale(1) translateY(0); }
+      0% { transform: scale(1); }
+      40% { transform: scale(1.15); }
+      75% { transform: scale(0.94); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes busHonkBounceAngled {
+      0% { transform: rotate(-30deg) scale(1); }
+      40% { transform: rotate(-30deg) scale(1.15); }
+      75% { transform: rotate(-30deg) scale(0.94); }
+      100% { transform: rotate(-30deg) scale(1); }
     }
 
     .bus-fleet-item.bus-honking {
       animation: busHonkBounce 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .bus-fleet-item.angled.bus-honking {
+      animation: busHonkBounceAngled 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .bottom-boundary-panel::before {
@@ -449,259 +475,13 @@
 
   <!-- Bottom Boundary Panel (Bus Fleet Depot below Trapezium) -->
   <div class="bottom-boundary-panel" id="bus-terminal-panel">
-    <div class="bus-fleet-grid">
-      <div class="bus-fleet-item" onclick="onBusClick(this, 440)">
-        <svg viewBox="0 0 160 100" style="width:100%; height:88px; max-height:88px; overflow:visible; filter: drop-shadow(0 5px 8px rgba(15,20,35,0.18));">
-          <!-- Ground Contact Shadow -->
-          <ellipse cx="76" cy="74" rx="54" ry="18" fill="rgba(20, 26, 42, 0.26)" />
-          <!-- Chassis Base -->
-          <path d="M 28,59 L 108,69 L 122,62 L 122,58 L 108,65 L 28,55 Z" fill="#1e232e" />
-          <!-- Side Body -->
-          <path d="M 28,57 L 106,67 L 106,34 Q 106,31 102,31 L 32,21 Q 28,21 28,22 Z" fill="#ef4444" />
-          <!-- Front Face -->
-          <path d="M 106,67 L 122,60 L 122,27 L 106,34 Z" fill="#dc2626" />
-          <!-- Roof Top -->
-          <path d="M 28,22 L 106,34 L 122,27 L 44,15 Z" fill="#ffffff" />
-          <!-- Marshmallow Roof Soft Dome Highlight -->
-          <path d="M 34,21 L 100,32 L 114,26 L 48,15 Z" fill="#ffffff" opacity="0.35" />
-          <!-- Front Windshield -->
-          <path d="M 108,59 L 120,53 L 120,30 L 108,36 Z" fill="#1a222d" opacity="0.95" />
-          <!-- Glass Glare Sheen -->
-          <line x1="110" y1="35" x2="118" y2="52" stroke="rgba(255,255,255,0.45)" stroke-width="1.4" stroke-linecap="round" />
-          <!-- Headlights -->
-          <circle cx="109" cy="63" r="3.2" fill="#fef08a" stroke="#ffffff" stroke-width="0.8" />
-          <circle cx="119" cy="58" r="3.2" fill="#fef08a" stroke="#ffffff" stroke-width="0.8" />
-          <!-- Front Bumper -->
-          <path d="M 107,66 L 121,60 L 121,57 L 107,63 Z" fill="#ffffff" opacity="0.85" />
-          <!-- Side Windows -->
-          <rect x="33" y="27" width="14" height="11" rx="2.5" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <rect x="51" y="29" width="14" height="11" rx="2.5" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <rect x="69" y="31" width="14" height="11" rx="2.5" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <rect x="87" y="33" width="14" height="11" rx="2.5" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <!-- Donut Clay Wheel -->
-          <g transform="translate(44, 61)">
-            <ellipse cx="0" cy="0" rx="8.5" ry="10.5" fill="#1a202c" />
-            <ellipse cx="0" cy="0" rx="4.8" ry="6.0" fill="#ef4444" stroke="#ffffff" stroke-width="1.2" />
-            <circle cx="0" cy="0" r="1.5" fill="#ffffff" />
-          </g>
-          <!-- Donut Clay Wheel -->
-          <g transform="translate(92, 67)">
-            <ellipse cx="0" cy="0" rx="8.5" ry="10.5" fill="#1a202c" />
-            <ellipse cx="0" cy="0" rx="4.8" ry="6.0" fill="#ef4444" stroke="#ffffff" stroke-width="1.2" />
-            <circle cx="0" cy="0" r="1.5" fill="#ffffff" />
-          </g>
-        </svg>
-      </div>
-      <div class="bus-fleet-item" onclick="onBusClick(this, 392)">
-        <svg viewBox="0 0 160 100" style="width:100%; height:88px; max-height:88px; overflow:visible; filter: drop-shadow(0 5px 8px rgba(15,20,35,0.18));">
-          <!-- Ground Contact Shadow -->
-          <ellipse cx="76" cy="74" rx="54" ry="18" fill="rgba(20, 26, 42, 0.26)" />
-          <!-- Chassis Base -->
-          <path d="M 28,59 L 108,69 L 122,62 L 122,58 L 108,65 L 28,55 Z" fill="#1e232e" />
-          <!-- Rear / Side Cabin -->
-          <path d="M 28,55 L 86,62 L 86,29 Q 86,25 82,25 L 32,21 Q 28,21 28,22 Z" fill="#f59e0b" />
-          <!-- Cabin Roof Top -->
-          <path d="M 28,22 L 86,29 L 98,23 L 40,16 Z" fill="#fef3c7" />
-          <!-- Engine Hood Side -->
-          <path d="M 86,62 L 108,65 L 108,47 L 86,45 Z" fill="#f59e0b" />
-          <!-- Engine Hood Top -->
-          <path d="M 86,45 L 108,47 L 120,41 L 98,39 Z" fill="#f59e0b" />
-          <!-- Engine Hood Front Face -->
-          <path d="M 108,65 L 122,58 L 122,41 L 108,47 Z" fill="#d97706" />
-          <!-- Front Grille & Headlights -->
-          <path d="M 111,57 L 119,53 L 119,48 L 111,52 Z" fill="#151922" />
-          <circle cx="111" cy="60" r="3.2" fill="#fef08a" stroke="#ffffff" stroke-width="0.8" />
-          <circle cx="119" cy="56" r="3.2" fill="#fef08a" stroke="#ffffff" stroke-width="0.8" />
-          <!-- Windshield above hood -->
-          <path d="M 86,47 L 98,41 L 98,22 L 86,28 Z" fill="#1a222d" opacity="0.95" />
-          <line x1="88" y1="27" x2="96" y2="44" stroke="rgba(255,255,255,0.45)" stroke-width="1.2" stroke-linecap="round" />
-          <!-- Side Windows -->
-          <rect x="33" y="27" width="13" height="11" rx="2.5" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <rect x="50" y="29" width="13" height="11" rx="2.5" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <rect x="67" y="31" width="13" height="11" rx="2.5" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <!-- Donut Clay Wheel -->
-          <g transform="translate(44, 61)">
-            <ellipse cx="0" cy="0" rx="8.5" ry="10.5" fill="#1a202c" />
-            <ellipse cx="0" cy="0" rx="4.8" ry="6.0" fill="#f59e0b" stroke="#ffffff" stroke-width="1.2" />
-            <circle cx="0" cy="0" r="1.5" fill="#ffffff" />
-          </g>
-          <!-- Donut Clay Wheel -->
-          <g transform="translate(92, 67)">
-            <ellipse cx="0" cy="0" rx="8.5" ry="10.5" fill="#1a202c" />
-            <ellipse cx="0" cy="0" rx="4.8" ry="6.0" fill="#f59e0b" stroke="#ffffff" stroke-width="1.2" />
-            <circle cx="0" cy="0" r="1.5" fill="#ffffff" />
-          </g>
-        </svg>
-      </div>
-      <div class="bus-fleet-item" onclick="onBusClick(this, 494)">
-        <svg viewBox="0 0 160 100" style="width:100%; height:88px; max-height:88px; overflow:visible; filter: drop-shadow(0 5px 8px rgba(15,20,35,0.18));">
-          <!-- Ground Contact Shadow -->
-          <ellipse cx="76" cy="74" rx="54" ry="18" fill="rgba(20, 26, 42, 0.26)" />
-          <!-- Chassis Base -->
-          <path d="M 28,59 L 108,69 L 122,62 L 122,58 L 108,65 L 28,55 Z" fill="#1e232e" />
-          <!-- Side Body -->
-          <path d="M 28,57 L 106,67 L 106,34 Q 106,31 102,31 L 32,21 Q 28,21 28,22 Z" fill="#2563eb" />
-          <!-- Front Face -->
-          <path d="M 106,67 L 122,60 L 122,27 L 106,34 Z" fill="#1d4ed8" />
-          <!-- Roof Top -->
-          <path d="M 28,22 L 106,34 L 122,27 L 44,15 Z" fill="#ffffff" />
-          <!-- Marshmallow Roof Soft Dome Highlight -->
-          <path d="M 34,21 L 100,32 L 114,26 L 48,15 Z" fill="#ffffff" opacity="0.35" />
-          <!-- Front Windshield -->
-          <path d="M 108,59 L 120,53 L 120,30 L 108,36 Z" fill="#1a222d" opacity="0.95" />
-          <!-- Glass Glare Sheen -->
-          <line x1="110" y1="35" x2="118" y2="52" stroke="rgba(255,255,255,0.45)" stroke-width="1.4" stroke-linecap="round" />
-          <!-- Headlights -->
-          <circle cx="109" cy="63" r="3.2" fill="#fef08a" stroke="#ffffff" stroke-width="0.8" />
-          <circle cx="119" cy="58" r="3.2" fill="#fef08a" stroke="#ffffff" stroke-width="0.8" />
-          <!-- Front Bumper -->
-          <path d="M 107,66 L 121,60 L 121,57 L 107,63 Z" fill="#ffffff" opacity="0.85" />
-          <!-- Side Windows -->
-          <rect x="33" y="27" width="14" height="11" rx="2.5" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <rect x="51" y="29" width="14" height="11" rx="2.5" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <rect x="69" y="31" width="14" height="11" rx="2.5" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <rect x="87" y="33" width="14" height="11" rx="2.5" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <!-- Donut Clay Wheel -->
-          <g transform="translate(44, 61)">
-            <ellipse cx="0" cy="0" rx="8.5" ry="10.5" fill="#1a202c" />
-            <ellipse cx="0" cy="0" rx="4.8" ry="6.0" fill="#2563eb" stroke="#ffffff" stroke-width="1.2" />
-            <circle cx="0" cy="0" r="1.5" fill="#ffffff" />
-          </g>
-          <!-- Donut Clay Wheel -->
-          <g transform="translate(92, 67)">
-            <ellipse cx="0" cy="0" rx="8.5" ry="10.5" fill="#1a202c" />
-            <ellipse cx="0" cy="0" rx="4.8" ry="6.0" fill="#2563eb" stroke="#ffffff" stroke-width="1.2" />
-            <circle cx="0" cy="0" r="1.5" fill="#ffffff" />
-          </g>
-        </svg>
-      </div>
-      <div class="bus-fleet-item" onclick="onBusClick(this, 523)">
-        <svg viewBox="0 0 160 100" style="width:100%; height:88px; max-height:88px; overflow:visible; filter: drop-shadow(0 5px 8px rgba(15,20,35,0.18));">
-          <!-- Ground Contact Shadow -->
-          <ellipse cx="76" cy="74" rx="54" ry="18" fill="rgba(20, 26, 42, 0.26)" />
-          <!-- Chassis Base -->
-          <path d="M 28,59 L 108,69 L 122,62 L 122,58 L 108,65 L 28,55 Z" fill="#1e232e" />
-          <!-- Side Body -->
-          <path d="M 28,57 L 106,67 L 106,34 Q 106,31 102,31 L 32,21 Q 28,21 28,22 Z" fill="#10b981" />
-          <!-- Front Face -->
-          <path d="M 106,67 L 122,60 L 122,27 L 106,34 Z" fill="#059669" />
-          <!-- Roof Top -->
-          <path d="M 28,22 L 106,34 L 122,27 L 44,15 Z" fill="#d1fae5" />
-          <!-- Marshmallow Roof Soft Dome Highlight -->
-          <path d="M 34,21 L 100,32 L 114,26 L 48,15 Z" fill="#ffffff" opacity="0.35" />
-          <!-- Front Windshield -->
-          <path d="M 108,59 L 120,53 L 120,30 L 108,36 Z" fill="#1a222d" opacity="0.95" />
-          <!-- Glass Glare Sheen -->
-          <line x1="110" y1="35" x2="118" y2="52" stroke="rgba(255,255,255,0.45)" stroke-width="1.4" stroke-linecap="round" />
-          <!-- Headlights -->
-          <circle cx="109" cy="63" r="3.2" fill="#fef08a" stroke="#ffffff" stroke-width="0.8" />
-          <circle cx="119" cy="58" r="3.2" fill="#fef08a" stroke="#ffffff" stroke-width="0.8" />
-          <!-- Front Bumper -->
-          <path d="M 107,66 L 121,60 L 121,57 L 107,63 Z" fill="#ffffff" opacity="0.85" />
-          <!-- Side Windows -->
-          <rect x="33" y="27" width="14" height="11" rx="2.5" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <rect x="51" y="29" width="14" height="11" rx="2.5" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <rect x="69" y="31" width="14" height="11" rx="2.5" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <rect x="87" y="33" width="14" height="11" rx="2.5" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <!-- Donut Clay Wheel -->
-          <g transform="translate(44, 61)">
-            <ellipse cx="0" cy="0" rx="8.5" ry="10.5" fill="#1a202c" />
-            <ellipse cx="0" cy="0" rx="4.8" ry="6.0" fill="#10b981" stroke="#ffffff" stroke-width="1.2" />
-            <circle cx="0" cy="0" r="1.5" fill="#ffffff" />
-          </g>
-          <!-- Donut Clay Wheel -->
-          <g transform="translate(92, 67)">
-            <ellipse cx="0" cy="0" rx="8.5" ry="10.5" fill="#1a202c" />
-            <ellipse cx="0" cy="0" rx="4.8" ry="6.0" fill="#10b981" stroke="#ffffff" stroke-width="1.2" />
-            <circle cx="0" cy="0" r="1.5" fill="#ffffff" />
-          </g>
-        </svg>
-      </div>
-      <div class="bus-fleet-item" onclick="onBusClick(this, 587)">
-        <svg viewBox="0 0 160 100" style="width:100%; height:88px; max-height:88px; overflow:visible; filter: drop-shadow(0 5px 8px rgba(15,20,35,0.18));">
-          <!-- Ground Contact Shadow -->
-          <ellipse cx="76" cy="74" rx="54" ry="18" fill="rgba(20, 26, 42, 0.26)" />
-          <!-- Chassis Base -->
-          <path d="M 28,59 L 108,69 L 122,62 L 122,58 L 108,65 L 28,55 Z" fill="#1e232e" />
-          <!-- Side Body -->
-          <path d="M 28,57 L 106,67 L 106,34 Q 106,31 102,31 L 32,21 Q 28,21 28,22 Z" fill="#8b5cf6" />
-          <!-- Front Face -->
-          <path d="M 106,67 L 122,60 L 122,27 L 106,34 Z" fill="#7c3aed" />
-          <!-- Roof Top -->
-          <path d="M 28,22 L 106,34 L 122,27 L 44,15 Z" fill="#ede9fe" />
-          <!-- Marshmallow Roof Soft Dome Highlight -->
-          <path d="M 34,21 L 100,32 L 114,26 L 48,15 Z" fill="#ffffff" opacity="0.35" />
-          <!-- Front Windshield -->
-          <path d="M 108,59 L 120,53 L 120,30 L 108,36 Z" fill="#1a222d" opacity="0.95" />
-          <!-- Glass Glare Sheen -->
-          <line x1="110" y1="35" x2="118" y2="52" stroke="rgba(255,255,255,0.45)" stroke-width="1.4" stroke-linecap="round" />
-          <!-- Headlights -->
-          <circle cx="109" cy="63" r="3.2" fill="#fef08a" stroke="#ffffff" stroke-width="0.8" />
-          <circle cx="119" cy="58" r="3.2" fill="#fef08a" stroke="#ffffff" stroke-width="0.8" />
-          <!-- Front Bumper -->
-          <path d="M 107,66 L 121,60 L 121,57 L 107,63 Z" fill="#ffffff" opacity="0.85" />
-          <!-- Side Windows -->
-          <rect x="33" y="27" width="14" height="11" rx="2.5" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <rect x="51" y="29" width="14" height="11" rx="2.5" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <rect x="69" y="31" width="14" height="11" rx="2.5" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <rect x="87" y="33" width="14" height="11" rx="2.5" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <!-- Donut Clay Wheel -->
-          <g transform="translate(44, 61)">
-            <ellipse cx="0" cy="0" rx="8.5" ry="10.5" fill="#1a202c" />
-            <ellipse cx="0" cy="0" rx="4.8" ry="6.0" fill="#8b5cf6" stroke="#ffffff" stroke-width="1.2" />
-            <circle cx="0" cy="0" r="1.5" fill="#ffffff" />
-          </g>
-          <!-- Donut Clay Wheel -->
-          <g transform="translate(92, 67)">
-            <ellipse cx="0" cy="0" rx="8.5" ry="10.5" fill="#1a202c" />
-            <ellipse cx="0" cy="0" rx="4.8" ry="6.0" fill="#8b5cf6" stroke="#ffffff" stroke-width="1.2" />
-            <circle cx="0" cy="0" r="1.5" fill="#ffffff" />
-          </g>
-        </svg>
-      </div>
-      <div class="bus-fleet-item" onclick="onBusClick(this, 659)">
-        <svg viewBox="0 0 160 100" style="width:100%; height:88px; max-height:88px; overflow:visible; filter: drop-shadow(0 5px 8px rgba(15,20,35,0.18));">
-          <!-- Ground Contact Shadow -->
-          <ellipse cx="76" cy="74" rx="54" ry="18" fill="rgba(20, 26, 42, 0.26)" />
-          <!-- Chassis Base -->
-          <path d="M 28,59 L 108,69 L 122,62 L 122,58 L 108,65 L 28,55 Z" fill="#1e232e" />
-          <!-- Side Body -->
-          <path d="M 28,57 L 106,67 L 106,21 Q 106,18 102,18 L 32,8 Q 28,8 28,9 Z" fill="#06b6d4" />
-          <!-- Front Face -->
-          <path d="M 106,67 L 122,60 L 122,14 L 106,21 Z" fill="#0891b2" />
-          <!-- Roof Top -->
-          <path d="M 28,9 L 106,21 L 122,14 L 44,2 Z" fill="#ffffff" />
-          <!-- Front Windshields: Lower & Upper -->
-          <path d="M 108,61 L 120,55 L 120,44 L 108,50 Z" fill="#1a222d" opacity="0.95" />
-          <path d="M 108,44 L 120,38 L 120,24 L 108,30 Z" fill="#1a222d" opacity="0.95" />
-          <line x1="110" y1="28" x2="118" y2="35" stroke="rgba(255,255,255,0.4)" stroke-width="1.2" stroke-linecap="round" />
-          <!-- Headlights -->
-          <circle cx="109" cy="64" r="3.2" fill="#fef08a" stroke="#ffffff" stroke-width="0.8" />
-          <circle cx="119" cy="59" r="3.2" fill="#fef08a" stroke="#ffffff" stroke-width="0.8" />
-          <!-- Side Windows: Lower Tier -->
-          <rect x="33" y="36" width="14" height="9" rx="2" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <rect x="51" y="38" width="14" height="9" rx="2" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <rect x="69" y="40" width="14" height="9" rx="2" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <rect x="87" y="42" width="14" height="9" rx="2" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <!-- Side Windows: Upper Tier -->
-          <rect x="33" y="22" width="14" height="9" rx="2" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <rect x="51" y="24" width="14" height="9" rx="2" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <rect x="69" y="26" width="14" height="9" rx="2" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <rect x="87" y="28" width="14" height="9" rx="2" fill="#1a222d" opacity="0.9" transform="skewY(7)" />
-          <!-- Donut Clay Wheel -->
-          <g transform="translate(44, 61)">
-            <ellipse cx="0" cy="0" rx="8.5" ry="10.5" fill="#1a202c" />
-            <ellipse cx="0" cy="0" rx="4.8" ry="6.0" fill="#06b6d4" stroke="#ffffff" stroke-width="1.2" />
-            <circle cx="0" cy="0" r="1.5" fill="#ffffff" />
-          </g>
-          <!-- Donut Clay Wheel -->
-          <g transform="translate(92, 67)">
-            <ellipse cx="0" cy="0" rx="8.5" ry="10.5" fill="#1a202c" />
-            <ellipse cx="0" cy="0" rx="4.8" ry="6.0" fill="#06b6d4" stroke="#ffffff" stroke-width="1.2" />
-            <circle cx="0" cy="0" r="1.5" fill="#ffffff" />
-          </g>
-        </svg>
-      </div>
+    <div class="bus-fleet-row">
+      <div class="bus-fleet-item" onclick="onBusClick(this, 440)"><svg viewBox="0 0 25 50" width="25" height="50" style="display:block;">  <rect x="0" y="0" width="25" height="50" rx="5.5" fill="#ef4444" />  <path d="M 3,4.5 Q 12.5,2.5 22,4.5 L 21.5,9.5 Q 12.5,7.8 3.5,9.5 Z" fill="#1e2430" />  <rect x="1.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />  <rect x="6.5" y="20" width="12" height="14" rx="2.5" fill="none" stroke="#1e2430" stroke-width="0.8" opacity="0.35" />  <line x1="9" y1="24" x2="16" y2="24" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />  <line x1="9" y1="27" x2="16" y2="27" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />  <line x1="9" y1="30" x2="16" y2="30" stroke="#1e2430" stroke-width="0.7" opacity="0.35" /></svg></div>
+      <div class="bus-fleet-item" onclick="onBusClick(this, 392)"><svg viewBox="0 0 25 50" width="25" height="50" style="display:block;">  <rect x="0" y="0" width="25" height="50" rx="5.5" fill="#f59e0b" />  <path d="M 3,4.5 Q 12.5,2.5 22,4.5 L 21.5,9.5 Q 12.5,7.8 3.5,9.5 Z" fill="#1e2430" />  <rect x="1.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />  <line x1="3" y1="12" x2="22" y2="12" stroke="#1e2430" stroke-width="0.9" opacity="0.45" />  <rect x="7" y="24" width="11" height="12" rx="2" fill="none" stroke="#1e2440" stroke-width="0.8" opacity="0.35" /></svg></div>
+      <div class="bus-fleet-item" onclick="onBusClick(this, 494)"><svg viewBox="0 0 25 50" width="25" height="50" style="display:block;">  <rect x="0" y="0" width="25" height="50" rx="5.5" fill="#2563eb" />  <path d="M 3,4.5 Q 12.5,2.5 22,4.5 L 21.5,9.5 Q 12.5,7.8 3.5,9.5 Z" fill="#1e2430" />  <rect x="1.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />  <rect x="6.5" y="20" width="12" height="14" rx="2.5" fill="none" stroke="#1e2430" stroke-width="0.8" opacity="0.35" />  <line x1="9" y1="24" x2="16" y2="24" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />  <line x1="9" y1="27" x2="16" y2="27" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />  <line x1="9" y1="30" x2="16" y2="30" stroke="#1e2430" stroke-width="0.7" opacity="0.35" /></svg></div>
+      <div class="bus-fleet-item" onclick="onBusClick(this, 523)"><svg viewBox="0 0 25 50" width="25" height="50" style="display:block;">  <rect x="0" y="0" width="25" height="50" rx="5.5" fill="#10b981" />  <path d="M 3,4.5 Q 12.5,2.5 22,4.5 L 21.5,9.5 Q 12.5,7.8 3.5,9.5 Z" fill="#1e2430" />  <rect x="1.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />  <rect x="6.5" y="20" width="12" height="14" rx="2.5" fill="none" stroke="#1e2430" stroke-width="0.8" opacity="0.35" />  <line x1="9" y1="24" x2="16" y2="24" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />  <line x1="9" y1="27" x2="16" y2="27" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />  <line x1="9" y1="30" x2="16" y2="30" stroke="#1e2430" stroke-width="0.7" opacity="0.35" /></svg></div>
+      <div class="bus-fleet-item" onclick="onBusClick(this, 587)"><svg viewBox="0 0 25 50" width="25" height="50" style="display:block;">  <rect x="0" y="0" width="25" height="50" rx="5.5" fill="#8b5cf6" />  <path d="M 3,4.5 Q 12.5,2.5 22,4.5 L 21.5,9.5 Q 12.5,7.8 3.5,9.5 Z" fill="#1e2430" />  <rect x="1.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />  <rect x="6.5" y="20" width="12" height="14" rx="2.5" fill="none" stroke="#1e2430" stroke-width="0.8" opacity="0.35" />  <line x1="9" y1="24" x2="16" y2="24" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />  <line x1="9" y1="27" x2="16" y2="27" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />  <line x1="9" y1="30" x2="16" y2="30" stroke="#1e2430" stroke-width="0.7" opacity="0.35" /></svg></div>
+      <div class="bus-fleet-item" onclick="onBusClick(this, 659)"><svg viewBox="0 0 25 50" width="25" height="50" style="display:block;">  <rect x="0" y="0" width="25" height="50" rx="5.5" fill="#06b6d4" />  <path d="M 3,4.5 Q 12.5,2.5 22,4.5 L 21.5,9.5 Q 12.5,7.8 3.5,9.5 Z" fill="#1e2430" />  <rect x="1.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />  <rect x="7" y="16" width="11" height="8" rx="2" fill="none" stroke="#1e2430" stroke-width="0.8" opacity="0.35" />  <rect x="7" y="28" width="11" height="8" rx="2" fill="none" stroke="#1e2430" stroke-width="0.8" opacity="0.35" /></svg></div>
     </div>
   </div>
 
