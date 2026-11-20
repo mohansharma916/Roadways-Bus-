@@ -90,50 +90,40 @@ flowchart TD
 
 ---
 
-### Phase 2: Procedural Track & Roadway Spline Network (14 Detailed Steps)
+### Phase 2: Procedural Track & Roadway Spline Network (14 Detailed Steps) - COMPLETED
 
-- [ ] **Step 2.1: Splines Package Setup**: Install `com.unity.splines` via Package Manager or create a standalone `CatmullRomSpline.cs` mathematics utility.
-- [ ] **Step 2.2: 16-Point Circuit Closed Spline Geometry**:
-  Port the 16 exact Catmull-Rom spline control points from `3D_Showcase_Preview.html`:
-  - Chicane dip: $(480, 125)$ between rounded crests $(360, 95)$ and $(605, 80)$.
-  - Left hairpin turn: apex $(203, 170)$.
-  - Right apex turn: $(794, 210)$.
-  - Bottom straightaway: $Y = 236$.
-- [ ] **Step 2.3: Spline Arc-Length Lookup Table (LUT)**:
-  - Sample the closed spline into 1000 equidistant segments.
-  - Cache cumulative distances $s(i)$ and normalized tangents $T(i)$ for $O(1)$ constant-linear-speed evaluation.
-- [ ] **Step 2.4: Procedural Road Surface Ribbon Mesh**:
-  - Implement `RoadMeshBuilder.cs` that extrudes a quad strip along the spline normals.
-  - Road width: exactly 82 units (`#525769` dark slate asphalt).
-- [ ] **Step 2.5: White Edge Curbs Mesh Generation**:
-  - Extrude 2-unit wide white curb strips along both inner and outer road boundaries (`#e6e9ee`).
-- [ ] **Step 2.6: Tan Dirt Shoulder Meshes**:
-  - Extrude 11-unit wide dirt shoulders flanking the exterior white curbs (`#cbb27a`).
-- [ ] **Step 2.7: 5 Red & White Inner Apex Kerbs**:
-  - Generate alternating red (`#e74c3c`) and white (`#ffffff`) 8-unit curb blocks placed at the 5 inner turn apexes:
-    1. Chicane dip inner curve.
-    2. Top-left crest apex.
-    3. Top-right crest apex.
-    4. Left hairpin inner apex.
-    5. Bottom-right turn apex.
-- [ ] **Step 2.8: Dashed Centerline Shader**:
-  - Custom URP Unlit shader with procedural alpha dash pattern (`dashLength = 10`, `gapLength = 8`).
-- [ ] **Step 2.9: Left Feeder Connecting Road**:
-  - Curve spline entering from screen left ($X = -50$) curving smoothly to merge into the circuit at $(88, 134)$.
-- [ ] **Step 2.10: Right Feeder Road**:
-  - Curve spline exiting from right circuit crest outward to screen edge ($X = 1015$).
-- [ ] **Step 2.11: Feeder White Stop Bar**:
-  - Procedural quad stop line rendered across the feeder road at $X = 30$ ($25\text{px}$ clearance from ring outer curb).
-- [ ] **Step 2.12: Trapezium Asphalt Highway Neck**:
-  - Build flared asphalt polygon bridging the bottom straight ($X = 390$ to $610$) down into the top edge of the trapezium parking area ($Y = 320$).
-  - Route white side curbs and dirt shoulders along the outer flaring neck borders.
-- [ ] **Step 2.13: Central Grass Island Mesh**:
-  - Infill the closed inner boundary with a clean pastel lawn mesh matching the ground color (`#fff1f2`).
-- [ ] **Step 2.14: Roadway Trigger Colliders**:
-  - Place invisible 2D trigger volumes for:
-    - Feeder merge trigger.
-    - Highway exit neck trigger.
-    - Feeder queue boundary stop line.
+- [x] **Step 2.1: Splines Package Setup**: Implemented standalone `CatmullRomSpline.cs` mathematics utility with high-precision derivatives and normal evaluation.
+- [x] **Step 2.2: 16-Point Circuit Closed Spline Geometry**:
+  Ported the 16 exact Catmull-Rom spline control points from `3D_Showcase_Preview.html` ($Y = 80$ to $236$, chicane dip at $X=250, Y=114$, left hairpin apex, right apex turn, bottom straightaway).
+- [x] **Step 2.3: Spline Arc-Length Lookup Table (LUT)**:
+  Implemented `SplineArcLengthTable.cs`, pre-sampling closed spline into 1000 equidistant segments ($830.31\text{ units}$ total length, $13.84\text{ units}$ row spacing for 60 rows / 420 Chilbis) with $O(\log N)$ binary search constant-linear-speed evaluation.
+- [x] **Step 2.4: Procedural Road Surface Ribbon Mesh**:
+  Implemented `RoadMeshBuilder.cs` extruding a quad strip along spline normals. Road width: exactly 82 units (`#525769` dark slate asphalt).
+- [x] **Step 2.5: White Edge Curbs Mesh Generation**:
+  Extruded 2-unit wide white curb strips along both inner and outer road boundaries (`#e6e9ee`).
+- [x] **Step 2.6: Tan Dirt Shoulder Meshes**:
+  Extruded 11-unit wide dirt shoulders flanking the exterior white curbs (`#cbb27a`).
+- [x] **Step 2.7: 5 Red & White Inner Apex Kerbs**:
+  Implemented `ApexKerbGenerator.cs` generating alternating red (`#e74c3c`) and white (`#ffffff`) curb blocks placed at the 5 inner turn apexes:
+  1. Chicane dip inner curve.
+  2. Top-left crest apex.
+  3. Top-right crest apex.
+  4. Left hairpin inner apex.
+  5. Bottom-right turn apex.
+- [x] **Step 2.8: Dashed Centerline**:
+  Procedural alpha dashed pattern with alternating white dashes (`dashLength = 10`, `gapLength = 8`, alpha $0.65$).
+- [x] **Step 2.9: Left Feeder Connecting Road**:
+  Implemented `FeederRoadController.cs` curving from screen left ($X = -50, Y = 102$) to merge into circuit at $(88, 134)$ with its own arc-length LUT and open ribbon meshes.
+- [x] **Step 2.10: Right Feeder Road**:
+  Right Feeder spline exiting from right circuit crest outward to screen edge ($X = 510, Y = 102$).
+- [x] **Step 2.11: Feeder White Stop Bar**:
+  Procedural stop line across feeder road at $X = 30$ ($25\text{px}$ clearance from ring outer curb).
+- [x] **Step 2.12: Trapezium Asphalt Highway Neck**:
+  Implemented `HighwayNeckBuilder.cs` building flared asphalt polygon bridging bottom straight ($X = 175$ to $325$, $Y = 252$) down into top edge of trapezium parking area ($Y = 320$) with white side curbs and dirt shoulders.
+- [x] **Step 2.13: Central Grass Island Mesh**:
+  Infilled closed inner boundary with clean pastel lawn mesh matching ground color (`#fff1f2`).
+- [x] **Step 2.14: Roadway Trigger Colliders**:
+  Placed trigger volumes for feeder merge trigger, highway exit neck trigger, and feeder queue boundary stop line.
 
 ---
 

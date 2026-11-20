@@ -800,6 +800,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 400000001}
+  - component: {fileID: 400000002}
   m_Layer: 0
   m_Name: --- [ROAD_NETWORK] ---
   m_TagString: Untagged
@@ -816,16 +817,36 @@ Transform:
   m_GameObject: {fileID: 400000000}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 8}
+  m_LocalScale: {x: 0.1, y: 1, z: -0.1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 400000011}
   - {fileID: 400000021}
   - {fileID: 400000031}
-  - {fileID: 400000041}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &400000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 400000000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75417e0fefa3452a601d3047bd6f6c34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  worldScale: 0.1
+  centerOffset: {x: 250, y: 170}
+  worldAnchor: {x: 0, y: 0, z: 8}
+  circuitSpline: {fileID: 400000012}
+  circuitLut: {fileID: 400000013}
+  roadMeshBuilder: {fileID: 400000014}
+  apexKerbGenerator: {fileID: 400000015}
+  feederController: {fileID: 400000022}
+  highwayNeckBuilder: {fileID: 400000032}
 --- !u!1 &400000010
 GameObject:
   m_ObjectHideFlags: 0
@@ -835,6 +856,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 400000011}
+  - component: {fileID: 400000012}
+  - component: {fileID: 400000013}
+  - component: {fileID: 400000014}
+  - component: {fileID: 400000015}
   m_Layer: 0
   m_Name: TrackSpline
   m_TagString: Untagged
@@ -857,6 +882,81 @@ Transform:
   m_Children: []
   m_Father: {fileID: 400000001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &400000012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 400000010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e98cbd3fb15ccf42ff44d727b63e9ffb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isClosedLoop: 1
+  controlPoints:
+  - {x: 0, y: 0, z: 66}
+  - {x: 62, y: 0, z: 64}
+  - {x: 118, y: 0, z: 46}
+  - {x: 158, y: 0, z: 8}
+  - {x: 162, y: 0, z: -36}
+  - {x: 132, y: 0, z: -76}
+  - {x: 85, y: 0, z: -90}
+  - {x: 45, y: 0, z: -74}
+  - {x: 0, y: 0, z: -56}
+  - {x: -45, y: 0, z: -74}
+  - {x: -85, y: 0, z: -90}
+  - {x: -132, y: 0, z: -76}
+  - {x: -162, y: 0, z: -36}
+  - {x: -158, y: 0, z: 8}
+  - {x: -118, y: 0, z: 46}
+  - {x: -62, y: 0, z: 64}
+--- !u!114 &400000013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 400000010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cca845eef18de19a6d235f4adfb034c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spline: {fileID: 400000012}
+  sampleCount: 1000
+--- !u!114 &400000014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 400000010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bb4c97c927215c1aff78050af083e2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roadWidth: 82
+  curbWidth: 2
+  shoulderWidth: 11
+  centerLineWidth: 1.2
+  extrusionSegments: 300
+--- !u!114 &400000015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 400000010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b080ed64060dd07c389df0cf77f65248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  kerbRadialWidth: 6.5
+  kerbHeight: 0.04
 --- !u!1 &400000020
 GameObject:
   m_ObjectHideFlags: 0
@@ -866,8 +966,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 400000021}
+  - component: {fileID: 400000022}
   m_Layer: 0
-  m_Name: Curbs
+  m_Name: FeederRoads
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -888,6 +989,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 400000001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &400000022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 400000020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de66e3dfdde0abf59e398f3720315eb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roadWidth: 82
+  curbWidth: 2
+  shoulderWidth: 11
+  stopBarPositionX: 30
+  stopBarWidth: 2.5
 --- !u!1 &400000030
 GameObject:
   m_ObjectHideFlags: 0
@@ -897,8 +1015,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 400000031}
+  - component: {fileID: 400000032}
   m_Layer: 0
-  m_Name: Shoulders
+  m_Name: HighwayNeck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -919,37 +1038,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 400000001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &400000040
-GameObject:
+--- !u!114 &400000032
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 400000041}
-  m_Layer: 0
-  m_Name: HighwayNeck
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &400000041
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 400000040}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 400000001}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_GameObject: {fileID: 400000030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3cd8aca8c7b444fe7a7db90ec9aa03b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &500000000
 GameObject:
   m_ObjectHideFlags: 0
