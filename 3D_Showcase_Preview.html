@@ -194,10 +194,10 @@
   <div class="track-network-container">
     <svg class="track-network-svg" viewBox="0 0 1000 400" preserveAspectRatio="none">
       <defs>
-        <!-- Mask for hollow center island: nothing inside -->
+        <!-- Mask for hollow center island: nothing inside (Widened road width) -->
         <mask id="roundabout-island-hole">
           <rect width="1000" height="400" fill="white" />
-          <ellipse cx="500" cy="185" rx="160" ry="35" fill="black" />
+          <ellipse cx="500" cy="185" rx="145" ry="22" fill="black" />
         </mask>
 
         <!-- Red Chilbi Candy Bean Gradients -->
@@ -225,84 +225,148 @@
         </radialGradient>
       </defs>
 
-      <!-- Unified Road Surface Fill (#7a7d90) -->
-      <path d="M -15,-10 C 60,35 150,75 243.6,126.1 A 345,88 0 0,1 756.4,126.1 C 850,75 940,35 1015,-10 
-               L 1015,85 
-               C 940,110 880,135 834.8,163.7 A 345,88 0 0,1 600,269.2 L 600,320 
-               L 400,320 
-               L 400,269.2 A 345,88 0 0,1 165.2,163.7 C 120,135 60,110 -15,85 
+      <!-- Unified Road Surface Fill (#7a7d90) (Widened Road Width for Squad Walking) -->
+      <path d="M -15,-15 C 60,30 150,70 240,119.6 A 355,96 0 0,1 760,119.6 C 850,70 940,30 1015,-15 
+               L 1015,90 
+               C 940,115 885,135 840,157.4 A 355,96 0 0,1 610,276.3 L 610,320 
+               L 390,320 
+               L 390,276.3 A 355,96 0 0,1 160,157.4 C 115,135 60,115 -15,90 
                Z" fill="#7a7d90" mask="url(#roundabout-island-hole)" />
 
       <!-- Top Continuous Curb Line (#e1e6ec) spanning left horn, ring top, and right horn -->
-      <path d="M -15,-10 C 60,35 150,75 243.6,126.1 A 345,88 0 0,1 756.4,126.1 C 850,75 940,35 1015,-10" fill="none"
+      <path d="M -15,-15 C 60,30 150,70 240,119.6 A 355,96 0 0,1 760,119.6 C 850,70 940,30 1015,-15" fill="none"
         stroke="#e1e6ec" stroke-width="5.5" stroke-linecap="round" />
 
       <!-- Right Lower Curb Line (#e1e6ec) curving from right corner into roundabout and down into trapezium (wide opening) -->
-      <path d="M 1015,85 C 940,110 880,135 834.8,163.7 A 345,88 0 0,1 600,269.2 L 600,320" fill="none" stroke="#e1e6ec"
+      <path d="M 1015,90 C 940,115 885,135 840,157.4 A 355,96 0 0,1 610,276.3 L 610,320" fill="none" stroke="#e1e6ec"
         stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
 
       <!-- Left Lower Curb Line (#e1e6ec) curving from trapezium up through roundabout and out to left corner (wide opening) -->
-      <path d="M 400,320 L 400,269.2 A 345,88 0 0,1 165.2,163.7 C 120,135 60,110 -15,85" fill="none" stroke="#e1e6ec"
+      <path d="M 390,320 L 390,276.3 A 355,96 0 0,1 160,157.4 C 115,135 60,115 -15,90" fill="none" stroke="#e1e6ec"
         stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
 
       <!-- Inner Island Closed Ring Curb (#e1e6ec) -->
-      <ellipse cx="500" cy="185" rx="160" ry="35" fill="none" stroke="#e1e6ec" stroke-width="5.5" />
+      <ellipse cx="500" cy="185" rx="145" ry="22" fill="none" stroke="#e1e6ec" stroke-width="5.5" />
 
-      <!-- Animated Chilbi ("Bean") Characters Layer (Upright 2.5D Side-View from Bottom-Side Viewpoint) -->
+      <!-- Animated Chilbi ("Bean") Characters Layer (Upright 2.5D Side-View Squad) -->
       <g id="chilbi-characters-layer">
-        <!-- Left Chilbi Character (Coral Red Candy Bean - Upright Side View) -->
-        <g id="chilbi-red" transform="translate(-100, -100)">
-          <!-- Ground Shadow -->
-          <ellipse class="chilbi-shadow" cx="0" cy="1" rx="14" ry="5.5" fill="rgba(15, 20, 35, 0.35)" />
-          <!-- Far Arm (behind body) -->
-          <rect id="chilbi-red-arm-far" x="3" y="-22" width="5" height="13" rx="2.5" fill="#c0392b" />
-          <!-- Far Foot -->
-          <rect id="chilbi-red-foot-far" x="-1" y="-4" width="5.5" height="9.5" rx="2.7" fill="#961133" />
-          <!-- Near Foot -->
-          <rect id="chilbi-red-foot-near" x="-6" y="-3" width="5.5" height="9.5" rx="2.7" fill="#b71540" />
-          <!-- Upright Body & Head Group -->
-          <g id="chilbi-red-body-group">
-            <!-- Bean Capsule Torso -->
-            <rect x="-9" y="-28" width="18" height="26" rx="9" fill="url(#chilbi-grad-red-body)" />
-            <!-- Head Dome -->
-            <circle cx="2" cy="-32" r="10.5" fill="url(#chilbi-grad-red-head)" />
-            <!-- 3D Gloss Highlight -->
-            <ellipse cx="0" cy="-35" rx="3.5" ry="2.2" fill="rgba(255, 255, 255, 0.75)"
-              transform="rotate(-15 0 -35)" />
-            <circle cx="5" cy="-32" r="1.1" fill="rgba(255, 255, 255, 0.5)" />
-            <!-- Chibi Profile Eye (looking in walking direction) -->
-            <ellipse cx="6.5" cy="-31" rx="1.6" ry="2.5" fill="#1e1e28" />
-            <circle cx="6.8" cy="-32" r="0.7" fill="#ffffff" />
-            <!-- Near Side Arm (swinging in front of body) -->
-            <rect id="chilbi-red-arm-near" x="-5" y="-21" width="5" height="13" rx="2.5" fill="#e55039" />
+        <!-- 6 Red Chilbi Squad Members Walking Together (Compact Scale, Staggered Pack) -->
+        <!-- Red Chilbi 1 (Front Left) -->
+        <g id="chilbi-red-1" class="chilbi-walker" transform="translate(-100, -100)">
+          <ellipse class="chilbi-shadow" cx="0" cy="1" rx="10.5" ry="4" fill="rgba(15, 20, 35, 0.35)" />
+          <rect id="chilbi-red-1-arm-far" x="2.5" y="-17" width="3.8" height="10" rx="1.9" fill="#c0392b" />
+          <rect id="chilbi-red-1-foot-far" x="-1" y="-3" width="4.2" height="7.5" rx="2.1" fill="#961133" />
+          <rect id="chilbi-red-1-foot-near" x="-5" y="-2" width="4.2" height="7.5" rx="2.1" fill="#b71540" />
+          <g id="chilbi-red-1-body-group">
+            <rect x="-7" y="-22" width="14" height="20" rx="7" fill="url(#chilbi-grad-red-body)" />
+            <circle cx="1.5" cy="-25" r="8" fill="url(#chilbi-grad-red-head)" />
+            <ellipse cx="0" cy="-27.5" rx="2.7" ry="1.7" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 0 -27.5)" />
+            <circle cx="4" cy="-25" r="0.9" fill="rgba(255, 255, 255, 0.5)" />
+            <ellipse cx="5" cy="-24.5" rx="1.3" ry="2" fill="#1e1e28" />
+            <circle cx="5.3" cy="-25" r="0.6" fill="#ffffff" />
+            <rect id="chilbi-red-1-arm-near" x="-4" y="-16" width="3.8" height="10" rx="1.9" fill="#e55039" />
           </g>
         </g>
 
-        <!-- Right Chilbi Character (Turquoise Cyan Candy Bean - Upright Side View) -->
-        <g id="chilbi-cyan" transform="translate(-100, -100)">
-          <!-- Ground Shadow -->
-          <ellipse class="chilbi-shadow" cx="0" cy="1" rx="14" ry="5.5" fill="rgba(15, 20, 35, 0.35)" />
-          <!-- Far Arm (behind body) -->
-          <rect id="chilbi-cyan-arm-far" x="3" y="-22" width="5" height="13" rx="2.5" fill="#006266" />
-          <!-- Far Foot -->
-          <rect id="chilbi-cyan-foot-far" x="-1" y="-4" width="5.5" height="9.5" rx="2.7" fill="#00484a" />
-          <!-- Near Foot -->
-          <rect id="chilbi-cyan-foot-near" x="-6" y="-3" width="5.5" height="9.5" rx="2.7" fill="#006266" />
-          <!-- Upright Body & Head Group -->
+        <!-- Red Chilbi 2 (Front Center) -->
+        <g id="chilbi-red-2" class="chilbi-walker" transform="translate(-100, -100)">
+          <ellipse class="chilbi-shadow" cx="0" cy="1" rx="10.5" ry="4" fill="rgba(15, 20, 35, 0.35)" />
+          <rect id="chilbi-red-2-arm-far" x="2.5" y="-17" width="3.8" height="10" rx="1.9" fill="#c0392b" />
+          <rect id="chilbi-red-2-foot-far" x="-1" y="-3" width="4.2" height="7.5" rx="2.1" fill="#961133" />
+          <rect id="chilbi-red-2-foot-near" x="-5" y="-2" width="4.2" height="7.5" rx="2.1" fill="#b71540" />
+          <g id="chilbi-red-2-body-group">
+            <rect x="-7" y="-22" width="14" height="20" rx="7" fill="url(#chilbi-grad-red-body)" />
+            <circle cx="1.5" cy="-25" r="8" fill="url(#chilbi-grad-red-head)" />
+            <ellipse cx="0" cy="-27.5" rx="2.7" ry="1.7" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 0 -27.5)" />
+            <circle cx="4" cy="-25" r="0.9" fill="rgba(255, 255, 255, 0.5)" />
+            <ellipse cx="5" cy="-24.5" rx="1.3" ry="2" fill="#1e1e28" />
+            <circle cx="5.3" cy="-25" r="0.6" fill="#ffffff" />
+            <rect id="chilbi-red-2-arm-near" x="-4" y="-16" width="3.8" height="10" rx="1.9" fill="#e55039" />
+          </g>
+        </g>
+
+        <!-- Red Chilbi 3 (Front Right) -->
+        <g id="chilbi-red-3" class="chilbi-walker" transform="translate(-100, -100)">
+          <ellipse class="chilbi-shadow" cx="0" cy="1" rx="10.5" ry="4" fill="rgba(15, 20, 35, 0.35)" />
+          <rect id="chilbi-red-3-arm-far" x="2.5" y="-17" width="3.8" height="10" rx="1.9" fill="#c0392b" />
+          <rect id="chilbi-red-3-foot-far" x="-1" y="-3" width="4.2" height="7.5" rx="2.1" fill="#961133" />
+          <rect id="chilbi-red-3-foot-near" x="-5" y="-2" width="4.2" height="7.5" rx="2.1" fill="#b71540" />
+          <g id="chilbi-red-3-body-group">
+            <rect x="-7" y="-22" width="14" height="20" rx="7" fill="url(#chilbi-grad-red-body)" />
+            <circle cx="1.5" cy="-25" r="8" fill="url(#chilbi-grad-red-head)" />
+            <ellipse cx="0" cy="-27.5" rx="2.7" ry="1.7" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 0 -27.5)" />
+            <circle cx="4" cy="-25" r="0.9" fill="rgba(255, 255, 255, 0.5)" />
+            <ellipse cx="5" cy="-24.5" rx="1.3" ry="2" fill="#1e1e28" />
+            <circle cx="5.3" cy="-25" r="0.6" fill="#ffffff" />
+            <rect id="chilbi-red-3-arm-near" x="-4" y="-16" width="3.8" height="10" rx="1.9" fill="#e55039" />
+          </g>
+        </g>
+
+        <!-- Red Chilbi 4 (Rear Left) -->
+        <g id="chilbi-red-4" class="chilbi-walker" transform="translate(-100, -100)">
+          <ellipse class="chilbi-shadow" cx="0" cy="1" rx="10.5" ry="4" fill="rgba(15, 20, 35, 0.35)" />
+          <rect id="chilbi-red-4-arm-far" x="2.5" y="-17" width="3.8" height="10" rx="1.9" fill="#c0392b" />
+          <rect id="chilbi-red-4-foot-far" x="-1" y="-3" width="4.2" height="7.5" rx="2.1" fill="#961133" />
+          <rect id="chilbi-red-4-foot-near" x="-5" y="-2" width="4.2" height="7.5" rx="2.1" fill="#b71540" />
+          <g id="chilbi-red-4-body-group">
+            <rect x="-7" y="-22" width="14" height="20" rx="7" fill="url(#chilbi-grad-red-body)" />
+            <circle cx="1.5" cy="-25" r="8" fill="url(#chilbi-grad-red-head)" />
+            <ellipse cx="0" cy="-27.5" rx="2.7" ry="1.7" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 0 -27.5)" />
+            <circle cx="4" cy="-25" r="0.9" fill="rgba(255, 255, 255, 0.5)" />
+            <ellipse cx="5" cy="-24.5" rx="1.3" ry="2" fill="#1e1e28" />
+            <circle cx="5.3" cy="-25" r="0.6" fill="#ffffff" />
+            <rect id="chilbi-red-4-arm-near" x="-4" y="-16" width="3.8" height="10" rx="1.9" fill="#e55039" />
+          </g>
+        </g>
+
+        <!-- Red Chilbi 5 (Rear Center) -->
+        <g id="chilbi-red-5" class="chilbi-walker" transform="translate(-100, -100)">
+          <ellipse class="chilbi-shadow" cx="0" cy="1" rx="10.5" ry="4" fill="rgba(15, 20, 35, 0.35)" />
+          <rect id="chilbi-red-5-arm-far" x="2.5" y="-17" width="3.8" height="10" rx="1.9" fill="#c0392b" />
+          <rect id="chilbi-red-5-foot-far" x="-1" y="-3" width="4.2" height="7.5" rx="2.1" fill="#961133" />
+          <rect id="chilbi-red-5-foot-near" x="-5" y="-2" width="4.2" height="7.5" rx="2.1" fill="#b71540" />
+          <g id="chilbi-red-5-body-group">
+            <rect x="-7" y="-22" width="14" height="20" rx="7" fill="url(#chilbi-grad-red-body)" />
+            <circle cx="1.5" cy="-25" r="8" fill="url(#chilbi-grad-red-head)" />
+            <ellipse cx="0" cy="-27.5" rx="2.7" ry="1.7" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 0 -27.5)" />
+            <circle cx="4" cy="-25" r="0.9" fill="rgba(255, 255, 255, 0.5)" />
+            <ellipse cx="5" cy="-24.5" rx="1.3" ry="2" fill="#1e1e28" />
+            <circle cx="5.3" cy="-25" r="0.6" fill="#ffffff" />
+            <rect id="chilbi-red-5-arm-near" x="-4" y="-16" width="3.8" height="10" rx="1.9" fill="#e55039" />
+          </g>
+        </g>
+
+        <!-- Red Chilbi 6 (Rear Right) -->
+        <g id="chilbi-red-6" class="chilbi-walker" transform="translate(-100, -100)">
+          <ellipse class="chilbi-shadow" cx="0" cy="1" rx="10.5" ry="4" fill="rgba(15, 20, 35, 0.35)" />
+          <rect id="chilbi-red-6-arm-far" x="2.5" y="-17" width="3.8" height="10" rx="1.9" fill="#c0392b" />
+          <rect id="chilbi-red-6-foot-far" x="-1" y="-3" width="4.2" height="7.5" rx="2.1" fill="#961133" />
+          <rect id="chilbi-red-6-foot-near" x="-5" y="-2" width="4.2" height="7.5" rx="2.1" fill="#b71540" />
+          <g id="chilbi-red-6-body-group">
+            <rect x="-7" y="-22" width="14" height="20" rx="7" fill="url(#chilbi-grad-red-body)" />
+            <circle cx="1.5" cy="-25" r="8" fill="url(#chilbi-grad-red-head)" />
+            <ellipse cx="0" cy="-27.5" rx="2.7" ry="1.7" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 0 -27.5)" />
+            <circle cx="4" cy="-25" r="0.9" fill="rgba(255, 255, 255, 0.5)" />
+            <ellipse cx="5" cy="-24.5" rx="1.3" ry="2" fill="#1e1e28" />
+            <circle cx="5.3" cy="-25" r="0.6" fill="#ffffff" />
+            <rect id="chilbi-red-6-arm-near" x="-4" y="-16" width="3.8" height="10" rx="1.9" fill="#e55039" />
+          </g>
+        </g>
+
+        <!-- Right Chilbi Character (Turquoise Cyan Candy Bean - Compact Scale) -->
+        <g id="chilbi-cyan" class="chilbi-walker" transform="translate(-100, -100)">
+          <ellipse class="chilbi-shadow" cx="0" cy="1" rx="10.5" ry="4" fill="rgba(15, 20, 35, 0.35)" />
+          <rect id="chilbi-cyan-arm-far" x="2.5" y="-17" width="3.8" height="10" rx="1.9" fill="#006266" />
+          <rect id="chilbi-cyan-foot-far" x="-1" y="-3" width="4.2" height="7.5" rx="2.1" fill="#00484a" />
+          <rect id="chilbi-cyan-foot-near" x="-5" y="-2" width="4.2" height="7.5" rx="2.1" fill="#006266" />
           <g id="chilbi-cyan-body-group">
-            <!-- Bean Capsule Torso -->
-            <rect x="-9" y="-28" width="18" height="26" rx="9" fill="url(#chilbi-grad-cyan-body)" />
-            <!-- Head Dome -->
-            <circle cx="2" cy="-32" r="10.5" fill="url(#chilbi-grad-cyan-head)" />
-            <!-- 3D Gloss Highlight -->
-            <ellipse cx="0" cy="-35" rx="3.5" ry="2.2" fill="rgba(255, 255, 255, 0.75)"
-              transform="rotate(-15 0 -35)" />
-            <circle cx="5" cy="-32" r="1.1" fill="rgba(255, 255, 255, 0.5)" />
-            <!-- Chibi Profile Eye (looking in walking direction) -->
-            <ellipse cx="6.5" cy="-31" rx="1.6" ry="2.5" fill="#1e1e28" />
-            <circle cx="6.8" cy="-32" r="0.7" fill="#ffffff" />
-            <!-- Near Side Arm (swinging in front of body) -->
-            <rect id="chilbi-cyan-arm-near" x="-5" y="-21" width="5" height="13" rx="2.5" fill="#12cbc4" />
+            <rect x="-7" y="-22" width="14" height="20" rx="7" fill="url(#chilbi-grad-cyan-body)" />
+            <circle cx="1.5" cy="-25" r="8" fill="url(#chilbi-grad-cyan-head)" />
+            <ellipse cx="0" cy="-27.5" rx="2.7" ry="1.7" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 0 -27.5)" />
+            <circle cx="4" cy="-25" r="0.9" fill="rgba(255, 255, 255, 0.5)" />
+            <ellipse cx="5" cy="-24.5" rx="1.3" ry="2" fill="#1e1e28" />
+            <circle cx="5.3" cy="-25" r="0.6" fill="#ffffff" />
+            <rect id="chilbi-cyan-arm-near" x="-4" y="-16" width="3.8" height="10" rx="1.9" fill="#12cbc4" />
           </g>
         </g>
       </g>
@@ -1718,13 +1782,25 @@
     // and round the oval ring in a perpetual counter-clockwise loop with waddling bounce.
     // =========================================================================
     (function initChilbiWalkers() {
-      const redElem = document.getElementById('chilbi-red');
-      const redBody = document.getElementById('chilbi-red-body-group');
-      const redFootNear = document.getElementById('chilbi-red-foot-near');
-      const redFootFar = document.getElementById('chilbi-red-foot-far');
-      const redArmNear = document.getElementById('chilbi-red-arm-near');
-      const redArmFar = document.getElementById('chilbi-red-arm-far');
+      // 6 Red Chilbi Squad Members Walking Together (Staggered V-Flock Formation)
+      const redSquad = [
+        { id: 1, w:   0, dt: -0.16, phase: 0.0 }, // Point lead (Center)
+        { id: 2, w: -12, dt: -0.07, phase: 1.1 }, // Wing Left (Inner-mid)
+        { id: 3, w:  12, dt: -0.07, phase: 2.3 }, // Wing Right (Outer-mid)
+        { id: 4, w: -20, dt:  0.06, phase: 3.5 }, // Flank Left (Inner-lane)
+        { id: 5, w:  20, dt:  0.06, phase: 4.7 }, // Flank Right (Outer-lane)
+        { id: 6, w:   0, dt:  0.15, phase: 5.9 }  // Tail Center (Rear-guard)
+      ].map(m => ({
+        ...m,
+        elem: document.getElementById('chilbi-red-' + m.id),
+        body: document.getElementById('chilbi-red-' + m.id + '-body-group'),
+        footNear: document.getElementById('chilbi-red-' + m.id + '-foot-near'),
+        footFar: document.getElementById('chilbi-red-' + m.id + '-foot-far'),
+        armNear: document.getElementById('chilbi-red-' + m.id + '-arm-near'),
+        armFar: document.getElementById('chilbi-red-' + m.id + '-arm-far')
+      }));
 
+      // 1 Cyan Chilbi Walker
       const cyanElem = document.getElementById('chilbi-cyan');
       const cyanBody = document.getElementById('chilbi-cyan-body-group');
       const cyanFootNear = document.getElementById('chilbi-cyan-foot-near');
@@ -1732,20 +1808,20 @@
       const cyanArmNear = document.getElementById('chilbi-cyan-arm-near');
       const cyanArmFar = document.getElementById('chilbi-cyan-arm-far');
 
-      if (!redElem || !cyanElem) return;
+      if (!redSquad[0].elem) return;
 
       const feederDuration = 5.0; // seconds to travel from screen corner to ring
       const ringSpeed = 0.55;      // radians/second (~11.4 seconds per full ring loop)
       const waddleFreq = 9.0;     // waddling frequency (steps/sec)
 
-      // Feeder Horn Bezier Control Points
-      // Left Feeder: corner (-15, 37.5) to ring junction (281.3, 154.25)
-      const pL0 = { x: -15, y: 37.5 }, pL1 = { x: 85, y: 75 }, pL2 = { x: 175, y: 120 }, pL3 = { x: 281.3, y: 154.25 };
-      // Right Feeder: corner (1015, 37.5) to ring junction (718.7, 154.25)
-      const pR0 = { x: 1015, y: 37.5 }, pR1 = { x: 915, y: 75 }, pR2 = { x: 825, y: 120 }, pR3 = { x: 718.7, y: 154.25 };
+      // Feeder Horn Bezier Control Points (Widened Road Centerline)
+      // Left Feeder: corner (-15, 37.5) to ring junction (283.5, 155.5)
+      const pL0 = { x: -15, y: 37.5 }, pL1 = { x: 85, y: 70 }, pL2 = { x: 175, y: 115 }, pL3 = { x: 283.5, y: 155.5 };
+      // Right Feeder: corner (1015, 37.5) to ring junction (716.5, 155.5)
+      const pR0 = { x: 1015, y: 37.5 }, pR1 = { x: 915, y: 70 }, pR2 = { x: 825, y: 115 }, pR3 = { x: 716.5, y: 155.5 };
 
-      // Ring Ellipse: cx=500, cy=185, Rx=252.5, Ry=61.5
-      const ringCx = 500, ringCy = 185, ringRx = 252.5, ringRy = 61.5;
+      // Ring Centerline Ellipse: cx=500, cy=185, Rx=250, Ry=59
+      const ringCx = 500, ringCy = 185, ringRx = 250, ringRy = 59;
       const thetaStartL = 3.665; // ~210 deg (top-left junction)
       const thetaStartR = 5.760; // ~330 deg (top-right junction)
 
@@ -1759,72 +1835,82 @@
         return { x, y, dx, dy };
       }
 
+      function getPathSample(t, isRightFeeder) {
+        if (t < feederDuration) {
+          const u = Math.max(0, Math.min(1, t / feederDuration));
+          return isRightFeeder ? getCubicBezier(pR0, pR1, pR2, pR3, u) : getCubicBezier(pL0, pL1, pL2, pL3, u);
+        } else {
+          const dt = t - feederDuration;
+          const thetaStart = isRightFeeder ? thetaStartR : thetaStartL;
+          const theta = thetaStart + dt * ringSpeed;
+          const x = ringCx + ringRx * Math.cos(theta);
+          const y = ringCy + ringRy * Math.sin(theta);
+          const dx = -ringRx * Math.sin(theta);
+          const dy = ringRy * Math.cos(theta);
+          return { x, y, dx, dy };
+        }
+      }
+
       const startTime = performance.now() - 6500;
 
       function updateChilbiFrame(now) {
         const tSec = (now - startTime) / 1000;
 
-        // 1. UPDATE LEFT CHILBI (RED) - Upright 2.5D Side-View Character
-        let redPos;
-        if (tSec < feederDuration) {
-          const u = tSec / feederDuration;
-          redPos = getCubicBezier(pL0, pL1, pL2, pL3, u);
-        } else {
-          const dt = tSec - feederDuration;
-          const theta = thetaStartL + dt * ringSpeed;
-          const x = ringCx + ringRx * Math.cos(theta);
-          const y = ringCy + ringRy * Math.sin(theta);
-          const dx = -ringRx * Math.sin(theta);
-          const dy = ringRy * Math.cos(theta);
-          redPos = { x, y, dx, dy };
+        // 1. UPDATE 6 RED CHILBI SQUAD MEMBERS WALKING TOGETHER
+        for (let i = 0; i < redSquad.length; i++) {
+          const m = redSquad[i];
+          if (!m.elem) continue;
+
+          const mSec = tSec + m.dt;
+          const pos = getPathSample(mSec, false);
+
+          // Calculate normal vector perpendicular to road tangent
+          const len = Math.hypot(pos.dx, pos.dy) || 1;
+          const nx = -pos.dy / len;
+          const ny = pos.dx / len;
+
+          // Offset across road lane width
+          const px = pos.x + m.w * nx;
+          const py = pos.y + m.w * ny;
+
+          // Depth perspective scale: slightly larger near bottom/trapezium, smaller at top
+          const depth = Math.max(0.85, Math.min(1.15, 0.88 + ((py - 120) / 130) * 0.26));
+          const facingX = pos.dx >= 0 ? 1 : -1;
+          m.elem.setAttribute('transform', `translate(${px.toFixed(2)}, ${py.toFixed(2)}) scale(${(facingX * depth).toFixed(3)}, ${depth.toFixed(3)})`);
+
+          // Waddling bounce & limb animations with individual phase
+          const wPhase = mSec * waddleFreq + m.phase;
+          const bounce = Math.abs(Math.sin(wPhase)) * 2.5;
+          const tilt = Math.sin(wPhase) * 4.5;
+          const legStride = Math.sin(wPhase) * 4.8;
+          const armSwing = Math.sin(wPhase) * 22.0;
+
+          if (m.body) m.body.setAttribute('transform', `translate(0, ${-bounce.toFixed(2)}) rotate(${tilt.toFixed(1)} 0 -13)`);
+          if (m.footNear) m.footNear.setAttribute('transform', `translate(${legStride.toFixed(2)}, 0)`);
+          if (m.footFar) m.footFar.setAttribute('transform', `translate(${-legStride.toFixed(2)}, 0)`);
+          if (m.armNear) m.armNear.setAttribute('transform', `rotate(${armSwing.toFixed(1)}, -3, -15)`);
+          if (m.armFar) m.armFar.setAttribute('transform', `rotate(${-armSwing.toFixed(1)}, 4, -15)`);
         }
-        // Depth perspective scale: slightly larger near bottom/trapezium, smaller at top
-        const depthRed = Math.max(0.88, Math.min(1.18, 0.90 + ((redPos.y - 124) / 122) * 0.28));
-        const facingXRed = redPos.dx >= 0 ? 1 : -1;
-        redElem.setAttribute('transform', `translate(${redPos.x.toFixed(2)}, ${redPos.y.toFixed(2)}) scale(${(facingXRed * depthRed).toFixed(3)}, ${depthRed.toFixed(3)})`);
 
-        // 2. UPDATE RIGHT CHILBI (CYAN) - Upright 2.5D Side-View Character
-        let cyanPos;
-        if (tSec < feederDuration) {
-          const u = tSec / feederDuration;
-          cyanPos = getCubicBezier(pR0, pR1, pR2, pR3, u);
-        } else {
-          const dt = tSec - feederDuration;
-          const theta = thetaStartR + dt * ringSpeed;
-          const x = ringCx + ringRx * Math.cos(theta);
-          const y = ringCy + ringRy * Math.sin(theta);
-          const dx = -ringRx * Math.sin(theta);
-          const dy = ringRy * Math.cos(theta);
-          cyanPos = { x, y, dx, dy };
+        // 2. UPDATE CYAN CHILBI (RIGHT FEEDER WALKER)
+        if (cyanElem) {
+          const cyanPos = getPathSample(tSec, true);
+          const depthCyan = Math.max(0.85, Math.min(1.15, 0.88 + ((cyanPos.y - 120) / 130) * 0.26));
+          const facingXCyan = cyanPos.dx >= 0 ? 1 : -1;
+          cyanElem.setAttribute('transform', `translate(${cyanPos.x.toFixed(2)}, ${cyanPos.y.toFixed(2)}) scale(${(facingXCyan * depthCyan).toFixed(3)}, ${depthCyan.toFixed(3)})`);
+
+          const wPhaseCyan = tSec * waddleFreq + 1.2;
+          const bounceC = Math.abs(Math.sin(wPhaseCyan)) * 2.5;
+          const tiltC = Math.sin(wPhaseCyan) * 4.5;
+          const legStrideC = Math.sin(wPhaseCyan) * 4.8;
+          const armSwingC = Math.sin(wPhaseCyan) * 22.0;
+
+          if (cyanBody) cyanBody.setAttribute('transform', `translate(0, ${-bounceC.toFixed(2)}) rotate(${tiltC.toFixed(1)} 0 -13)`);
+          if (cyanFootNear) cyanFootNear.setAttribute('transform', `translate(${legStrideC.toFixed(2)}, 0)`);
+          if (cyanFootFar) cyanFootFar.setAttribute('transform', `translate(${-legStrideC.toFixed(2)}, 0)`);
+          if (cyanArmNear) cyanArmNear.setAttribute('transform', `rotate(${armSwingC.toFixed(1)}, -3, -15)`);
+          if (cyanArmFar) cyanArmFar.setAttribute('transform', `rotate(${-armSwingC.toFixed(1)}, 4, -15)`);
         }
-        const depthCyan = Math.max(0.88, Math.min(1.18, 0.90 + ((cyanPos.y - 124) / 122) * 0.28));
-        const facingXCyan = cyanPos.dx >= 0 ? 1 : -1;
-        cyanElem.setAttribute('transform', `translate(${cyanPos.x.toFixed(2)}, ${cyanPos.y.toFixed(2)}) scale(${(facingXCyan * depthCyan).toFixed(3)}, ${depthCyan.toFixed(3)})`);
-
-        // 3. UPRIGHT 2.5D WADDLE BOUNCE & STRIDING LIMB ANIMATIONS
-        const wPhaseRed = tSec * waddleFreq;
-        const bounceR = Math.abs(Math.sin(wPhaseRed)) * 2.8;
-        const tiltR = Math.sin(wPhaseRed) * 5.0;
-        const legStrideR = Math.sin(wPhaseRed) * 5.5;
-        const armSwingR = Math.sin(wPhaseRed) * 25.0;
-
-        redBody.setAttribute('transform', `translate(0, ${-bounceR.toFixed(2)}) rotate(${tiltR.toFixed(1)} 0 -15)`);
-        if (redFootNear) redFootNear.setAttribute('transform', `translate(${legStrideR.toFixed(2)}, 0)`);
-        if (redFootFar) redFootFar.setAttribute('transform', `translate(${-legStrideR.toFixed(2)}, 0)`);
-        if (redArmNear) redArmNear.setAttribute('transform', `rotate(${armSwingR.toFixed(1)}, -3, -19)`);
-        if (redArmFar) redArmFar.setAttribute('transform', `rotate(${-armSwingR.toFixed(1)}, 5, -19)`);
-
-        const wPhaseCyan = tSec * waddleFreq + 1.2;
-        const bounceC = Math.abs(Math.sin(wPhaseCyan)) * 2.8;
-        const tiltC = Math.sin(wPhaseCyan) * 5.0;
-        const legStrideC = Math.sin(wPhaseCyan) * 5.5;
-        const armSwingC = Math.sin(wPhaseCyan) * 25.0;
-
-        cyanBody.setAttribute('transform', `translate(0, ${-bounceC.toFixed(2)}) rotate(${tiltC.toFixed(1)} 0 -15)`);
-        if (cyanFootNear) cyanFootNear.setAttribute('transform', `translate(${legStrideC.toFixed(2)}, 0)`);
-        if (cyanFootFar) cyanFootFar.setAttribute('transform', `translate(${-legStrideC.toFixed(2)}, 0)`);
-        if (cyanArmNear) cyanArmNear.setAttribute('transform', `rotate(${armSwingC.toFixed(1)}, -3, -19)`);
-        if (cyanArmFar) cyanArmFar.setAttribute('transform', `rotate(${-armSwingC.toFixed(1)}, 5, -19)`);
 
         requestAnimationFrame(updateChilbiFrame);
       }
