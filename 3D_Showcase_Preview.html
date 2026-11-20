@@ -238,67 +238,59 @@
         <div class="track-network-container">
     <svg class="track-network-svg" viewBox="0 0 500 320" preserveAspectRatio="none">
       <defs>
-        <!-- Red Candy Bean Gradients (Unified Head + Torso) -->
+        <!-- Red Candy Bean Gradients (Unified Head + Torso - Matte Finish) -->
         <linearGradient id="chilbi-grad-red-body" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#ff7979" />
-          <stop offset="35%" stop-color="#eb4d4b" />
-          <stop offset="70%" stop-color="#c0392b" />
+          <stop offset="0%" stop-color="#eb4d4b" />
+          <stop offset="50%" stop-color="#c0392b" />
           <stop offset="100%" stop-color="#991b1b" />
         </linearGradient>
 
-        <!-- Yellow Candy Bean Gradients (Unified Head + Torso) -->
+        <!-- Yellow Candy Bean Gradients (Unified Head + Torso - Matte Finish) -->
         <linearGradient id="chilbi-grad-yellow-body" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#fff275" />
-          <stop offset="35%" stop-color="#fed330" />
-          <stop offset="70%" stop-color="#f39c12" />
+          <stop offset="0%" stop-color="#fed330" />
+          <stop offset="50%" stop-color="#f39c12" />
           <stop offset="100%" stop-color="#d35400" />
         </linearGradient>
 
-        <!-- Blue Candy Bean Gradients (Unified Head + Torso) -->
+        <!-- Blue Candy Bean Gradients (Unified Head + Torso - Matte Finish) -->
         <linearGradient id="chilbi-grad-blue-body" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#70a1ff" />
-          <stop offset="35%" stop-color="#3742fa" />
-          <stop offset="70%" stop-color="#1e3799" />
-          <stop offset="100%" stop-color="#0c2461" />
+          <stop offset="0%" stop-color="#4b7bec" />
+          <stop offset="50%" stop-color="#2548ad" />
+          <stop offset="100%" stop-color="#182c61" />
         </linearGradient>
 
-        <!-- Green Candy Bean Gradients (Unified Head + Torso) -->
+        <!-- Green Candy Bean Gradients (Unified Head + Torso - Matte Finish) -->
         <linearGradient id="chilbi-grad-green-body" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#7bed9f" />
-          <stop offset="35%" stop-color="#2ed573" />
-          <stop offset="70%" stop-color="#10ac84" />
-          <stop offset="100%" stop-color="#006266" />
+          <stop offset="0%" stop-color="#2ecc71" />
+          <stop offset="50%" stop-color="#20bf6b" />
+          <stop offset="100%" stop-color="#10ac84" />
         </linearGradient>
 
-        <!-- Purple Candy Bean Gradients (Unified Head + Torso) -->
+        <!-- Purple Candy Bean Gradients (Unified Head + Torso - Matte Finish) -->
         <linearGradient id="chilbi-grad-purple-body" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#e056fd" />
-          <stop offset="35%" stop-color="#be2edd" />
-          <stop offset="70%" stop-color="#686de0" />
-          <stop offset="100%" stop-color="#4834d4" />
+          <stop offset="0%" stop-color="#a55eea" />
+          <stop offset="50%" stop-color="#8854d0" />
+          <stop offset="100%" stop-color="#5f27cd" />
         </linearGradient>
 
-        <!-- Orange Candy Bean Gradients (Unified Head + Torso) -->
+        <!-- Orange Candy Bean Gradients (Unified Head + Torso - Matte Finish) -->
         <linearGradient id="chilbi-grad-orange-body" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#ffbe76" />
-          <stop offset="35%" stop-color="#f0932b" />
-          <stop offset="70%" stop-color="#e17055" />
-          <stop offset="100%" stop-color="#b33939" />
+          <stop offset="0%" stop-color="#fa8231" />
+          <stop offset="50%" stop-color="#e67e22" />
+          <stop offset="100%" stop-color="#c0392b" />
         </linearGradient>
 
-        <!-- Pink Candy Bean Gradients (Unified Head + Torso) -->
+        <!-- Pink Candy Bean Gradients (Unified Head + Torso - Matte Finish) -->
         <linearGradient id="chilbi-grad-pink-body" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#ff9ff3" />
-          <stop offset="35%" stop-color="#f368e0" />
-          <stop offset="70%" stop-color="#e84393" />
+          <stop offset="0%" stop-color="#fc5c65" />
+          <stop offset="50%" stop-color="#e84393" />
           <stop offset="100%" stop-color="#833471" />
         </linearGradient>
 
-        <!-- Cyan Candy Bean Gradients (Unified Head + Torso) -->
+        <!-- Cyan Candy Bean Gradients (Unified Head + Torso - Matte Finish) -->
         <linearGradient id="chilbi-grad-cyan-body" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#7efff5" />
-          <stop offset="35%" stop-color="#18dcff" />
-          <stop offset="70%" stop-color="#00cec9" />
+          <stop offset="0%" stop-color="#2bcbba" />
+          <stop offset="50%" stop-color="#0fbcf9" />
           <stop offset="100%" stop-color="#0984e3" />
         </linearGradient>
       </defs>
@@ -335,9 +327,9 @@
         <path d="M 325,252 C 345,274 380,300 410,320" />
       </g>
 
-      <!-- 5. Feeder Road Stop Lines at Merges -->
+      <!-- 5. Feeder Road Stop Lines at Merges (Queue Stop Markings) -->
       <g fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round">
-        <path d="M 74,112 L 80,152" />
+        <path d="M 30,76 L 30,144" />
         <path d="M 426,112 L 420,152" />
       </g>
 
@@ -1869,7 +1861,8 @@
         }
       }
 
-      const rowSpacing = 16.0;            // 16px distance between consecutive rows
+      const maxCircuitRows = 60;          // Exactly 60 rows (420 Chilbis) tightly pack ring road
+      let rowSpacing = 13.82;             // Exact closed-loop spacing (totalLength / maxCircuitRows)
       const chilbiBaseScale = 1.05;       // Scale for parade formation
 
       const layer = document.getElementById("chilbi-characters-layer");
@@ -1877,7 +1870,7 @@
       const frag = document.createDocumentFragment();
 
       let createdChilbis = 0;
-      // Build SVG elements for all 2,000 Chilbis across 286 rows
+      // Build SVG elements for all 2,000 Chilbis across 286 rows (Matte, No Eyes, No Shininess)
       for (let r = 0; r < TOTAL_ROWS; r++) {
         const themeName = rowColors[r];
         const theme = colorThemes[themeName];
@@ -1902,16 +1895,8 @@
                 <rect x="-2.2" y="-3" width="4.4" height="10" rx="2.2" fill="${theme.footFar}" />
               </g>
 
-              <!-- Seamless Unified Bean Body (Head + Torso together in ONE organic continuous shape) -->
+              <!-- Seamless Unified Bean Body (Head + Torso together in ONE organic continuous matte shape) -->
               <rect x="-8.5" y="-30" width="17" height="27" rx="8.5" fill="${theme.bodyGrad}" />
-
-              <!-- 3D Gloss Highlight on Head -->
-              <ellipse cx="-1.5" cy="-25" rx="3.8" ry="2.2" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 -1.5 -25)" />
-              <circle cx="3.2" cy="-22" r="1.1" fill="rgba(255, 255, 255, 0.45)" />
-
-              <!-- Cute Profile Eye -->
-              <ellipse cx="5.2" cy="-21" rx="1.5" ry="2.4" fill="#1e1e28" />
-              <circle cx="5.7" cy="-21.8" r="0.75" fill="#ffffff" />
 
               <!-- Near Leg: Connected seamlessly inside pelvis/hip (-2.0, -6) -->
               <g id="${id}-leg-near" transform="translate(-2.0, -6)">
@@ -2007,6 +1992,10 @@
         prevX = smp.x;
         prevY = smp.y;
       }
+
+      // Mathematical Exact Loop Closure:
+      // totalLength / 60 guarantees the distance from row 59 to row 0 is identically equal to rowSpacing
+      rowSpacing = totalLength / maxCircuitRows;
 
       function sampleSplineAtDistance(s) {
         s = ((s % totalLength) + totalLength) % totalLength;
@@ -2165,10 +2154,9 @@
         // Kinematic Speed Profile:
         // As rows arrive on the ring road, run at fast speed (150 px/s)
         // until the ring road is fully occupied (lead row completes 1 full circuit lap)!
-        // Ring road circuit capacity: 51 rows (~357 Chilbis).
+        // Ring road circuit capacity: 60 rows (420 Chilbis) tightly packed.
         // Full occupation lead distance = feederLength + totalLength (~143.0 + 829.3 = ~972.3 px).
-        const maxCircuitRows = Math.floor(totalLength / rowSpacing); // 51 rows on ring road
-        const totalOccupiedLeadDist = feederLength + totalLength;    // ~972.3 px
+        const totalOccupiedLeadDist = feederLength + totalLength;
 
         let currentSpeed;
         if (squadLeadDist < totalOccupiedLeadDist) {
@@ -2190,7 +2178,7 @@
             const pct = Math.min(100, Math.floor((squadLeadDist / totalOccupiedLeadDist) * 100));
             watermarkTitle.textContent = `🌸 Ring Road Filling (${pct}%) • Sprinting (150 px/s)`;
           } else {
-            watermarkTitle.textContent = `🌸 Ring Road Full • 357 on Circuit | 1,643 Queued`;
+            watermarkTitle.textContent = `🌸 Ring Road Full • 420 on Circuit | 1,580 Queued`;
           }
         }
 
@@ -2201,6 +2189,9 @@
         const curBounce = 2.2 + speedRatio * 2.4;
         const curTilt = 3.5 + speedRatio * 3.5;
 
+        // Queue front holding position on feeder road (safety buffer ~55px before ring road merge)
+        const queueFrontDist = feederLength - 68.0;
+
         // Update all 2,000 Chilbis (with viewport distance culling for locked 60 FPS)
         for (let i = 0; i < walkers.length; i++) {
           const w = walkers[i];
@@ -2208,12 +2199,12 @@
           let isQueued = false;
 
           if (w.row < maxCircuitRows) {
-            // Rows 0 to 50: In the active ring road parade
+            // Rows 0 to 59: In the active tight-packed ring road parade (60 rows * 7 = 420 Chilbis)
             rowDist = squadLeadDist - (w.row * rowSpacing);
           } else {
-            // Rows 51 to 285: Remaining Chilbis queued on connected feeder road
-            // Stop at their assigned slot in the queue before the junction
-            const queueStopDist = feederLength - ((w.row - maxCircuitRows + 1) * rowSpacing);
+            // Rows 60 to 285: Remaining 1,580 Chilbis queued cleanly on connected feeder road
+            // Stop at their assigned slot behind the stop line with zero ring road overlap
+            const queueStopDist = queueFrontDist - ((w.row - maxCircuitRows) * rowSpacing);
             const movingDist = squadLeadDist - (w.row * rowSpacing);
             if (movingDist >= queueStopDist) {
               rowDist = queueStopDist;
