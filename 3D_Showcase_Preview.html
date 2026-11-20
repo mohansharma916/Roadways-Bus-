@@ -238,53 +238,37 @@
         <div class="track-network-container">
     <svg class="track-network-svg" viewBox="0 0 500 320" preserveAspectRatio="none">
       <defs>
-        <!-- Red Candy Bean Gradients -->
+        <!-- Red Candy Bean Gradients (Unified Head + Torso) -->
         <linearGradient id="chilbi-grad-red-body" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#ff6b81" />
-          <stop offset="60%" stop-color="#ee5253" />
-          <stop offset="100%" stop-color="#b71540" />
-        </linearGradient>
-        <radialGradient id="chilbi-grad-red-head" cx="35%" cy="30%" r="65%">
           <stop offset="0%" stop-color="#ff7979" />
-          <stop offset="45%" stop-color="#eb4d4b" />
+          <stop offset="35%" stop-color="#eb4d4b" />
+          <stop offset="70%" stop-color="#c0392b" />
           <stop offset="100%" stop-color="#991b1b" />
-        </radialGradient>
-
-        <!-- Yellow Candy Bean Gradients -->
-        <linearGradient id="chilbi-grad-yellow-body" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#ffeaa7" />
-          <stop offset="55%" stop-color="#fed330" />
-          <stop offset="100%" stop-color="#f39c12" />
         </linearGradient>
-        <radialGradient id="chilbi-grad-yellow-head" cx="35%" cy="30%" r="65%">
-          <stop offset="0%" stop-color="#fff275" />
-          <stop offset="45%" stop-color="#feca57" />
-          <stop offset="100%" stop-color="#e67e22" />
-        </radialGradient>
 
-        <!-- Blue Candy Bean Gradients -->
+        <!-- Yellow Candy Bean Gradients (Unified Head + Torso) -->
+        <linearGradient id="chilbi-grad-yellow-body" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#fff275" />
+          <stop offset="35%" stop-color="#fed330" />
+          <stop offset="70%" stop-color="#f39c12" />
+          <stop offset="100%" stop-color="#d35400" />
+        </linearGradient>
+
+        <!-- Blue Candy Bean Gradients (Unified Head + Torso) -->
         <linearGradient id="chilbi-grad-blue-body" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stop-color="#70a1ff" />
-          <stop offset="55%" stop-color="#1e90ff" />
-          <stop offset="100%" stop-color="#2e86de" />
+          <stop offset="35%" stop-color="#3742fa" />
+          <stop offset="70%" stop-color="#1e3799" />
+          <stop offset="100%" stop-color="#0c2461" />
         </linearGradient>
-        <radialGradient id="chilbi-grad-blue-head" cx="35%" cy="30%" r="65%">
-          <stop offset="0%" stop-color="#99c5ff" />
-          <stop offset="45%" stop-color="#3742fa" />
-          <stop offset="100%" stop-color="#1e3799" />
-        </radialGradient>
 
-        <!-- Green Candy Bean Gradients -->
+        <!-- Green Candy Bean Gradients (Unified Head + Torso) -->
         <linearGradient id="chilbi-grad-green-body" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#55efc4" />
-          <stop offset="55%" stop-color="#00b894" />
+          <stop offset="0%" stop-color="#7bed9f" />
+          <stop offset="35%" stop-color="#2ed573" />
+          <stop offset="70%" stop-color="#10ac84" />
           <stop offset="100%" stop-color="#006266" />
         </linearGradient>
-        <radialGradient id="chilbi-grad-green-head" cx="35%" cy="30%" r="65%">
-          <stop offset="0%" stop-color="#7bed9f" />
-          <stop offset="45%" stop-color="#2ed573" />
-          <stop offset="100%" stop-color="#1e824c" />
-        </radialGradient>
       </defs>
 
       <!-- 1. Smooth Sand / Dirt Shoulder (Uniform 96.0px stroke) -->
@@ -1826,7 +1810,7 @@
       const layer = document.getElementById("chilbi-characters-layer");
       const walkers = [];
 
-      // Build SVG elements for all 24 rows
+      // Build SVG elements for all 24 rows (Seamless Connected Candy Bean Rig)
       for (let r = 0; r < TOTAL_ROWS; r++) {
         const themeName = rowColors[r];
         const theme = colorThemes[themeName];
@@ -1837,18 +1821,38 @@
           g.setAttribute("class", `chilbi-walker chilbi-${themeName}`);
           g.setAttribute("transform", "translate(-200, -200)");
           g.innerHTML = `
-            <ellipse class="chilbi-shadow" cx="0" cy="1" rx="9.5" ry="3.6" fill="rgba(15, 20, 35, 0.35)" />
-            <rect id="${id}-arm-far" x="2.5" y="-18" width="3.8" height="10" rx="1.9" fill="${theme.armFar}" />
-            <rect id="${id}-foot-far" x="-1" y="-3.5" width="4.2" height="7.5" rx="2" fill="${theme.footFar}" />
-            <rect id="${id}-foot-near" x="-5" y="-2.5" width="4.2" height="7.5" rx="2" fill="${theme.footNear}" />
+            <ellipse class="chilbi-shadow" cx="0" cy="1" rx="10" ry="3.8" fill="rgba(15, 20, 35, 0.35)" />
             <g id="${id}-body-group">
-              <rect x="-7" y="-22" width="14" height="20" rx="7" fill="${theme.bodyGrad}" />
-              <circle cx="1.5" cy="-25" r="8" fill="${theme.headGrad}" />
-              <ellipse cx="0" cy="-27.5" rx="2.6" ry="1.7" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 0 -27.5)" />
-              <circle cx="4" cy="-25" r="0.9" fill="rgba(255, 255, 255, 0.5)" />
-              <ellipse cx="5" cy="-24.2" rx="1.2" ry="2" fill="#1e1e28" />
-              <circle cx="5.3" cy="-24.8" r="0.55" fill="#ffffff" />
-              <rect id="${id}-arm-near" x="-4.2" y="-16.5" width="3.8" height="10" rx="1.9" fill="${theme.armNear}" />
+              <!-- Far Arm: Connected seamlessly at shoulder (2.5, -17) -->
+              <g id="${id}-arm-far" transform="translate(2.5, -17)">
+                <rect x="-1.9" y="-1.5" width="3.8" height="10.5" rx="1.9" fill="${theme.armFar}" />
+              </g>
+
+              <!-- Far Leg: Connected seamlessly inside pelvis/hip (2.0, -6) -->
+              <g id="${id}-leg-far" transform="translate(2.0, -6)">
+                <rect x="-2.2" y="-3" width="4.4" height="10" rx="2.2" fill="${theme.footFar}" />
+              </g>
+
+              <!-- Seamless Unified Bean Body (Head + Torso together in ONE organic continuous shape) -->
+              <rect x="-8.5" y="-30" width="17" height="27" rx="8.5" fill="${theme.bodyGrad}" />
+
+              <!-- 3D Gloss Highlight on Head -->
+              <ellipse cx="-1.5" cy="-25" rx="3.8" ry="2.2" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 -1.5 -25)" />
+              <circle cx="3.2" cy="-22" r="1.1" fill="rgba(255, 255, 255, 0.45)" />
+
+              <!-- Cute Profile Eye -->
+              <ellipse cx="5.2" cy="-21" rx="1.5" ry="2.4" fill="#1e1e28" />
+              <circle cx="5.7" cy="-21.8" r="0.75" fill="#ffffff" />
+
+              <!-- Near Leg: Connected seamlessly inside pelvis/hip (-2.0, -6) -->
+              <g id="${id}-leg-near" transform="translate(-2.0, -6)">
+                <rect x="-2.2" y="-3" width="4.4" height="10" rx="2.2" fill="${theme.footNear}" />
+              </g>
+
+              <!-- Near Arm: Connected seamlessly at shoulder (-2.5, -17) -->
+              <g id="${id}-arm-near" transform="translate(-2.5, -17)">
+                <rect x="-1.9" y="-1.5" width="3.8" height="10.5" rx="1.9" fill="${theme.armNear}" />
+              </g>
             </g>
           `;
           layer.appendChild(g);
@@ -1856,8 +1860,9 @@
           walkers.push({
             elem: g,
             body: g.querySelector(`#${id}-body-group`),
-            footNear: g.querySelector(`#${id}-foot-near`),
-            footFar: g.querySelector(`#${id}-foot-far`),
+            shadow: g.querySelector(`.chilbi-shadow`),
+            legNear: g.querySelector(`#${id}-leg-near`),
+            legFar: g.querySelector(`#${id}-leg-far`),
             armNear: g.querySelector(`#${id}-arm-near`),
             armFar: g.querySelector(`#${id}-arm-far`),
             row: r,
@@ -2142,14 +2147,15 @@
           const bounce = Math.abs(Math.sin(wPhase)) * curBounce;
           const sprintLean = facingX * speedRatio * 11.0;
           const tilt = Math.sin(wPhase) * curTilt + sprintLean;
-          const legStride = Math.sin(wPhase) * curLegStride;
-          const armSwing = Math.sin(wPhase) * curArmSwing;
+          const legAngle = Math.sin(wPhase) * (20.0 + speedRatio * 18.0);
+          const armAngle = Math.sin(wPhase) * (24.0 + speedRatio * 20.0);
 
           if (w.body) w.body.setAttribute("transform", `translate(0, ${-bounce.toFixed(2)}) rotate(${tilt.toFixed(1)} 0 -15)`);
-          if (w.footNear) w.footNear.setAttribute("transform", `translate(${legStride.toFixed(2)}, 0)`);
-          if (w.footFar) w.footFar.setAttribute("transform", `translate(${-legStride.toFixed(2)}, 0)`);
-          if (w.armNear) w.armNear.setAttribute("transform", `rotate(${armSwing.toFixed(1)}, -3, -17)`);
-          if (w.armFar) w.armFar.setAttribute("transform", `rotate(${-armSwing.toFixed(1)}, 4, -17)`);
+          if (w.legNear) w.legNear.setAttribute("transform", `translate(-2.0, -6) rotate(${legAngle.toFixed(1)})`);
+          if (w.legFar) w.legFar.setAttribute("transform", `translate(2.0, -6) rotate(${-legAngle.toFixed(1)})`);
+          if (w.armNear) w.armNear.setAttribute("transform", `translate(-2.5, -17) rotate(${-armAngle.toFixed(1)})`);
+          if (w.armFar) w.armFar.setAttribute("transform", `translate(2.5, -17) rotate(${armAngle.toFixed(1)})`);
+          if (w.shadow) w.shadow.setAttribute("rx", (10.0 - bounce * 0.35).toFixed(1));
         }
 
         requestAnimationFrame(updateChilbiSquad);
