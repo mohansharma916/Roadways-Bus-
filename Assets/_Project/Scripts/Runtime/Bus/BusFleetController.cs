@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 namespace RoadwaysGame
 {
@@ -16,9 +19,9 @@ namespace RoadwaysGame
     public class BusFleetController : MonoBehaviour
     {
         [Header("Depot Layout")]
-        [SerializeField] private float depotOriginZ = 520.0f;
-        [SerializeField] private float busSpacing = 34.0f;
-        [SerializeField] private Vector3 depotCenter = new Vector3(250.0f, 0f, 520.0f);
+        [SerializeField] private float depotOriginZ = 24.5f;
+        [SerializeField] private float busSpacing = 1.35f;
+        [SerializeField] private Vector3 depotCenter = new Vector3(0f, 0f, 24.5f);
 
         [Header("References")]
         [SerializeField] private ParkingBayManager bayManager;
@@ -38,6 +41,19 @@ namespace RoadwaysGame
             if (buses == null || buses.Count == 0 || transform.childCount == 0)
             {
                 BuildDepotFleet();
+            }
+            else
+            {
+                foreach (var bus in buses)
+                {
+                    if (bus != null)
+                    {
+                        bus.OnBusDocked -= HandleBusDocked;
+                        bus.OnBusDocked += HandleBusDocked;
+                        bus.OnBusReturnedToDepot -= HandleBusReturned;
+                        bus.OnBusReturnedToDepot += HandleBusReturned;
+                    }
+                }
             }
             mainCamera = Camera.main;
         }
@@ -95,12 +111,36 @@ namespace RoadwaysGame
 
         private void HandlePointerInput()
         {
-            if (Input.GetMouseButtonDown(0))
+            Vector2 pointerPos = Vector2.zero;
+            bool pointerDown = false;
+
+#if ENABLE_INPUT_SYSTEM
+            if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame)
+            {
+                pointerPos = Touchscreen.current.primaryTouch.position.ReadValue();
+                pointerDown = true;
+            }
+            else if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+            {
+                pointerPos = Mouse.current.position.ReadValue();
+                pointerDown = true;
+            }
+#endif
+
+#if ENABLE_LEGACY_INPUT_MANAGER
+            if (!pointerDown && Input.GetMouseButtonDown(0))
+            {
+                pointerPos = Input.mousePosition;
+                pointerDown = true;
+            }
+#endif
+
+            if (pointerDown)
             {
                 if (mainCamera == null) mainCamera = Camera.main;
                 if (mainCamera == null) return;
 
-                Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+                Ray ray = mainCamera.ScreenPointToRay(pointerPos);
                 if (Physics.Raycast(ray, out RaycastHit hit, 200f))
                 {
                     BusVehicleController clickedBus = hit.collider.GetComponentInParent<BusVehicleController>();

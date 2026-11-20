@@ -13,7 +13,7 @@ namespace RoadwaysGame
     {
         [Header("World Mapping & Framing")]
         [Tooltip("Scale factor mapping prototype coordinate space (0-500) to Unity 3D world units.")]
-        [SerializeField] private float worldScale = 0.1f;
+        [SerializeField] private float worldScale = 0.038f;
 
         [Tooltip("Center offset in prototype units before scaling (Default: X=250, Z=170).")]
         [SerializeField] private Vector2 centerOffset = new Vector2(250f, 170f);
@@ -56,10 +56,7 @@ namespace RoadwaysGame
 
         private void Start()
         {
-            if (transform.childCount == 0 || circuitLut == null || !circuitLut.IsValid)
-            {
-                BuildCompleteTrackNetwork();
-            }
+            BuildCompleteTrackNetwork();
         }
 
         [ContextMenu("Build Complete Track Network")]
@@ -85,7 +82,7 @@ namespace RoadwaysGame
         {
             // Position root at anchor and set scale
             transform.position = worldAnchor;
-            transform.localScale = new Vector3(worldScale, 1f, -worldScale); // -Z because screen Y increases downward
+            transform.localScale = new Vector3(worldScale, 1f, worldScale);
         }
 
         private void SetupCircuitSpline()
@@ -150,7 +147,7 @@ namespace RoadwaysGame
         public Vector3 PrototypeToWorldPoint(float px, float py, float heightY = 0f)
         {
             float localX = (px - centerOffset.x) * worldScale;
-            float localZ = -(py - centerOffset.y) * worldScale;
+            float localZ = (py - centerOffset.y) * worldScale;
             return worldAnchor + new Vector3(localX, heightY, localZ);
         }
     }

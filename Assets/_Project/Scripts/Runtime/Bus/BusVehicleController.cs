@@ -252,7 +252,7 @@ namespace RoadwaysGame
             {
                 float t = shakeTimer / dur;
                 // -4 -> +4 -> -3 -> 0
-                float offsetX = Mathf.Sin(t * Mathf.PI * 4f) * 4f * (1f - t);
+                float offsetX = Mathf.Sin(t * Mathf.PI * 4f) * 0.25f * (1f - t);
                 transform.localPosition = depotSlotPosition + Vector3.right * offsetX;
             }
             else
@@ -292,37 +292,37 @@ namespace RoadwaysGame
             bodyObj.transform.SetParent(transform, false);
             vehicleBody = bodyObj.transform;
 
-            // 1. Bus Hull Mesh (25x50 units, rx=5.5)
+            // 1. Bus Hull Mesh (2.5x5.0 units, rx=0.55)
             GameObject hullObj = new GameObject("BusHull");
             hullObj.transform.SetParent(vehicleBody, false);
             MeshFilter mfHull = hullObj.AddComponent<MeshFilter>();
-            mfHull.sharedMesh = BusMeshGenerator.CreateBusBodyMesh(GameConstants.BusWidth, GameConstants.BusLength, GameConstants.BusCornerRadius, 3.5f);
+            mfHull.sharedMesh = BusMeshGenerator.CreateBusBodyMesh(BusMeshGenerator.BusWidth, BusMeshGenerator.BusLength, BusMeshGenerator.CornerRadius, BusMeshGenerator.BusHeight);
             MeshRenderer mrHull = hullObj.AddComponent<MeshRenderer>();
             mrHull.sharedMaterial = new Material(unlitShader) { name = "M_BusMatteBody", color = primary };
 
             // 2. Front Windshield Visor (#1e2430)
             GameObject visorObj = new GameObject("FrontVisor");
             visorObj.transform.SetParent(vehicleBody, false);
-            visorObj.transform.localPosition = new Vector3(0f, 3.52f, 16f); // Near front
+            visorObj.transform.localPosition = new Vector3(0f, BusMeshGenerator.BusHeight + 0.01f, 0.60f); // Near front
             MeshFilter mfVisor = visorObj.AddComponent<MeshFilter>();
-            mfVisor.sharedMesh = BusMeshGenerator.CreateTintedVisorMesh(21f, 9f);
+            mfVisor.sharedMesh = BusMeshGenerator.CreateTintedVisorMesh(0.80f, 0.35f);
             MeshRenderer mrVisor = visorObj.AddComponent<MeshRenderer>();
             mrVisor.sharedMaterial = new Material(unlitShader) { name = "M_BusVisor", color = new Color32(0x1E, 0x24, 0x30, 0xFF) };
 
             // 3. Crisp White Roof Arrow (centered on roof)
             GameObject arrowObj = new GameObject("RoofArrow");
             arrowObj.transform.SetParent(vehicleBody, false);
-            arrowObj.transform.localPosition = new Vector3(0f, 3.53f, -2f);
+            arrowObj.transform.localPosition = new Vector3(0f, BusMeshGenerator.BusHeight + 0.02f, -0.05f);
             MeshFilter mfArrow = arrowObj.AddComponent<MeshFilter>();
-            mfArrow.sharedMesh = BusMeshGenerator.CreateRoofArrowMesh(0.85f);
+            mfArrow.sharedMesh = BusMeshGenerator.CreateRoofArrowMesh(0.035f);
             arrowRenderer = arrowObj.AddComponent<MeshRenderer>();
             arrowRenderer.sharedMaterial = new Material(unlitShader) { name = "M_BusRoofArrow", color = Color.white };
 
             // 4. Touch Box Collider
             touchCollider = GetComponent<BoxCollider>();
             if (touchCollider == null) touchCollider = gameObject.AddComponent<BoxCollider>();
-            touchCollider.size = new Vector3(GameConstants.BusWidth, 5f, GameConstants.BusLength);
-            touchCollider.center = new Vector3(0f, 2.5f, 0f);
+            touchCollider.size = new Vector3(BusMeshGenerator.BusWidth, 0.8f, BusMeshGenerator.BusLength);
+            touchCollider.center = new Vector3(0f, 0.4f, 0f);
         }
     }
 }

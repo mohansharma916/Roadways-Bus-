@@ -53,6 +53,8 @@ namespace RoadwaysGame
                 shoulderMaterial = new Material(unlitShader) { name = "M_NeckShoulder", color = GameConstants.DirtShoulderColor };
         }
 
+        private static Vector3 P(float px, float py) => new Vector3(px - 250f, 0f, py - 170f);
+
         private void BuildAsphaltNeck()
         {
             // Left curve: (175, 252) -> C(155, 274)(120, 300) -> (90, 320)
@@ -61,18 +63,18 @@ namespace RoadwaysGame
             // Top line: (325, 252) -> (175, 252)
             int steps = 24;
             List<Vector3> leftCurve = SampleCubicBezier(
-                new Vector3(175f, 0f, 252f),
-                new Vector3(155f, 0f, 274f),
-                new Vector3(120f, 0f, 300f),
-                new Vector3(90f, 0f, 320f),
+                P(175f, 252f),
+                P(155f, 274f),
+                P(120f, 300f),
+                P(90f, 320f),
                 steps
             );
 
             List<Vector3> rightCurve = SampleCubicBezier(
-                new Vector3(325f, 0f, 252f),
-                new Vector3(345f, 0f, 274f),
-                new Vector3(380f, 0f, 300f),
-                new Vector3(410f, 0f, 320f),
+                P(325f, 252f),
+                P(345f, 274f),
+                P(380f, 300f),
+                P(410f, 320f),
                 steps
             );
 
@@ -128,20 +130,20 @@ namespace RoadwaysGame
 
             // Left Curb
             List<Vector3> leftCurve = SampleCubicBezier(
-                new Vector3(175f, 0f, 252f),
-                new Vector3(155f, 0f, 274f),
-                new Vector3(120f, 0f, 300f),
-                new Vector3(90f, 0f, 320f),
+                P(175f, 252f),
+                P(155f, 274f),
+                P(120f, 300f),
+                P(90f, 320f),
                 steps
             );
             BuildStripAlongCurve(curbsGroup, "LeftNeckCurb", leftCurve, -curbW, 0.026f, curbMaterial);
 
             // Right Curb
             List<Vector3> rightCurve = SampleCubicBezier(
-                new Vector3(325f, 0f, 252f),
-                new Vector3(345f, 0f, 274f),
-                new Vector3(380f, 0f, 300f),
-                new Vector3(410f, 0f, 320f),
+                P(325f, 252f),
+                P(345f, 274f),
+                P(380f, 300f),
+                P(410f, 320f),
                 steps
             );
             BuildStripAlongCurve(curbsGroup, "RightNeckCurb", rightCurve, curbW, 0.026f, curbMaterial);
@@ -157,20 +159,20 @@ namespace RoadwaysGame
 
             // Left Shoulder
             List<Vector3> leftCurve = SampleCubicBezier(
-                new Vector3(175f, 0f, 252f),
-                new Vector3(155f, 0f, 274f),
-                new Vector3(120f, 0f, 300f),
-                new Vector3(90f, 0f, 320f),
+                P(175f, 252f),
+                P(155f, 274f),
+                P(120f, 300f),
+                P(90f, 320f),
                 steps
             );
             BuildStripAlongCurve(shouldersGroup, "LeftNeckShoulder", leftCurve, -shoulderW, 0.016f, shoulderMaterial);
 
             // Right Shoulder
             List<Vector3> rightCurve = SampleCubicBezier(
-                new Vector3(325f, 0f, 252f),
-                new Vector3(345f, 0f, 274f),
-                new Vector3(380f, 0f, 300f),
-                new Vector3(410f, 0f, 320f),
+                P(325f, 252f),
+                P(345f, 274f),
+                P(380f, 300f),
+                P(410f, 320f),
                 steps
             );
             BuildStripAlongCurve(shouldersGroup, "RightNeckShoulder", rightCurve, shoulderW, 0.016f, shoulderMaterial);

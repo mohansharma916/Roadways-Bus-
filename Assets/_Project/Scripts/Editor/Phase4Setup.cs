@@ -20,6 +20,9 @@ namespace RoadwaysGame.Editor
             {
                 busRoot = new GameObject("--- [BUS_SYSTEM] ---");
             }
+            busRoot.transform.position = Vector3.zero;
+            busRoot.transform.rotation = Quaternion.identity;
+            busRoot.transform.localScale = Vector3.one;
 
             // 1. Trapezium & Bays
             Transform panelObj = busRoot.transform.Find("TrapeziumPanel");

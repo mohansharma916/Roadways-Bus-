@@ -74,6 +74,8 @@ namespace RoadwaysGame
                 stopBarMaterial = new Material(unlitShader) { name = "M_FeederStopBar", color = Color.white };
         }
 
+        private static Vector3 P(float px, float py) => new Vector3(px - 250f, 0f, py - 170f);
+
         private void SetupFeederSplines()
         {
             // Left Feeder: Curve from X = -50, Y = 102 to merge at X = 88, Y = 134
@@ -87,12 +89,12 @@ namespace RoadwaysGame
 
             Vector3[] leftPts = new Vector3[]
             {
-                new Vector3(-60f, 0f, 102f),
-                new Vector3(-50f, 0f, 102f),
-                new Vector3(10f, 0f, 102f),
-                new Vector3(50f, 0f, 112f),
-                new Vector3(88f, 0f, 134f),
-                new Vector3(105f, 0f, 150f)
+                P(-60f, 102f),
+                P(-50f, 102f),
+                P(10f, 102f),
+                P(50f, 112f),
+                P(88f, 134f),
+                P(105f, 150f)
             };
             leftFeederSpline.SetControlPoints(leftPts, false);
             leftFeederLut.RebuildTable();
@@ -108,12 +110,12 @@ namespace RoadwaysGame
 
             Vector3[] rightPts = new Vector3[]
             {
-                new Vector3(395f, 0f, 150f),
-                new Vector3(412f, 0f, 134f),
-                new Vector3(445f, 0f, 112f),
-                new Vector3(480f, 0f, 102f),
-                new Vector3(510f, 0f, 102f),
-                new Vector3(520f, 0f, 102f)
+                P(395f, 150f),
+                P(412f, 134f),
+                P(445f, 112f),
+                P(480f, 102f),
+                P(510f, 102f),
+                P(520f, 102f)
             };
             rightFeederSpline.SetControlPoints(rightPts, false);
             rightFeederLut.RebuildTable();
@@ -197,7 +199,7 @@ namespace RoadwaysGame
             bar.transform.SetParent(transform, false);
 
             float spanY = roadWidth;
-            bar.transform.localPosition = new Vector3(stopBarPositionX, 0.04f, 107f);
+            bar.transform.localPosition = new Vector3(stopBarPositionX - 250f, 0.04f, 107f - 170f);
             bar.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
             bar.transform.localScale = new Vector3(stopBarWidth, spanY, 1f);
 

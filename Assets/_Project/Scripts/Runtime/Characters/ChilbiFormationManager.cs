@@ -227,13 +227,14 @@ namespace RoadwaysGame
                     : charWorldPos * scale;
 
                 // Bobbing calculation
+                float visualScale = scale * 10f;
                 float twoPiFT = 2f * Mathf.PI * currentFreq * simulationTime;
-                float bobY = Mathf.Sin(twoPiFT * 2f) * 0.18f * scale;
+                float bobY = Mathf.Sin(twoPiFT * 2f) * 0.05f;
 
                 // Facing direction
                 float facingDirX = tangent.x;
                 float sign = facingDirX >= 0f ? 1f : -1f;
-                Vector3 charScale = new Vector3(scale * sign, scale, scale);
+                Vector3 charScale = new Vector3(visualScale * sign, visualScale, visualScale);
 
                 // Billboard facing camera
                 Quaternion billboardRot = Quaternion.identity;

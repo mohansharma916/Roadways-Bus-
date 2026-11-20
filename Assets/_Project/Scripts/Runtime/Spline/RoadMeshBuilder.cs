@@ -81,14 +81,17 @@ namespace RoadwaysGame
             if (asphaltMaterial == null)
             {
                 asphaltMaterial = new Material(unlitShader) { name = "M_TrackAsphalt", color = GameConstants.AsphaltColor };
+                asphaltMaterial.SetInt("_Cull", 0);
             }
             if (curbMaterial == null)
             {
                 curbMaterial = new Material(unlitShader) { name = "M_TrackCurb", color = GameConstants.WhiteCurbColor };
+                curbMaterial.SetInt("_Cull", 0);
             }
             if (shoulderMaterial == null)
             {
                 shoulderMaterial = new Material(unlitShader) { name = "M_TrackShoulder", color = GameConstants.DirtShoulderColor };
+                shoulderMaterial.SetInt("_Cull", 0);
             }
             if (dashedLineMaterial == null)
             {
@@ -101,11 +104,13 @@ namespace RoadwaysGame
                 dashedLineMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
                 dashedLineMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
                 dashedLineMaterial.SetInt("_ZWrite", 0);
+                dashedLineMaterial.SetInt("_Cull", 0);
                 dashedLineMaterial.renderQueue = 3000;
             }
             if (islandLawnMaterial == null)
             {
                 islandLawnMaterial = new Material(unlitShader) { name = "M_CentralIslandLawn", color = GameConstants.LawnColor };
+                islandLawnMaterial.SetInt("_Cull", 0);
             }
         }
 

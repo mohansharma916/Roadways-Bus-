@@ -93,12 +93,12 @@ namespace RoadwaysGame
             if (index < 0 || index >= bodyMatrices.Length) return;
 
             // Body matrix (with bob offset)
-            Vector3 bodyPos = position + rotation * new Vector3(0f, 1.4f + bobY, 0f);
+            Vector3 bodyPos = position + rotation * new Vector3(0f, 0.5f * scale.y + bobY, 0f);
             bodyMatrices[index] = Matrix4x4.TRS(bodyPos, rotation, scale);
 
             // Shadow matrix (flat on ground)
             float shadowScale = 1f - (bobY * 0.5f);
-            Vector3 sScale = new Vector3(scale.x * shadowScale, 1f, scale.z * shadowScale);
+            Vector3 sScale = new Vector3(Mathf.Abs(scale.x) * shadowScale, 1f, Mathf.Abs(scale.z) * shadowScale);
             shadowMatrices[index] = Matrix4x4.TRS(position + Vector3.up * 0.01f, Quaternion.identity, sScale);
 
             Color primary = ColorPaletteDatabase.GetPrimaryColor(colorType);

@@ -11,14 +11,16 @@ namespace RoadwaysGame
     /// </summary>
     public static class BusMeshGenerator
     {
-        public const float BusWidth = GameConstants.BusWidth;       // 25.0f
-        public const float BusLength = GameConstants.BusLength;     // 50.0f
-        public const float CornerRadius = GameConstants.BusCornerRadius; // 5.5f
+        // Mobile 3D World Scaled Constants (Exact Screen-Fit Parity)
+        public const float BusWidth = 0.95f;
+        public const float BusLength = 1.90f;
+        public const float CornerRadius = 0.22f;
+        public const float BusHeight = 0.25f;
 
         /// <summary>
         /// Creates a top-down rounded rectangle mesh for the bus body.
         /// </summary>
-        public static Mesh CreateBusBodyMesh(float width = BusWidth, float length = BusLength, float radius = CornerRadius, float height = 3.5f)
+        public static Mesh CreateBusBodyMesh(float width = BusWidth, float length = BusLength, float radius = CornerRadius, float height = BusHeight)
         {
             Mesh mesh = new Mesh { name = "BusBodyMesh" };
 
@@ -140,7 +142,7 @@ namespace RoadwaysGame
         /// Based on prototype SVG path: M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 ...
         /// Centered on roof origin.
         /// </summary>
-        public static Mesh CreateRoofArrowMesh(float scale = 0.8f)
+        public static Mesh CreateRoofArrowMesh(float scale = 0.035f)
         {
             Mesh mesh = new Mesh { name = "RoofArrowMesh" };
 
@@ -198,7 +200,7 @@ namespace RoadwaysGame
         /// <summary>
         /// Creates dark tinted window visor strip mesh.
         /// </summary>
-        public static Mesh CreateTintedVisorMesh(float width = 21f, float length = 9f)
+        public static Mesh CreateTintedVisorMesh(float width = 0.80f, float length = 0.35f)
         {
             Mesh mesh = new Mesh { name = "TintedVisorMesh" };
             float hw = width * 0.5f;
@@ -223,7 +225,7 @@ namespace RoadwaysGame
         /// <summary>
         /// Creates rectangular parking bay border slot.
         /// </summary>
-        public static Mesh CreateParkingSlotBorderMesh(float width = 25f, float length = 50f, float borderWidth = 2f)
+        public static Mesh CreateParkingSlotBorderMesh(float width = 0.95f, float length = 1.90f, float borderWidth = 0.08f)
         {
             Mesh mesh = new Mesh { name = "ParkingSlotBorderMesh" };
 

@@ -31,14 +31,14 @@ namespace RoadwaysGame
     {
         [Header("Bay Configuration")]
         [SerializeField] private int totalBays = GameConstants.TotalParkingBays; // 9
-        [SerializeField] private float bayWidth = GameConstants.BusWidth;        // 25.0f
-        [SerializeField] private float bayLength = GameConstants.BusLength;      // 50.0f
-        [SerializeField] private float baySpacing = 8.0f;
+        [SerializeField] private float bayWidth = 0.95f;
+        [SerializeField] private float bayLength = 1.90f;
+        [SerializeField] private float baySpacing = 0.28f;
         [SerializeField] private float bayAngleDeg = GameConstants.ParkingBayAngleDeg; // -30.0f
-        [SerializeField] private float entryCorridorDist = 55.0f;
+        [SerializeField] private float entryCorridorDist = 2.0f;
 
-        [Header("Base Center Position in Prototype Space")]
-        [SerializeField] private Vector3 firstBayCenter = new Vector3(118.0f, 0f, 320.8f);
+        [Header("Base Center Position in Unity World Space")]
+        [SerializeField] private Vector3 firstBayCenter = new Vector3(-4.48f, 0f, 19.5f);
 
         [Header("Materials (Auto-Created if Null)")]
         [SerializeField] private Material panelMaterial;
@@ -100,10 +100,10 @@ namespace RoadwaysGame
             panelObj.name = "Gen_TrapeziumFloorPanel";
             panelObj.transform.SetParent(transform, false);
 
-            // Large panel covering the terminal area
-            panelObj.transform.localPosition = new Vector3(250f, 0.005f, 450f);
+            // Panel covering terminal bay and fleet depot area
+            panelObj.transform.localPosition = new Vector3(0f, 0.005f, 22.5f);
             panelObj.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-            panelObj.transform.localScale = new Vector3(450f, 320f, 1f);
+            panelObj.transform.localScale = new Vector3(14.0f, 10.0f, 1f);
 
             Renderer r = panelObj.GetComponent<Renderer>();
             if (r != null) r.sharedMaterial = panelMaterial;
@@ -118,7 +118,7 @@ namespace RoadwaysGame
             GameObject baysGroup = new GameObject("Gen_ParkingBaySlots");
             baysGroup.transform.SetParent(transform, false);
 
-            Mesh borderMesh = BusMeshGenerator.CreateParkingSlotBorderMesh(bayWidth, bayLength, 2f);
+            Mesh borderMesh = BusMeshGenerator.CreateParkingSlotBorderMesh(bayWidth, bayLength, 0.08f);
 
             // Unit direction vector pointing INTO the -30 deg bay: (sin(-30), 0, cos(-30)) = (-0.5, 0, 0.866025)
             float rad = bayAngleDeg * Mathf.Deg2Rad;
@@ -126,7 +126,7 @@ namespace RoadwaysGame
 
             // Step vector between adjacent bays in the single horizontal row
             // Width projected perpendicular + spacing
-            float effectiveSpacing = (bayWidth + baySpacing) * 1.15f;
+            float effectiveSpacing = 1.12f;
 
             for (int i = 0; i < totalBays; i++)
             {

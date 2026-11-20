@@ -51,7 +51,7 @@ namespace RoadwaysGame.Editor
 
             // Target Android Architectures
             PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.IL2CPP);
-            PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
+            PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARMv7 | AndroidArchitecture.ARM64;
         }
 
         public static void ConfigureURPSettings()
