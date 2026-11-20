@@ -238,7 +238,7 @@
         <div class="track-network-container">
     <svg class="track-network-svg" viewBox="0 0 500 320" preserveAspectRatio="none">
       <defs>
-        <!-- Red Chilbi Candy Bean Gradients -->
+        <!-- Red Candy Bean Gradients -->
         <linearGradient id="chilbi-grad-red-body" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stop-color="#ff6b81" />
           <stop offset="60%" stop-color="#ee5253" />
@@ -250,16 +250,40 @@
           <stop offset="100%" stop-color="#991b1b" />
         </radialGradient>
 
-        <!-- Turquoise Cyan Candy Bean Gradients -->
-        <linearGradient id="chilbi-grad-cyan-body" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#7efff5" />
-          <stop offset="55%" stop-color="#18dcff" />
-          <stop offset="100%" stop-color="#0652dd" />
+        <!-- Yellow Candy Bean Gradients -->
+        <linearGradient id="chilbi-grad-yellow-body" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#ffeaa7" />
+          <stop offset="55%" stop-color="#fed330" />
+          <stop offset="100%" stop-color="#f39c12" />
         </linearGradient>
-        <radialGradient id="chilbi-grad-cyan-head" cx="35%" cy="30%" r="65%">
-          <stop offset="0%" stop-color="#81ecec" />
-          <stop offset="45%" stop-color="#12cbc4" />
+        <radialGradient id="chilbi-grad-yellow-head" cx="35%" cy="30%" r="65%">
+          <stop offset="0%" stop-color="#fff275" />
+          <stop offset="45%" stop-color="#feca57" />
+          <stop offset="100%" stop-color="#e67e22" />
+        </radialGradient>
+
+        <!-- Blue Candy Bean Gradients -->
+        <linearGradient id="chilbi-grad-blue-body" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#70a1ff" />
+          <stop offset="55%" stop-color="#1e90ff" />
+          <stop offset="100%" stop-color="#2e86de" />
+        </linearGradient>
+        <radialGradient id="chilbi-grad-blue-head" cx="35%" cy="30%" r="65%">
+          <stop offset="0%" stop-color="#99c5ff" />
+          <stop offset="45%" stop-color="#3742fa" />
+          <stop offset="100%" stop-color="#1e3799" />
+        </radialGradient>
+
+        <!-- Green Candy Bean Gradients -->
+        <linearGradient id="chilbi-grad-green-body" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#55efc4" />
+          <stop offset="55%" stop-color="#00b894" />
           <stop offset="100%" stop-color="#006266" />
+        </linearGradient>
+        <radialGradient id="chilbi-grad-green-head" cx="35%" cy="30%" r="65%">
+          <stop offset="0%" stop-color="#7bed9f" />
+          <stop offset="45%" stop-color="#2ed573" />
+          <stop offset="100%" stop-color="#1e824c" />
         </radialGradient>
       </defs>
 
@@ -326,135 +350,6 @@
 
       <!-- 8. Animated Chilbi Characters Layer (Upright 2.5D Side-View) -->
       <g id="chilbi-characters-layer">
-        <!-- Red Chilbi 1 (Lane 1 - Upright 2.5D Side View) -->
-        <g id="chilbi-red-1" class="chilbi-walker" transform="translate(-100, -100)">
-          <ellipse class="chilbi-shadow" cx="0" cy="1" rx="11" ry="4.2" fill="rgba(15, 20, 35, 0.35)" />
-          <rect id="chilbi-red-1-arm-far" x="2.5" y="-18" width="4" height="10.5" rx="2" fill="#c0392b" />
-          <rect id="chilbi-red-1-foot-far" x="-1" y="-3.5" width="4.5" height="8" rx="2.2" fill="#961133" />
-          <rect id="chilbi-red-1-foot-near" x="-5.5" y="-2.5" width="4.5" height="8" rx="2.2" fill="#b71540" />
-          <g id="chilbi-red-1-body-group">
-            <rect x="-7.5" y="-23" width="15" height="21" rx="7.5" fill="url(#chilbi-grad-red-body)" />
-            <circle cx="1.5" cy="-26" r="8.5" fill="url(#chilbi-grad-red-head)" />
-            <ellipse cx="0" cy="-28.5" rx="2.8" ry="1.8" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 0 -28.5)" />
-            <circle cx="4" cy="-26" r="1.0" fill="rgba(255, 255, 255, 0.5)" />
-            <ellipse cx="5.2" cy="-25.2" rx="1.3" ry="2.1" fill="#1e1e28" />
-            <circle cx="5.5" cy="-25.8" r="0.6" fill="#ffffff" />
-            <rect id="chilbi-red-1-arm-near" x="-4.5" y="-17" width="4" height="10.5" rx="2" fill="#e55039" />
-          </g>
-        </g>
-        <!-- Red Chilbi 2 (Lane 2 - Upright 2.5D Side View) -->
-        <g id="chilbi-red-2" class="chilbi-walker" transform="translate(-100, -100)">
-          <ellipse class="chilbi-shadow" cx="0" cy="1" rx="11" ry="4.2" fill="rgba(15, 20, 35, 0.35)" />
-          <rect id="chilbi-red-2-arm-far" x="2.5" y="-18" width="4" height="10.5" rx="2" fill="#c0392b" />
-          <rect id="chilbi-red-2-foot-far" x="-1" y="-3.5" width="4.5" height="8" rx="2.2" fill="#961133" />
-          <rect id="chilbi-red-2-foot-near" x="-5.5" y="-2.5" width="4.5" height="8" rx="2.2" fill="#b71540" />
-          <g id="chilbi-red-2-body-group">
-            <rect x="-7.5" y="-23" width="15" height="21" rx="7.5" fill="url(#chilbi-grad-red-body)" />
-            <circle cx="1.5" cy="-26" r="8.5" fill="url(#chilbi-grad-red-head)" />
-            <ellipse cx="0" cy="-28.5" rx="2.8" ry="1.8" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 0 -28.5)" />
-            <circle cx="4" cy="-26" r="1.0" fill="rgba(255, 255, 255, 0.5)" />
-            <ellipse cx="5.2" cy="-25.2" rx="1.3" ry="2.1" fill="#1e1e28" />
-            <circle cx="5.5" cy="-25.8" r="0.6" fill="#ffffff" />
-            <rect id="chilbi-red-2-arm-near" x="-4.5" y="-17" width="4" height="10.5" rx="2" fill="#e55039" />
-          </g>
-        </g>
-        <!-- Red Chilbi 3 (Lane 3 - Upright 2.5D Side View) -->
-        <g id="chilbi-red-3" class="chilbi-walker" transform="translate(-100, -100)">
-          <ellipse class="chilbi-shadow" cx="0" cy="1" rx="11" ry="4.2" fill="rgba(15, 20, 35, 0.35)" />
-          <rect id="chilbi-red-3-arm-far" x="2.5" y="-18" width="4" height="10.5" rx="2" fill="#c0392b" />
-          <rect id="chilbi-red-3-foot-far" x="-1" y="-3.5" width="4.5" height="8" rx="2.2" fill="#961133" />
-          <rect id="chilbi-red-3-foot-near" x="-5.5" y="-2.5" width="4.5" height="8" rx="2.2" fill="#b71540" />
-          <g id="chilbi-red-3-body-group">
-            <rect x="-7.5" y="-23" width="15" height="21" rx="7.5" fill="url(#chilbi-grad-red-body)" />
-            <circle cx="1.5" cy="-26" r="8.5" fill="url(#chilbi-grad-red-head)" />
-            <ellipse cx="0" cy="-28.5" rx="2.8" ry="1.8" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 0 -28.5)" />
-            <circle cx="4" cy="-26" r="1.0" fill="rgba(255, 255, 255, 0.5)" />
-            <ellipse cx="5.2" cy="-25.2" rx="1.3" ry="2.1" fill="#1e1e28" />
-            <circle cx="5.5" cy="-25.8" r="0.6" fill="#ffffff" />
-            <rect id="chilbi-red-3-arm-near" x="-4.5" y="-17" width="4" height="10.5" rx="2" fill="#e55039" />
-          </g>
-        </g>
-        <!-- Red Chilbi 4 (Lane 4 - Upright 2.5D Side View) -->
-        <g id="chilbi-red-4" class="chilbi-walker" transform="translate(-100, -100)">
-          <ellipse class="chilbi-shadow" cx="0" cy="1" rx="11" ry="4.2" fill="rgba(15, 20, 35, 0.35)" />
-          <rect id="chilbi-red-4-arm-far" x="2.5" y="-18" width="4" height="10.5" rx="2" fill="#c0392b" />
-          <rect id="chilbi-red-4-foot-far" x="-1" y="-3.5" width="4.5" height="8" rx="2.2" fill="#961133" />
-          <rect id="chilbi-red-4-foot-near" x="-5.5" y="-2.5" width="4.5" height="8" rx="2.2" fill="#b71540" />
-          <g id="chilbi-red-4-body-group">
-            <rect x="-7.5" y="-23" width="15" height="21" rx="7.5" fill="url(#chilbi-grad-red-body)" />
-            <circle cx="1.5" cy="-26" r="8.5" fill="url(#chilbi-grad-red-head)" />
-            <ellipse cx="0" cy="-28.5" rx="2.8" ry="1.8" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 0 -28.5)" />
-            <circle cx="4" cy="-26" r="1.0" fill="rgba(255, 255, 255, 0.5)" />
-            <ellipse cx="5.2" cy="-25.2" rx="1.3" ry="2.1" fill="#1e1e28" />
-            <circle cx="5.5" cy="-25.8" r="0.6" fill="#ffffff" />
-            <rect id="chilbi-red-4-arm-near" x="-4.5" y="-17" width="4" height="10.5" rx="2" fill="#e55039" />
-          </g>
-        </g>
-        <!-- Red Chilbi 5 (Lane 5 - Upright 2.5D Side View) -->
-        <g id="chilbi-red-5" class="chilbi-walker" transform="translate(-100, -100)">
-          <ellipse class="chilbi-shadow" cx="0" cy="1" rx="11" ry="4.2" fill="rgba(15, 20, 35, 0.35)" />
-          <rect id="chilbi-red-5-arm-far" x="2.5" y="-18" width="4" height="10.5" rx="2" fill="#c0392b" />
-          <rect id="chilbi-red-5-foot-far" x="-1" y="-3.5" width="4.5" height="8" rx="2.2" fill="#961133" />
-          <rect id="chilbi-red-5-foot-near" x="-5.5" y="-2.5" width="4.5" height="8" rx="2.2" fill="#b71540" />
-          <g id="chilbi-red-5-body-group">
-            <rect x="-7.5" y="-23" width="15" height="21" rx="7.5" fill="url(#chilbi-grad-red-body)" />
-            <circle cx="1.5" cy="-26" r="8.5" fill="url(#chilbi-grad-red-head)" />
-            <ellipse cx="0" cy="-28.5" rx="2.8" ry="1.8" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 0 -28.5)" />
-            <circle cx="4" cy="-26" r="1.0" fill="rgba(255, 255, 255, 0.5)" />
-            <ellipse cx="5.2" cy="-25.2" rx="1.3" ry="2.1" fill="#1e1e28" />
-            <circle cx="5.5" cy="-25.8" r="0.6" fill="#ffffff" />
-            <rect id="chilbi-red-5-arm-near" x="-4.5" y="-17" width="4" height="10.5" rx="2" fill="#e55039" />
-          </g>
-        </g>
-        <!-- Red Chilbi 6 (Lane 6 - Upright 2.5D Side View) -->
-        <g id="chilbi-red-6" class="chilbi-walker" transform="translate(-100, -100)">
-          <ellipse class="chilbi-shadow" cx="0" cy="1" rx="11" ry="4.2" fill="rgba(15, 20, 35, 0.35)" />
-          <rect id="chilbi-red-6-arm-far" x="2.5" y="-18" width="4" height="10.5" rx="2" fill="#c0392b" />
-          <rect id="chilbi-red-6-foot-far" x="-1" y="-3.5" width="4.5" height="8" rx="2.2" fill="#961133" />
-          <rect id="chilbi-red-6-foot-near" x="-5.5" y="-2.5" width="4.5" height="8" rx="2.2" fill="#b71540" />
-          <g id="chilbi-red-6-body-group">
-            <rect x="-7.5" y="-23" width="15" height="21" rx="7.5" fill="url(#chilbi-grad-red-body)" />
-            <circle cx="1.5" cy="-26" r="8.5" fill="url(#chilbi-grad-red-head)" />
-            <ellipse cx="0" cy="-28.5" rx="2.8" ry="1.8" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 0 -28.5)" />
-            <circle cx="4" cy="-26" r="1.0" fill="rgba(255, 255, 255, 0.5)" />
-            <ellipse cx="5.2" cy="-25.2" rx="1.3" ry="2.1" fill="#1e1e28" />
-            <circle cx="5.5" cy="-25.8" r="0.6" fill="#ffffff" />
-            <rect id="chilbi-red-6-arm-near" x="-4.5" y="-17" width="4" height="10.5" rx="2" fill="#e55039" />
-          </g>
-        </g>
-        <!-- Red Chilbi 7 (Lane 7 - Upright 2.5D Side View) -->
-        <g id="chilbi-red-7" class="chilbi-walker" transform="translate(-100, -100)">
-          <ellipse class="chilbi-shadow" cx="0" cy="1" rx="11" ry="4.2" fill="rgba(15, 20, 35, 0.35)" />
-          <rect id="chilbi-red-7-arm-far" x="2.5" y="-18" width="4" height="10.5" rx="2" fill="#c0392b" />
-          <rect id="chilbi-red-7-foot-far" x="-1" y="-3.5" width="4.5" height="8" rx="2.2" fill="#961133" />
-          <rect id="chilbi-red-7-foot-near" x="-5.5" y="-2.5" width="4.5" height="8" rx="2.2" fill="#b71540" />
-          <g id="chilbi-red-7-body-group">
-            <rect x="-7.5" y="-23" width="15" height="21" rx="7.5" fill="url(#chilbi-grad-red-body)" />
-            <circle cx="1.5" cy="-26" r="8.5" fill="url(#chilbi-grad-red-head)" />
-            <ellipse cx="0" cy="-28.5" rx="2.8" ry="1.8" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 0 -28.5)" />
-            <circle cx="4" cy="-26" r="1.0" fill="rgba(255, 255, 255, 0.5)" />
-            <ellipse cx="5.2" cy="-25.2" rx="1.3" ry="2.1" fill="#1e1e28" />
-            <circle cx="5.5" cy="-25.8" r="0.6" fill="#ffffff" />
-            <rect id="chilbi-red-7-arm-near" x="-4.5" y="-17" width="4" height="10.5" rx="2" fill="#e55039" />
-          </g>
-        </g>
-
-        <!-- Right Chilbi Character (Turquoise Cyan Candy Bean - Upright 2.5D Side View) -->
-        <g id="chilbi-cyan" class="chilbi-walker" transform="translate(-100, -100)">
-          <ellipse class="chilbi-shadow" cx="0" cy="1" rx="11" ry="4.2" fill="rgba(15, 20, 35, 0.35)" />
-          <rect id="chilbi-cyan-arm-far" x="2.5" y="-18" width="4" height="10.5" rx="2" fill="#006266" />
-          <rect id="chilbi-cyan-foot-far" x="-1" y="-3.5" width="4.5" height="8" rx="2.2" fill="#00484a" />
-          <rect id="chilbi-cyan-foot-near" x="-5.5" y="-2.5" width="4.5" height="8" rx="2.2" fill="#006266" />
-          <g id="chilbi-cyan-body-group">
-            <rect x="-7.5" y="-23" width="15" height="21" rx="7.5" fill="url(#chilbi-grad-cyan-body)" />
-            <circle cx="1.5" cy="-26" r="8.5" fill="url(#chilbi-grad-cyan-head)" />
-            <ellipse cx="0" cy="-28.5" rx="2.8" ry="1.8" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 0 -28.5)" />
-            <circle cx="4" cy="-26" r="1.0" fill="rgba(255, 255, 255, 0.5)" />
-            <ellipse cx="5.2" cy="-25.2" rx="1.3" ry="2.1" fill="#1e1e28" />
-            <circle cx="5.5" cy="-25.8" r="0.6" fill="#ffffff" />
-            <rect id="chilbi-cyan-arm-near" x="-4.5" y="-17" width="4" height="10.5" rx="2" fill="#12cbc4" />
-          </g>
-        </g>
       </g>
     </svg>
   </div>
@@ -1868,33 +1763,110 @@
     //   - Upright 2.5D Side-View Posture (from Step 35)
     // =========================================================================
     (function initChilbiWalkers() {
-      // 7 Red Chilbi Squad Members spanning abreast lanes
-      const redSquad = [
-        { id: 1, d: -28.0 + 0 * (56.0 / 6.0), phase: 0.0 },
-        { id: 2, d: -28.0 + 1 * (56.0 / 6.0), phase: 0.7 },
-        { id: 3, d: -28.0 + 2 * (56.0 / 6.0), phase: 1.4 },
-        { id: 4, d: -28.0 + 3 * (56.0 / 6.0), phase: 2.1 },
-        { id: 5, d: -28.0 + 4 * (56.0 / 6.0), phase: 2.8 },
-        { id: 6, d: -28.0 + 5 * (56.0 / 6.0), phase: 3.5 },
-        { id: 7, d: -28.0 + 6 * (56.0 / 6.0), phase: 4.2 }
+      // Color Themes for Candy Bean rigs
+      const colorThemes = {
+        red: {
+          bodyGrad: "url(#chilbi-grad-red-body)",
+          headGrad: "url(#chilbi-grad-red-head)",
+          armNear: "#e55039",
+          armFar: "#c0392b",
+          footNear: "#b71540",
+          footFar: "#961133"
+        },
+        yellow: {
+          bodyGrad: "url(#chilbi-grad-yellow-body)",
+          headGrad: "url(#chilbi-grad-yellow-head)",
+          armNear: "#f1c40f",
+          armFar: "#f39c12",
+          footNear: "#e67e22",
+          footFar: "#d35400"
+        },
+        blue: {
+          bodyGrad: "url(#chilbi-grad-blue-body)",
+          headGrad: "url(#chilbi-grad-blue-head)",
+          armNear: "#48dbfb",
+          armFar: "#2980b9",
+          footNear: "#1e3799",
+          footFar: "#0c2461"
+        },
+        green: {
+          bodyGrad: "url(#chilbi-grad-green-body)",
+          headGrad: "url(#chilbi-grad-green-head)",
+          armNear: "#2ecc71",
+          armFar: "#27ae60",
+          footNear: "#16a085",
+          footFar: "#117a65"
+        }
+      };
+
+      // 24 Rows Formation Specification:
+      // - 5 rows of RED
+      // - 7 rows of YELLOW
+      // - 4 rows of BLUE
+      // - 8 rows of GREEN
+      // ONLY ONE COLOR PER ROW
+      const rowBlocks = [
+        { color: "red",    count: 5 },
+        { color: "yellow", count: 7 },
+        { color: "blue",   count: 4 },
+        { color: "green",  count: 8 }
       ];
 
-      for (let i = 0; i < redSquad.length; i++) {
-        const m = redSquad[i];
-        m.elem = document.getElementById("chilbi-red-" + m.id);
-        m.body = document.getElementById("chilbi-red-" + m.id + "-body-group");
-        m.armNear = document.getElementById("chilbi-red-" + m.id + "-arm-near");
-        m.armFar = document.getElementById("chilbi-red-" + m.id + "-arm-far");
-        m.footNear = document.getElementById("chilbi-red-" + m.id + "-foot-near");
-        m.footFar = document.getElementById("chilbi-red-" + m.id + "-foot-far");
-      }
+      const rowColors = [];
+      rowBlocks.forEach(b => {
+        for (let i = 0; i < b.count; i++) {
+          rowColors.push(b.color);
+        }
+      });
+      const TOTAL_ROWS = rowColors.length; // 24
+      const COLS_PER_ROW = 7;             // 7 abreast lanes
+      const rowSpacing = 16.0;            // 16px distance between consecutive rows
+      const chilbiBaseScale = 1.05;       // Scale for 24-row parade formation
 
-      const cyanElem = document.getElementById("chilbi-cyan");
-      const cyanBody = document.getElementById("chilbi-cyan-body-group");
-      const cyanArmNear = document.getElementById("chilbi-cyan-arm-near");
-      const cyanArmFar = document.getElementById("chilbi-cyan-arm-far");
-      const cyanFootNear = document.getElementById("chilbi-cyan-foot-near");
-      const cyanFootFar = document.getElementById("chilbi-cyan-foot-far");
+      const layer = document.getElementById("chilbi-characters-layer");
+      const walkers = [];
+
+      // Build SVG elements for all 24 rows
+      for (let r = 0; r < TOTAL_ROWS; r++) {
+        const themeName = rowColors[r];
+        const theme = colorThemes[themeName];
+        for (let c = 0; c < COLS_PER_ROW; c++) {
+          const id = `chilbi-r${r}-c${c}`;
+          const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          g.id = id;
+          g.setAttribute("class", `chilbi-walker chilbi-${themeName}`);
+          g.setAttribute("transform", "translate(-200, -200)");
+          g.innerHTML = `
+            <ellipse class="chilbi-shadow" cx="0" cy="1" rx="9.5" ry="3.6" fill="rgba(15, 20, 35, 0.35)" />
+            <rect id="${id}-arm-far" x="2.5" y="-18" width="3.8" height="10" rx="1.9" fill="${theme.armFar}" />
+            <rect id="${id}-foot-far" x="-1" y="-3.5" width="4.2" height="7.5" rx="2" fill="${theme.footFar}" />
+            <rect id="${id}-foot-near" x="-5" y="-2.5" width="4.2" height="7.5" rx="2" fill="${theme.footNear}" />
+            <g id="${id}-body-group">
+              <rect x="-7" y="-22" width="14" height="20" rx="7" fill="${theme.bodyGrad}" />
+              <circle cx="1.5" cy="-25" r="8" fill="${theme.headGrad}" />
+              <ellipse cx="0" cy="-27.5" rx="2.6" ry="1.7" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 0 -27.5)" />
+              <circle cx="4" cy="-25" r="0.9" fill="rgba(255, 255, 255, 0.5)" />
+              <ellipse cx="5" cy="-24.2" rx="1.2" ry="2" fill="#1e1e28" />
+              <circle cx="5.3" cy="-24.8" r="0.55" fill="#ffffff" />
+              <rect id="${id}-arm-near" x="-4.2" y="-16.5" width="3.8" height="10" rx="1.9" fill="${theme.armNear}" />
+            </g>
+          `;
+          layer.appendChild(g);
+
+          walkers.push({
+            elem: g,
+            body: g.querySelector(`#${id}-body-group`),
+            footNear: g.querySelector(`#${id}-foot-near`),
+            footFar: g.querySelector(`#${id}-foot-far`),
+            armNear: g.querySelector(`#${id}-arm-near`),
+            armFar: g.querySelector(`#${id}-arm-far`),
+            row: r,
+            col: c,
+            d: -27.0 + c * 9.0, // Lane normal offset across the 72px road
+            phase: r * 0.38 + c * 0.45
+          });
+        }
+      }
 
       // Audio & Speed Parameters
       const cheerAudio = document.getElementById("chilbi-cheer-audio");
@@ -1902,7 +1874,6 @@
       const runSpeed = 150.0;    // High speed running entrance from road (px/s)
       const walkSpeed = 46.0;   // Steady cruising walk pace on ring road (px/s)
       const baseWaddleFreq = 8.5;
-      const chilbiBaseScale = 1.38;
 
       // 16 Control Points defining the mobile circuit spline (Y = 80 to 236)
       const pts = [
@@ -2015,7 +1986,16 @@
       }
 
       function sampleFeederAtDistance(s) {
-        s = Math.max(0, Math.min(feederLength, s));
+        if (s <= 0) {
+          // Offscreen linear extension to the left
+          return {
+            x: pL0.x + s,
+            y: pL0.y,
+            dx: 1.0,
+            dy: 0.0
+          };
+        }
+        s = Math.min(feederLength, s);
         let low = 0, high = NUM_FEEDER_SAMPLES;
         while (low <= high) {
           const mid = (low + high) >> 1;
@@ -2049,7 +2029,7 @@
         }
       }
 
-      // Audio Autoplay & User-Gesture Unlocking
+      // Audio Autoplay & Gesture Unlocking
       let audioTriggered = false;
       function playCheerVoice() {
         if (!cheerAudio) return;
@@ -2059,9 +2039,7 @@
         if (promise !== undefined) {
           promise.then(() => {
             audioTriggered = true;
-          }).catch(() => {
-            // Browser autoplay waiting for user gesture
-          });
+          }).catch(() => {});
         }
       }
 
@@ -2077,13 +2055,13 @@
       // Simulation State
       let startTime = null;
       let lastTime = null;
-      let squadDist = 0;
+      let squadLeadDist = 0;
       let walkCyclePhase = 0;
 
-      function resetSquadRun() {
+      function resetParadeRun() {
         startTime = performance.now();
         lastTime = performance.now();
-        squadDist = 0;
+        squadLeadDist = 0;
         walkCyclePhase = 0;
         playCheerVoice();
       }
@@ -2091,11 +2069,10 @@
       if (replayBtn) {
         replayBtn.addEventListener("click", (e) => {
           e.stopPropagation();
-          resetSquadRun();
+          resetParadeRun();
         });
       }
 
-      // Attempt immediate kids cheer audio playback as scene renders
       playCheerVoice();
 
       function updateChilbiSquad(now) {
@@ -2109,101 +2086,70 @@
         const tSec = (now - startTime) / 1000.0;
 
         // Kinematic Speed Profile:
-        // t < 0.9s: High Speed Sprint (150 px/s) down the feeder road
-        // t in [0.9s, 2.3s]: Smooth Deceleration from 150 px/s down to 46 px/s at the merge
-        // t >= 2.3s: Cruising Walk Speed (46 px/s) looping around the ring road
+        // High speed run (150 px/s) down the entrance road with cheer audio,
+        // Smoothly decelerating to 46 px/s at the merge, then continuous loop walk!
         let currentSpeed;
         if (tSec < 0.9) {
           currentSpeed = runSpeed;
-        } else if (tSec < 2.3) {
-          const ease = 0.5 * (1 + Math.cos(Math.PI * (tSec - 0.9) / 1.4));
+        } else if (tSec < 2.4) {
+          const ease = 0.5 * (1 + Math.cos(Math.PI * (tSec - 0.9) / 1.5));
           currentSpeed = walkSpeed + (runSpeed - walkSpeed) * ease;
         } else {
           currentSpeed = walkSpeed;
         }
 
-        squadDist += currentSpeed * dt;
+        squadLeadDist += currentSpeed * dt;
 
-        // Dynamics matching running vs walking
         const speedRatio = Math.max(0, Math.min(1, (currentSpeed - walkSpeed) / (runSpeed - walkSpeed)));
-        const dynamicFreq = baseWaddleFreq + speedRatio * 11.0; // 8.5 Hz walk -> 19.5 Hz sprint!
+        const dynamicFreq = baseWaddleFreq + speedRatio * 11.0; // 8.5 Hz walk -> 19.5 Hz sprint
         walkCyclePhase += dt * dynamicFreq;
 
-        const curBounce = 2.4 + speedRatio * 2.6;       // 2.4px -> 5.0px vertical hop
-        const curTilt = 3.5 + speedRatio * 4.0;         // waddle tilt
-        const curLegStride = 5.0 + speedRatio * 4.5;    // 5.0px -> 9.5px leg stride
-        const curArmSwing = 20.0 + speedRatio * 22.0;   // 20 deg -> 42 deg running arm pump
+        const curBounce = 2.2 + speedRatio * 2.4;
+        const curTilt = 3.5 + speedRatio * 3.5;
+        const curLegStride = 4.8 + speedRatio * 4.2;
+        const curArmSwing = 18.0 + speedRatio * 22.0;
 
-        // Fanning factor: cluster tightly when running down the road, fan out fully across the 7 lanes on the ring
-        const fanFactor = Math.min(1.0, Math.max(0.55, squadDist / feederLength));
+        // Update all 168 Chilbis across the 24 rows
+        for (let i = 0; i < walkers.length; i++) {
+          const w = walkers[i];
+          const rowDist = squadLeadDist - (w.row * rowSpacing);
 
-        // 1. Red Chilbi Squad
-        for (let i = 0; i < redSquad.length; i++) {
-          const m = redSquad[i];
-          // Wedge formation during run: center leader leads, outer members follow slightly
-          const wedgeStagger = (1.0 - fanFactor) * (-(m.id - 4) * (m.id - 4) * 2.5);
-          const memberDist = squadDist + wedgeStagger;
-          const smp = sampleTrackAtDistance(memberDist);
+          if (rowDist < -50) {
+            // Far offscreen, keep hidden
+            w.elem.style.display = "none";
+            continue;
+          } else {
+            w.elem.style.display = "";
+          }
 
+          const smp = sampleTrackAtDistance(rowDist);
           const cLen = Math.hypot(smp.dx, smp.dy) || 1;
           const nx = -smp.dy / cLen;
           const ny = smp.dx / cLen;
           const facingX = smp.dx >= 0 ? 1 : -1;
 
-          const px = smp.x + (m.d * fanFactor) * nx;
-          const py = smp.y + (m.d * fanFactor) * ny;
+          // Road fanning factor (tighter in entrance road, full breadth on ring)
+          const fanFactor = Math.min(1.0, Math.max(0.65, rowDist / feederLength));
+          const px = smp.x + (w.d * fanFactor) * nx;
+          const py = smp.y + (w.d * fanFactor) * ny;
 
-          const depth = Math.max(0.90, Math.min(1.15, 0.92 + ((py - 60) / 160) * 0.20));
+          const depth = Math.max(0.88, Math.min(1.15, 0.90 + ((py - 60) / 160) * 0.22));
           const finalScale = depth * chilbiBaseScale;
 
-          m.elem.setAttribute("transform", `translate(${px.toFixed(1)}, ${py.toFixed(1)}) scale(${(facingX * finalScale).toFixed(3)}, ${finalScale.toFixed(3)})`);
+          w.elem.setAttribute("transform", `translate(${px.toFixed(1)}, ${py.toFixed(1)}) scale(${(facingX * finalScale).toFixed(3)}, ${finalScale.toFixed(3)})`);
 
-          const wPhase = walkCyclePhase + m.phase;
+          const wPhase = walkCyclePhase + w.phase;
           const bounce = Math.abs(Math.sin(wPhase)) * curBounce;
-          // Forward lean when sprinting
-          const sprintLean = facingX * speedRatio * 12.0;
+          const sprintLean = facingX * speedRatio * 11.0;
           const tilt = Math.sin(wPhase) * curTilt + sprintLean;
           const legStride = Math.sin(wPhase) * curLegStride;
           const armSwing = Math.sin(wPhase) * curArmSwing;
 
-          if (m.body) m.body.setAttribute("transform", `translate(0, ${-bounce.toFixed(2)}) rotate(${tilt.toFixed(1)} 0 -15)`);
-          if (m.footNear) m.footNear.setAttribute("transform", `translate(${legStride.toFixed(2)}, 0)`);
-          if (m.footFar) m.footFar.setAttribute("transform", `translate(${-legStride.toFixed(2)}, 0)`);
-          if (m.armNear) m.armNear.setAttribute("transform", `rotate(${armSwing.toFixed(1)}, -3, -17)`);
-          if (m.armFar) m.armFar.setAttribute("transform", `rotate(${-armSwing.toFixed(1)}, 4, -17)`);
-        }
-
-        // 2. Cyan Chilbi (Cheerful lead runner in front of the squad)
-        if (cyanElem) {
-          // Cyan runs slightly ahead in the center as the enthusiastic squad leader
-          const cyanLeadDist = squadDist + 14.0;
-          const smpCyan = sampleTrackAtDistance(cyanLeadDist);
-          const cLenC = Math.hypot(smpCyan.dx, smpCyan.dy) || 1;
-          const nxC = -smpCyan.dy / cLenC;
-          const nyC = smpCyan.dx / cLenC;
-          const facingXC = smpCyan.dx >= 0 ? 1 : -1;
-
-          // Centered along the track centerline (d = 0)
-          const pxC = smpCyan.x;
-          const pyC = smpCyan.y;
-
-          const depthC = Math.max(0.90, Math.min(1.15, 0.92 + ((pyC - 60) / 160) * 0.20));
-          const finalScaleC = depthC * chilbiBaseScale;
-
-          cyanElem.setAttribute("transform", `translate(${pxC.toFixed(1)}, ${pyC.toFixed(1)}) scale(${(facingXC * finalScaleC).toFixed(3)}, ${finalScaleC.toFixed(3)})`);
-
-          const wPhaseC = walkCyclePhase + 1.2;
-          const bounceC = Math.abs(Math.sin(wPhaseC)) * curBounce;
-          const sprintLeanC = facingXC * speedRatio * 12.0;
-          const tiltC = Math.sin(wPhaseC) * curTilt + sprintLeanC;
-          const legStrideC = Math.sin(wPhaseC) * curLegStride;
-          const armSwingC = Math.sin(wPhaseC) * curArmSwing;
-
-          if (cyanBody) cyanBody.setAttribute("transform", `translate(0, ${-bounceC.toFixed(2)}) rotate(${tiltC.toFixed(1)} 0 -15)`);
-          if (cyanFootNear) cyanFootNear.setAttribute("transform", `translate(${legStrideC.toFixed(2)}, 0)`);
-          if (cyanFootFar) cyanFootFar.setAttribute("transform", `translate(${-legStrideC.toFixed(2)}, 0)`);
-          if (cyanArmNear) cyanArmNear.setAttribute("transform", `rotate(${armSwingC.toFixed(1)}, -3, -17)`);
-          if (cyanArmFar) cyanArmFar.setAttribute("transform", `rotate(${-armSwingC.toFixed(1)}, 4, -17)`);
+          if (w.body) w.body.setAttribute("transform", `translate(0, ${-bounce.toFixed(2)}) rotate(${tilt.toFixed(1)} 0 -15)`);
+          if (w.footNear) w.footNear.setAttribute("transform", `translate(${legStride.toFixed(2)}, 0)`);
+          if (w.footFar) w.footFar.setAttribute("transform", `translate(${-legStride.toFixed(2)}, 0)`);
+          if (w.armNear) w.armNear.setAttribute("transform", `rotate(${armSwing.toFixed(1)}, -3, -17)`);
+          if (w.armFar) w.armFar.setAttribute("transform", `rotate(${-armSwing.toFixed(1)}, 4, -17)`);
         }
 
         requestAnimationFrame(updateChilbiSquad);
