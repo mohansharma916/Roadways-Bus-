@@ -336,7 +336,7 @@
           </g>
         </g>
 
-        <!-- Red Chilbi 6 (Rear Right) -->
+        <!-- Red Chilbi 6 -->
         <g id="chilbi-red-6" class="chilbi-walker" transform="translate(-100, -100)">
           <ellipse class="chilbi-shadow" cx="0" cy="1" rx="10.5" ry="4" fill="rgba(15, 20, 35, 0.35)" />
           <rect id="chilbi-red-6-arm-far" x="2.5" y="-17" width="3.8" height="10" rx="1.9" fill="#c0392b" />
@@ -350,6 +350,23 @@
             <ellipse cx="5" cy="-24.5" rx="1.3" ry="2" fill="#1e1e28" />
             <circle cx="5.3" cy="-25" r="0.6" fill="#ffffff" />
             <rect id="chilbi-red-6-arm-near" x="-4" y="-16" width="3.8" height="10" rx="1.9" fill="#e55039" />
+          </g>
+        </g>
+
+        <!-- Red Chilbi 7 (Outer Road Border) -->
+        <g id="chilbi-red-7" class="chilbi-walker" transform="translate(-100, -100)">
+          <ellipse class="chilbi-shadow" cx="0" cy="1" rx="10.5" ry="4" fill="rgba(15, 20, 35, 0.35)" />
+          <rect id="chilbi-red-7-arm-far" x="2.5" y="-17" width="3.8" height="10" rx="1.9" fill="#c0392b" />
+          <rect id="chilbi-red-7-foot-far" x="-1" y="-3" width="4.2" height="7.5" rx="2.1" fill="#961133" />
+          <rect id="chilbi-red-7-foot-near" x="-5" y="-2" width="4.2" height="7.5" rx="2.1" fill="#b71540" />
+          <g id="chilbi-red-7-body-group">
+            <rect x="-7" y="-22" width="14" height="20" rx="7" fill="url(#chilbi-grad-red-body)" />
+            <circle cx="1.5" cy="-25" r="8" fill="url(#chilbi-grad-red-head)" />
+            <ellipse cx="0" cy="-27.5" rx="2.7" ry="1.7" fill="rgba(255, 255, 255, 0.75)" transform="rotate(-15 0 -27.5)" />
+            <circle cx="4" cy="-25" r="0.9" fill="rgba(255, 255, 255, 0.5)" />
+            <ellipse cx="5" cy="-24.5" rx="1.3" ry="2" fill="#1e1e28" />
+            <circle cx="5.3" cy="-25" r="0.6" fill="#ffffff" />
+            <rect id="chilbi-red-7-arm-near" x="-4" y="-16" width="3.8" height="10" rx="1.9" fill="#e55039" />
           </g>
         </g>
 
@@ -1782,14 +1799,16 @@
     // and round the oval ring in a perpetual counter-clockwise loop with waddling bounce.
     // =========================================================================
     (function initChilbiWalkers() {
-      // 6 Red Chilbi Squad Members Walking Together (Staggered V-Flock Formation)
+      // 7 Red Chilbi Squad Members spanning Full Road Width from Border to Border
+      // Staggered cascading sequence: starts directly on inner road border, next after that, until reaching outer border
       const redSquad = [
-        { id: 1, w:   0, dt: -0.16, phase: 0.0 }, // Point lead (Center)
-        { id: 2, w: -12, dt: -0.07, phase: 1.1 }, // Wing Left (Inner-mid)
-        { id: 3, w:  12, dt: -0.07, phase: 2.3 }, // Wing Right (Outer-mid)
-        { id: 4, w: -20, dt:  0.06, phase: 3.5 }, // Flank Left (Inner-lane)
-        { id: 5, w:  20, dt:  0.06, phase: 4.7 }, // Flank Right (Outer-lane)
-        { id: 6, w:   0, dt:  0.15, phase: 5.9 }  // Tail Center (Rear-guard)
+        { id: 1, w: -30, dt: -0.21, phase: 0.0 }, // Directly on Inner Road Border
+        { id: 2, w: -20, dt: -0.14, phase: 1.0 }, // Next lane across
+        { id: 3, w: -10, dt: -0.07, phase: 2.1 }, // Next lane across
+        { id: 4, w:   0, dt:  0.00, phase: 3.1 }, // Center Road Lane
+        { id: 5, w:  10, dt:  0.07, phase: 4.2 }, // Next lane across
+        { id: 6, w:  20, dt:  0.14, phase: 5.2 }, // Next lane across
+        { id: 7, w:  30, dt:  0.21, phase: 0.5 }  // Directly on Outer Road Border
       ].map(m => ({
         ...m,
         elem: document.getElementById('chilbi-red-' + m.id),

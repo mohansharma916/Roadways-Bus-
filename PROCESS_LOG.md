@@ -15,7 +15,7 @@ This document records the step-by-step progress, specifications, design guidelin
 - **Camera Perspective & Scene View Angle**:
   - Three.js camera: Angled view looking into the cherry blossom park from the bottom side (`camY = 30, camZ = 42, targetZ = 8`, `camera.up.set(0, 1, 0)`). Mobile FOV set to 44° (landscape 38°).
   - Overlay Track Network: Pure flat 2D screen overlay (`transform: none`, no `rotateX`), ensuring pixel-perfect screen-edge alignment without any distortion. Road width widened by +40% (outer $R_x=355, R_y=96$; inner island $r_x=145, r_y=22$; feeder width 105px) to comfortably accommodate a multi-character squad.
-  - Chilbi Characters: Upright 2.5D side-view character rigs viewed from a standing bottom-side vantage point. Created 5 additional Red Chilbi (6 total) walking together in an organic staggered V-flock formation across the widened road lane, with individual walking phases, stepping strides, and swinging arms. Proportionally compact scale (~0.75x) to fit together cleanly with generous curb margins.
+  - Chilbi Characters: Upright 2.5D side-view character rigs viewed from a standing bottom-side vantage point. 7 Red Chilbi members span the **full road width from border to border** (from inner curb $w=-30$ to outer curb $w=+30$) with zero large gap, moving in a staggered cascading sweep. All walk at the exact same forward road speed while maintaining independent waddling bounce, tilt, and limb animations. Compact scale (~0.75x) matches road width for dense, shoulder-to-shoulder group marching.
   - Completely **static**: No camera dragging, panning, orbit rotation, or idle bobbing/movement.
 
 ### B. UI Overlay Structure
@@ -111,6 +111,7 @@ This document records the step-by-step progress, specifications, design guidelin
 | 34 | 2026-11-20 | Implemented Approach 1: applied CSS 3D perspective and rotateX(24deg) with bottom pivot (transform-origin: 50% 85%) on the track network container, providing an angled view looking at the ring and Chilbi from the bottom side without detaching feeder roads from device edges. Isolated Chilbi walk script. |
 | 35 | 2026-11-20 | Reverted ground/track container to pure flat 2D (no rotateX/distortion) and implemented upright 2.5D side-view Chilbi characters. Viewed from the bottom side at a standing height, characters stand upright on their ground shadows, showing their side profile body, swinging side arms, and stepping legs along their path. |
 | 36 | 2026-11-20 | Created 5 additional Red Chilbi (6 total in squad) walking together in a staggered V-formation; widened road width by +40% (outer Rx=355, Ry=96, inner rx=145, ry=22) and adjusted Chilbi scale (~0.75x) so all 6 walk together comfortably with generous curb clearance. |
+| 37 | 2026-11-20 | Configured Chilbi to span the full road width from border to border with zero empty gap. Added 7th Red Chilbi (7 total), distributed evenly from inner curb (w = -30) to outer curb (w = +30) in a staggered cascading sweep walking at the same forward speed with independent waddling animations. |
 
 ---
 
