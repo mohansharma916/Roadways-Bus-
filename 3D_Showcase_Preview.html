@@ -77,11 +77,11 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 20px;
+      gap: clamp(10px, 2.5vw, 16px);
       width: 100%;
       height: 100%;
       box-sizing: border-box;
-      padding: 10px 10px 20px 10px;
+      padding: 10px 8px 20px 8px;
     }
 
     .bus-fleet-item {
@@ -118,17 +118,39 @@
     }
 
     @keyframes busHonkBounce {
-      0% { transform: scale(1); }
-      40% { transform: scale(1.15); }
-      75% { transform: scale(0.94); }
-      100% { transform: scale(1); }
+      0% {
+        transform: scale(1);
+      }
+
+      40% {
+        transform: scale(1.15);
+      }
+
+      75% {
+        transform: scale(0.94);
+      }
+
+      100% {
+        transform: scale(1);
+      }
     }
 
     @keyframes busHonkBounceAngled {
-      0% { transform: rotate(-30deg) scale(1); }
-      40% { transform: rotate(-30deg) scale(1.15); }
-      75% { transform: rotate(-30deg) scale(0.94); }
-      100% { transform: rotate(-30deg) scale(1); }
+      0% {
+        transform: rotate(-30deg) scale(1);
+      }
+
+      40% {
+        transform: rotate(-30deg) scale(1.15);
+      }
+
+      75% {
+        transform: rotate(-30deg) scale(0.94);
+      }
+
+      100% {
+        transform: rotate(-30deg) scale(1);
+      }
     }
 
     .bus-fleet-item.bus-honking {
@@ -476,12 +498,155 @@
   <!-- Bottom Boundary Panel (Bus Fleet Depot below Trapezium) -->
   <div class="bottom-boundary-panel" id="bus-terminal-panel">
     <div class="bus-fleet-row">
-      <div class="bus-fleet-item" onclick="onBusClick(this, 440)"><svg viewBox="0 0 25 50" width="25" height="50" style="display:block;">  <rect x="0" y="0" width="25" height="50" rx="5.5" fill="#ef4444" />  <path d="M 3,4.5 Q 12.5,2.5 22,4.5 L 21.5,9.5 Q 12.5,7.8 3.5,9.5 Z" fill="#1e2430" />  <rect x="1.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />  <rect x="6.5" y="20" width="12" height="14" rx="2.5" fill="none" stroke="#1e2430" stroke-width="0.8" opacity="0.35" />  <line x1="9" y1="24" x2="16" y2="24" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />  <line x1="9" y1="27" x2="16" y2="27" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />  <line x1="9" y1="30" x2="16" y2="30" stroke="#1e2430" stroke-width="0.7" opacity="0.35" /></svg></div>
-      <div class="bus-fleet-item" onclick="onBusClick(this, 392)"><svg viewBox="0 0 25 50" width="25" height="50" style="display:block;">  <rect x="0" y="0" width="25" height="50" rx="5.5" fill="#f59e0b" />  <path d="M 3,4.5 Q 12.5,2.5 22,4.5 L 21.5,9.5 Q 12.5,7.8 3.5,9.5 Z" fill="#1e2430" />  <rect x="1.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />  <line x1="3" y1="12" x2="22" y2="12" stroke="#1e2430" stroke-width="0.9" opacity="0.45" />  <rect x="7" y="24" width="11" height="12" rx="2" fill="none" stroke="#1e2440" stroke-width="0.8" opacity="0.35" /></svg></div>
-      <div class="bus-fleet-item" onclick="onBusClick(this, 494)"><svg viewBox="0 0 25 50" width="25" height="50" style="display:block;">  <rect x="0" y="0" width="25" height="50" rx="5.5" fill="#2563eb" />  <path d="M 3,4.5 Q 12.5,2.5 22,4.5 L 21.5,9.5 Q 12.5,7.8 3.5,9.5 Z" fill="#1e2430" />  <rect x="1.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />  <rect x="6.5" y="20" width="12" height="14" rx="2.5" fill="none" stroke="#1e2430" stroke-width="0.8" opacity="0.35" />  <line x1="9" y1="24" x2="16" y2="24" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />  <line x1="9" y1="27" x2="16" y2="27" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />  <line x1="9" y1="30" x2="16" y2="30" stroke="#1e2430" stroke-width="0.7" opacity="0.35" /></svg></div>
-      <div class="bus-fleet-item" onclick="onBusClick(this, 523)"><svg viewBox="0 0 25 50" width="25" height="50" style="display:block;">  <rect x="0" y="0" width="25" height="50" rx="5.5" fill="#10b981" />  <path d="M 3,4.5 Q 12.5,2.5 22,4.5 L 21.5,9.5 Q 12.5,7.8 3.5,9.5 Z" fill="#1e2430" />  <rect x="1.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />  <rect x="6.5" y="20" width="12" height="14" rx="2.5" fill="none" stroke="#1e2430" stroke-width="0.8" opacity="0.35" />  <line x1="9" y1="24" x2="16" y2="24" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />  <line x1="9" y1="27" x2="16" y2="27" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />  <line x1="9" y1="30" x2="16" y2="30" stroke="#1e2430" stroke-width="0.7" opacity="0.35" /></svg></div>
-      <div class="bus-fleet-item" onclick="onBusClick(this, 587)"><svg viewBox="0 0 25 50" width="25" height="50" style="display:block;">  <rect x="0" y="0" width="25" height="50" rx="5.5" fill="#8b5cf6" />  <path d="M 3,4.5 Q 12.5,2.5 22,4.5 L 21.5,9.5 Q 12.5,7.8 3.5,9.5 Z" fill="#1e2430" />  <rect x="1.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />  <rect x="6.5" y="20" width="12" height="14" rx="2.5" fill="none" stroke="#1e2430" stroke-width="0.8" opacity="0.35" />  <line x1="9" y1="24" x2="16" y2="24" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />  <line x1="9" y1="27" x2="16" y2="27" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />  <line x1="9" y1="30" x2="16" y2="30" stroke="#1e2430" stroke-width="0.7" opacity="0.35" /></svg></div>
-      <div class="bus-fleet-item" onclick="onBusClick(this, 659)"><svg viewBox="0 0 25 50" width="25" height="50" style="display:block;">  <rect x="0" y="0" width="25" height="50" rx="5.5" fill="#06b6d4" />  <path d="M 3,4.5 Q 12.5,2.5 22,4.5 L 21.5,9.5 Q 12.5,7.8 3.5,9.5 Z" fill="#1e2430" />  <rect x="1.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />  <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />  <rect x="7" y="16" width="11" height="8" rx="2" fill="none" stroke="#1e2430" stroke-width="0.8" opacity="0.35" />  <rect x="7" y="28" width="11" height="8" rx="2" fill="none" stroke="#1e2430" stroke-width="0.8" opacity="0.35" /></svg></div>
+      <div class="bus-fleet-item" id="bus-red" onclick="onBusClick(this, 440)" title="Crimson Express"><svg
+          viewBox="0 0 25 50" width="25" height="50" style="display:block;">
+          <rect x="0" y="0" width="25" height="50" rx="5.5" fill="#c0392b" />
+          <path d="M 3,4.5 Q 12.5,2.5 22,4.5 L 21.5,9.5 Q 12.5,7.8 3.5,9.5 Z" fill="#1e2430" />
+          <rect x="1.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
+          <rect x="6.5" y="20" width="12" height="14" rx="2.5" fill="none" stroke="#1e2430" stroke-width="0.8"
+            opacity="0.35" />
+          <line x1="9" y1="24" x2="16" y2="24" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />
+          <line x1="9" y1="27" x2="16" y2="27" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />
+          <line x1="9" y1="30" x2="16" y2="30" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />
+        </svg></div>
+      <div class="bus-fleet-item" id="bus-yellow" onclick="onBusClick(this, 392)" title="Amber School Buggy"><svg
+          viewBox="0 0 25 50" width="25" height="50" style="display:block;">
+          <rect x="0" y="0" width="25" height="50" rx="5.5" fill="#f39c12" />
+          <path d="M 3,4.5 Q 12.5,2.5 22,4.5 L 21.5,9.5 Q 12.5,7.8 3.5,9.5 Z" fill="#1e2430" />
+          <rect x="1.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
+          <line x1="3" y1="12" x2="22" y2="12" stroke="#1e2430" stroke-width="0.9" opacity="0.45" />
+          <rect x="7" y="24" width="11" height="12" rx="2" fill="none" stroke="#1e2440" stroke-width="0.8"
+            opacity="0.35" />
+        </svg></div>
+      <div class="bus-fleet-item" id="bus-blue" onclick="onBusClick(this, 494)" title="Cobalt Commuter"><svg
+          viewBox="0 0 25 50" width="25" height="50" style="display:block;">
+          <rect x="0" y="0" width="25" height="50" rx="5.5" fill="#2548ad" />
+          <path d="M 3,4.5 Q 12.5,2.5 22,4.5 L 21.5,9.5 Q 12.5,7.8 3.5,9.5 Z" fill="#1e2430" />
+          <rect x="1.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
+          <rect x="6.5" y="20" width="12" height="14" rx="2.5" fill="none" stroke="#1e2430" stroke-width="0.8"
+            opacity="0.35" />
+          <line x1="9" y1="24" x2="16" y2="24" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />
+          <line x1="9" y1="27" x2="16" y2="27" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />
+          <line x1="9" y1="30" x2="16" y2="30" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />
+        </svg></div>
+      <div class="bus-fleet-item" id="bus-green" onclick="onBusClick(this, 523)" title="Emerald Eco"><svg
+          viewBox="0 0 25 50" width="25" height="50" style="display:block;">
+          <rect x="0" y="0" width="25" height="50" rx="5.5" fill="#20bf6b" />
+          <path d="M 3,4.5 Q 12.5,2.5 22,4.5 L 21.5,9.5 Q 12.5,7.8 3.5,9.5 Z" fill="#1e2430" />
+          <rect x="1.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
+          <rect x="6.5" y="20" width="12" height="14" rx="2.5" fill="none" stroke="#1e2430" stroke-width="0.8"
+            opacity="0.35" />
+          <line x1="9" y1="24" x2="16" y2="24" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />
+          <line x1="9" y1="27" x2="16" y2="27" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />
+          <line x1="9" y1="30" x2="16" y2="30" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />
+        </svg></div>
+      <div class="bus-fleet-item" id="bus-purple" onclick="onBusClick(this, 587)" title="Royal Violet"><svg
+          viewBox="0 0 25 50" width="25" height="50" style="display:block;">
+          <rect x="0" y="0" width="25" height="50" rx="5.5" fill="#8854d0" />
+          <path d="M 3,4.5 Q 12.5,2.5 22,4.5 L 21.5,9.5 Q 12.5,7.8 3.5,9.5 Z" fill="#1e2430" />
+          <rect x="1.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
+          <rect x="6.5" y="20" width="12" height="14" rx="2.5" fill="none" stroke="#1e2430" stroke-width="0.8"
+            opacity="0.35" />
+          <line x1="9" y1="24" x2="16" y2="24" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />
+          <line x1="9" y1="27" x2="16" y2="27" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />
+          <line x1="9" y1="30" x2="16" y2="30" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />
+        </svg></div>
+      <div class="bus-fleet-item" id="bus-orange" onclick="onBusClick(this, 622)" title="Tangerine Transit"><svg
+          viewBox="0 0 25 50" width="25" height="50" style="display:block;">
+          <rect x="0" y="0" width="25" height="50" rx="5.5" fill="#e67e22" />
+          <path d="M 3,4.5 Q 12.5,2.5 22,4.5 L 21.5,9.5 Q 12.5,7.8 3.5,9.5 Z" fill="#1e2430" />
+          <rect x="1.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
+          <rect x="6.5" y="20" width="12" height="14" rx="2.5" fill="none" stroke="#1e2430" stroke-width="0.8"
+            opacity="0.35" />
+          <line x1="9" y1="24" x2="16" y2="24" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />
+          <line x1="9" y1="27" x2="16" y2="27" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />
+          <line x1="9" y1="30" x2="16" y2="30" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />
+        </svg></div>
+      <div class="bus-fleet-item" id="bus-pink" onclick="onBusClick(this, 659)" title="Bubblegum Shuttle"><svg
+          viewBox="0 0 25 50" width="25" height="50" style="display:block;">
+          <rect x="0" y="0" width="25" height="50" rx="5.5" fill="#e84393" />
+          <path d="M 3,4.5 Q 12.5,2.5 22,4.5 L 21.5,9.5 Q 12.5,7.8 3.5,9.5 Z" fill="#1e2430" />
+          <rect x="1.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
+          <rect x="6.5" y="20" width="12" height="14" rx="2.5" fill="none" stroke="#1e2430" stroke-width="0.8"
+            opacity="0.35" />
+          <line x1="9" y1="24" x2="16" y2="24" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />
+          <line x1="9" y1="27" x2="16" y2="27" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />
+          <line x1="9" y1="30" x2="16" y2="30" stroke="#1e2430" stroke-width="0.7" opacity="0.35" />
+        </svg></div>
+      <div class="bus-fleet-item" id="bus-cyan" onclick="onBusClick(this, 740)" title="Cyan Deck-Master"><svg
+          viewBox="0 0 25 50" width="25" height="50" style="display:block;">
+          <rect x="0" y="0" width="25" height="50" rx="5.5" fill="#0fbcf9" />
+          <path d="M 3,4.5 Q 12.5,2.5 22,4.5 L 21.5,9.5 Q 12.5,7.8 3.5,9.5 Z" fill="#1e2430" />
+          <rect x="1.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="13" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="21" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="29" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
+          <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
+          <rect x="7" y="16" width="11" height="8" rx="2" fill="none" stroke="#1e2430" stroke-width="0.8"
+            opacity="0.35" />
+          <rect x="7" y="28" width="11" height="8" rx="2" fill="none" stroke="#1e2430" stroke-width="0.8"
+            opacity="0.35" />
+        </svg></div>
     </div>
   </div>
 
@@ -1864,6 +2029,111 @@
     renderStatic();
 
     // =========================================================================
+    // --- MASTER COLOR PALETTES & GAME CONSTANTS ---
+    // Strict Condition: 1:1 color parity between Chilbis and Buses!
+    // Every color theme used in the Chilbi formation MUST have a corresponding
+    // bus with the exact same solid primary color!
+    // =========================================================================
+    const MASTER_COLOR_PALETTES = {
+      red: {
+        id: "red",
+        name: "Crimson Express",
+        hex: "#c0392b",
+        armNear: "#c0392b",
+        armFar: "#a82c1f",
+        footNear: "#b71540",
+        footFar: "#961133",
+        bodyGrad: "url(#chilbi-grad-red-body)",
+        hornFreq: 440,
+        busType: "standard"
+      },
+      yellow: {
+        id: "yellow",
+        name: "Amber School Buggy",
+        hex: "#f39c12",
+        armNear: "#f39c12",
+        armFar: "#d4880f",
+        footNear: "#e67e22",
+        footFar: "#d35400",
+        bodyGrad: "url(#chilbi-grad-yellow-body)",
+        hornFreq: 392,
+        busType: "school_buggy"
+      },
+      blue: {
+        id: "blue",
+        name: "Cobalt Commuter",
+        hex: "#2548ad",
+        armNear: "#2548ad",
+        armFar: "#1c3987",
+        footNear: "#1e3799",
+        footFar: "#0c2461",
+        bodyGrad: "url(#chilbi-grad-blue-body)",
+        hornFreq: 494,
+        busType: "standard"
+      },
+      green: {
+        id: "green",
+        name: "Emerald Eco",
+        hex: "#20bf6b",
+        armNear: "#20bf6b",
+        armFar: "#168d4f",
+        footNear: "#16a085",
+        footFar: "#117a65",
+        bodyGrad: "url(#chilbi-grad-green-body)",
+        hornFreq: 523,
+        busType: "standard"
+      },
+      purple: {
+        id: "purple",
+        name: "Royal Violet",
+        hex: "#8854d0",
+        armNear: "#8854d0",
+        armFar: "#6c3db5",
+        footNear: "#8854d0",
+        footFar: "#371d72",
+        bodyGrad: "url(#chilbi-grad-purple-body)",
+        hornFreq: 587,
+        busType: "standard"
+      },
+      orange: {
+        id: "orange",
+        name: "Tangerine Transit",
+        hex: "#e67e22",
+        armNear: "#e67e22",
+        armFar: "#cf6717",
+        footNear: "#d35400",
+        footFar: "#96281b",
+        bodyGrad: "url(#chilbi-grad-orange-body)",
+        hornFreq: 622,
+        busType: "standard"
+      },
+      pink: {
+        id: "pink",
+        name: "Bubblegum Shuttle",
+        hex: "#e84393",
+        armNear: "#e84393",
+        armFar: "#cf2d7c",
+        footNear: "#d63031",
+        footFar: "#833471",
+        bodyGrad: "url(#chilbi-grad-pink-body)",
+        hornFreq: 659,
+        busType: "standard"
+      },
+      cyan: {
+        id: "cyan",
+        name: "Cyan Deck-Master",
+        hex: "#0fbcf9",
+        armNear: "#0fbcf9",
+        armFar: "#0998cc",
+        footNear: "#0097e6",
+        footFar: "#0652dd",
+        bodyGrad: "url(#chilbi-grad-cyan-body)",
+        hornFreq: 740,
+        busType: "double_decker"
+      }
+    };
+
+    // =========================================================================
     // --- CHILBI ("CANDY BEAN") CHARACTER WALKING ANIMATION SYSTEM ---
     // Squad of 7 Red Chilbis + 1 Cyan Chilbi (Mobile Optimized):
     //   - 100% Constant Linear Speed via Arc-Length LUT: No running or surging on corners!
@@ -1872,65 +2142,8 @@
     //   - Upright 2.5D Side-View Posture (from Step 35)
     // =========================================================================
     (function initChilbiWalkers() {
-      // Color Themes for Candy Bean rigs (8 Vivid Candy Palettes - Hand Color Matching Body)
-      const colorThemes = {
-        red: {
-          bodyGrad: "url(#chilbi-grad-red-body)",
-          armNear: "#c0392b",
-          armFar: "#a82c1f",
-          footNear: "#b71540",
-          footFar: "#961133"
-        },
-        yellow: {
-          bodyGrad: "url(#chilbi-grad-yellow-body)",
-          armNear: "#f39c12",
-          armFar: "#d4880f",
-          footNear: "#e67e22",
-          footFar: "#d35400"
-        },
-        blue: {
-          bodyGrad: "url(#chilbi-grad-blue-body)",
-          armNear: "#2548ad",
-          armFar: "#1c3987",
-          footNear: "#1e3799",
-          footFar: "#0c2461"
-        },
-        green: {
-          bodyGrad: "url(#chilbi-grad-green-body)",
-          armNear: "#20bf6b",
-          armFar: "#168d4f",
-          footNear: "#16a085",
-          footFar: "#117a65"
-        },
-        purple: {
-          bodyGrad: "url(#chilbi-grad-purple-body)",
-          armNear: "#8854d0",
-          armFar: "#6c3db5",
-          footNear: "#8854d0",
-          footFar: "#371d72"
-        },
-        orange: {
-          bodyGrad: "url(#chilbi-grad-orange-body)",
-          armNear: "#e67e22",
-          armFar: "#cf6717",
-          footNear: "#d35400",
-          footFar: "#96281b"
-        },
-        pink: {
-          bodyGrad: "url(#chilbi-grad-pink-body)",
-          armNear: "#e84393",
-          armFar: "#cf2d7c",
-          footNear: "#d63031",
-          footFar: "#833471"
-        },
-        cyan: {
-          bodyGrad: "url(#chilbi-grad-cyan-body)",
-          armNear: "#0fbcf9",
-          armFar: "#0998cc",
-          footNear: "#0097e6",
-          footFar: "#0652dd"
-        }
-      };
+      // Color Themes for Candy Bean rigs derived directly from MASTER_COLOR_PALETTES
+      const colorThemes = MASTER_COLOR_PALETTES;
 
       // 430 Chilbis Formation Specification:
       // - Exactly 430 Chilbis in 7-abreast rows across 62 rows (61 rows of 7 + 1 row of 3)
