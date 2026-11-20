@@ -330,7 +330,19 @@
     .dispatched-traveler-bus {
       transition: filter 0.15s ease;
     }
-    .dispatched-traveler-bus:hover {
+    
+    /* Bus Roof Arrow Transition (Fades out when docked in parking spot) */
+    .bus-roof-arrow {
+      transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1), transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-origin: 12.5px 26px;
+    }
+    .arrow-hidden .bus-roof-arrow,
+    .bus-roof-arrow.hidden {
+      opacity: 0 !important;
+      transform: scale(0.3) !important;
+      pointer-events: none;
+    }
+.dispatched-traveler-bus:hover {
       filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.7));
     }
 </style>
@@ -530,7 +542,7 @@
           <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
-          <path
+          <path class="bus-roof-arrow"
             d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z"
             fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
         </svg></div>
@@ -548,7 +560,7 @@
           <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
           <line x1="3" y1="12" x2="22" y2="12" stroke="#1e2430" stroke-width="0.9" opacity="0.45" />
-          <path
+          <path class="bus-roof-arrow"
             d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z"
             fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
         </svg></div>
@@ -565,7 +577,7 @@
           <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
-          <path
+          <path class="bus-roof-arrow"
             d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z"
             fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
         </svg></div>
@@ -582,7 +594,7 @@
           <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
-          <path
+          <path class="bus-roof-arrow"
             d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z"
             fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
         </svg></div>
@@ -599,7 +611,7 @@
           <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
-          <path
+          <path class="bus-roof-arrow"
             d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z"
             fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
         </svg></div>
@@ -616,7 +628,7 @@
           <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
-          <path
+          <path class="bus-roof-arrow"
             d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z"
             fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
         </svg></div>
@@ -633,7 +645,7 @@
           <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
-          <path
+          <path class="bus-roof-arrow"
             d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z"
             fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
         </svg></div>
@@ -650,7 +662,7 @@
           <rect x="1.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="21.5" y="37" width="2" height="6" rx="0.8" fill="#1e2430" opacity="0.85" />
           <rect x="4" y="45.5" width="17" height="2" rx="1" fill="#1e2430" />
-          <path
+          <path class="bus-roof-arrow"
             d="M 12.5,17 L 18.5,24.5 L 14.8,24.5 L 14.8,34 Q 14.8,35 12.5,35 Q 10.2,35 10.2,34 L 10.2,24.5 L 6.5,24.5 Z"
             fill="#ffffff" stroke="#ffffff" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="round" />
         </svg></div>
@@ -2796,6 +2808,9 @@
           dockedTravelerElement = traveler;
           playDockLatchSound();
 
+          // Arrow disappears when bus reaches the parking spot
+          traveler.classList.add("arrow-hidden");
+
           // Clicking the docked bus returns it to depot
           traveler.onclick = function() {
             returnBusToDepot(elem, traveler, freq);
@@ -2810,6 +2825,9 @@
       if (isBusDispatchedInFlight) return;
       isBusDispatchedInFlight = true;
       playBusHonk(freq);
+
+      // Re-show arrow when returning to depot
+      traveler.classList.remove("arrow-hidden");
 
       const elemRect = elem.getBoundingClientRect();
       const targetBoxes = document.querySelectorAll(".trapezium-box");
