@@ -236,6 +236,8 @@ namespace RoadwaysGame
                     GameObject rootObj = new GameObject($"Chilbi_r{r}_c{c}", typeof(RectTransform));
                     rootObj.transform.SetParent(layerObj.transform, false);
                     RectTransform rootRt = rootObj.GetComponent<RectTransform>();
+                    rootRt.anchorMin = new Vector2(0.5f, 0f);
+                    rootRt.anchorMax = new Vector2(0.5f, 0f);
                     rootRt.pivot = new Vector2(0.5f, 0.2f);
                     rootRt.sizeDelta = new Vector2(32f, 44f);
 
@@ -348,12 +350,11 @@ namespace RoadwaysGame
                 // SVG tangent (dx, dy). In Unity RectTransform:
                 // X matches SVG (0 is center, offset 540)
                 // Y is inverted (Unity Y up = 660 - SVG y)
-                // Tangent in Unity: (dx, -dy). Perpendicular normal to the left: (dy, dx).
-                float nx = dy / cLen;
-                float ny = dx / cLen;
-
-                float px = (x - 540f) + (w.laneD * nx);
-                float py = (660f - y) + (w.laneD * ny);
+                // SVG normal vector offset for laneD:
+                // x_svg = x - laneD * (dy / cLen) -> px = (x - 540f) - (w.laneD * (dy / cLen))
+                // y_svg = y + laneD * (dx / cLen) -> py = (660f - y) - (w.laneD * (dx / cLen))
+                float px = (x - 540f) - (w.laneD * (dy / cLen));
+                float py = (660f - y) - (w.laneD * (dx / cLen));
 
                 float facingX = dx >= 0f ? 1f : -1f;
 
