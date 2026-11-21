@@ -11,14 +11,16 @@ namespace RoadwaysGame
     /// Master UI Controller for Roadways Bus Game:
     /// - Screen-space overlay canvas scaled for portrait mobile screens (1080x1920 reference)
     /// - Safe Area / Notch adaptation for tall 9:16 to 20:9 Android screens
-    /// - Top-left glassmorphic Watermark Pill: "430 Chilbis Parade • Sakura Park"
-    /// - Dynamic Formation Status Pill: "420 on Track • 10 Queued" / "X Cleared • Y Left"
-    /// - Top-right interactive Replay / Cheer Button: "Replay Cheer"
-    /// - Clean typography without emoji dependencies for universal crisp font rendering
+    /// - Supports "Cherry Blossom Park Only" isolated view mode (hiding Road Network, Buses, and Chilbis)
+    /// - Sleek glassmorphic Watermark Pill: "Cherry Blossom Park"
     /// </summary>
     [ExecuteAlways]
     public class GameUIController : MonoBehaviour
     {
+        [Header("Display Mode")]
+        [Tooltip("When enabled, hides Ring Road, Parking Lot, Buses, and Chilbis to show ONLY Cherry Blossom Park.")]
+        [SerializeField] private bool parkOnlyMode = true;
+
         [Header("UI State (Dynamic)")]
         [SerializeField] private int clearedChilbis = 0;
         [SerializeField] private int totalChilbis = GameConstants.TotalChilbis; // 430
@@ -29,6 +31,9 @@ namespace RoadwaysGame
         [Header("UI References")]
         [SerializeField] private Canvas mainCanvas;
         [SerializeField] private CanvasScaler canvasScaler;
+        [SerializeField] private GameObject watermarkPill;
+        [SerializeField] private GameObject statusPill;
+        [SerializeField] private GameObject replayBtnObj;
         [SerializeField] private Text titleText;
         [SerializeField] private Text statusText;
         [SerializeField] private Text replayBtnText;
@@ -39,16 +44,26 @@ namespace RoadwaysGame
         private BusFleetController fleetController;
         private float lastUpdateTime = 0f;
 
-        public int ClearedChilbis => clearedChilbis;
-        public int TotalChilbis => totalChilbis;
+        public bool ParkOnlyMode
+        {
+            get => parkOnlyMode;
+            set
+            {
+                parkOnlyMode = value;
+                ApplyDisplayMode();
+                BuildUI();
+            }
+        }
 
         private void Awake()
         {
+            ApplyDisplayMode();
             BuildUI();
         }
 
         private void OnEnable()
         {
+            ApplyDisplayMode();
             if (mainCanvas == null || transform.Find("MainGameCanvas") == null)
             {
                 BuildUI();
@@ -57,6 +72,7 @@ namespace RoadwaysGame
 
         private void Start()
         {
+            ApplyDisplayMode();
             formationManager = FindAnyObjectByType<ChilbiFormationManager>();
             fleetController = FindAnyObjectByType<BusFleetController>();
             UpdateStatusDisplay();
@@ -67,8 +83,43 @@ namespace RoadwaysGame
             if (Time.unscaledTime - lastUpdateTime > 0.25f)
             {
                 lastUpdateTime = Time.unscaledTime;
-                RefreshState();
+                ApplyDisplayMode();
+                if (!parkOnlyMode)
+                {
+                    RefreshState();
+                }
             }
+        }
+
+        /// <summary>
+        /// Toggles or applies visibility of Ring Road, Parking Lot, Buses, and Chilbis.
+        /// </summary>
+        public void ApplyDisplayMode()
+        {
+            GameObject roadNetwork = GameObject.Find("--- [ROAD_NETWORK] ---");
+            GameObject busSystem = GameObject.Find("--- [BUS_SYSTEM] ---");
+            GameObject characters = GameObject.Find("--- [CHARACTERS] ---");
+
+            bool showOtherSystems = !parkOnlyMode;
+
+            if (roadNetwork != null && roadNetwork.activeSelf != showOtherSystems)
+            {
+                roadNetwork.SetActive(showOtherSystems);
+            }
+            if (busSystem != null && busSystem.activeSelf != showOtherSystems)
+            {
+                busSystem.SetActive(showOtherSystems);
+            }
+            if (characters != null && characters.activeSelf != showOtherSystems)
+            {
+                characters.SetActive(showOtherSystems);
+            }
+        }
+
+        [ContextMenu("Toggle Park Only Mode")]
+        public void ToggleParkOnlyMode()
+        {
+            ParkOnlyMode = !ParkOnlyMode;
         }
 
         private void RefreshState()
@@ -125,7 +176,7 @@ namespace RoadwaysGame
             if (canvasScaler == null) canvasScaler = canvasObj.AddComponent<CanvasScaler>();
             canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             canvasScaler.referenceResolution = new Vector2(1080f, 1920f);
-            canvasScaler.matchWidthOrHeight = 0f; // Match width for rock-solid portrait fit
+            canvasScaler.matchWidthOrHeight = 0f; // Match width for portrait fit
 
             GraphicRaycaster raycaster = canvasObj.GetComponent<GraphicRaycaster>();
             if (raycaster == null) raycaster = canvasObj.AddComponent<GraphicRaycaster>();
@@ -143,105 +194,148 @@ namespace RoadwaysGame
             headerRt.anchoredPosition = new Vector2(0f, -48f);
             headerRt.sizeDelta = new Vector2(-40f, 160f);
 
-            // 2. Top-Left Watermark Pill
-            GameObject watermarkPill = new GameObject("WatermarkPill", typeof(RectTransform), typeof(Image));
-            watermarkPill.transform.SetParent(headerContainer.transform, false);
-            RectTransform wmRt = watermarkPill.GetComponent<RectTransform>();
-            wmRt.anchorMin = new Vector2(0f, 1f);
-            wmRt.anchorMax = new Vector2(0f, 1f);
-            wmRt.pivot = new Vector2(0f, 1f);
-            wmRt.anchoredPosition = new Vector2(10f, 0f);
-            wmRt.sizeDelta = new Vector2(520f, 62f);
+            if (parkOnlyMode)
+            {
+                // ==================== PARK ONLY MODE UI ====================
+                // Elegant Centered Frosted Glass Pill: "Cherry Blossom Park"
+                watermarkPill = new GameObject("WatermarkPill", typeof(RectTransform), typeof(Image));
+                watermarkPill.transform.SetParent(headerContainer.transform, false);
+                RectTransform wmRt = watermarkPill.GetComponent<RectTransform>();
+                wmRt.anchorMin = new Vector2(0.5f, 1f);
+                wmRt.anchorMax = new Vector2(0.5f, 1f);
+                wmRt.pivot = new Vector2(0.5f, 1f);
+                wmRt.anchoredPosition = new Vector2(0f, 0f);
+                wmRt.sizeDelta = new Vector2(560f, 66f);
 
-            Image wmImg = watermarkPill.GetComponent<Image>();
-            wmImg.sprite = pillSprite;
-            wmImg.type = Image.Type.Sliced;
-            wmImg.color = new Color(1f, 1f, 1f, 0.94f); // 94% frosted white
+                Image wmImg = watermarkPill.GetComponent<Image>();
+                wmImg.sprite = pillSprite;
+                wmImg.type = Image.Type.Sliced;
+                wmImg.color = new Color(1f, 1f, 1f, 0.94f); // 94% frosted white
 
-            GameObject titleObj = new GameObject("TitleText", typeof(RectTransform), typeof(Text));
-            titleObj.transform.SetParent(watermarkPill.transform, false);
-            RectTransform titleRt = titleObj.GetComponent<RectTransform>();
-            titleRt.anchorMin = Vector2.zero;
-            titleRt.anchorMax = Vector2.one;
-            titleRt.sizeDelta = Vector2.zero;
-            titleRt.anchoredPosition = Vector2.zero;
+                GameObject titleObj = new GameObject("TitleText", typeof(RectTransform), typeof(Text));
+                titleObj.transform.SetParent(watermarkPill.transform, false);
+                RectTransform titleRt = titleObj.GetComponent<RectTransform>();
+                titleRt.anchorMin = Vector2.zero;
+                titleRt.anchorMax = Vector2.one;
+                titleRt.sizeDelta = Vector2.zero;
+                titleRt.anchoredPosition = Vector2.zero;
 
-            titleText = titleObj.GetComponent<Text>();
-            titleText.font = defaultFont;
-            titleText.fontSize = 24;
-            titleText.fontStyle = FontStyle.Bold;
-            titleText.alignment = TextAnchor.MiddleCenter;
-            titleText.color = new Color32(0x2C, 0x3E, 0x50, 0xFF);
-            titleText.text = "430 Chilbis Parade • Sakura Park";
+                titleText = titleObj.GetComponent<Text>();
+                titleText.font = defaultFont;
+                titleText.fontSize = 26;
+                titleText.fontStyle = FontStyle.Bold;
+                titleText.alignment = TextAnchor.MiddleCenter;
+                titleText.color = new Color32(0x2C, 0x3E, 0x50, 0xFF);
+                titleText.text = "Cherry Blossom Park";
 
-            // 3. Status Pill (Directly below Watermark)
-            GameObject statusPill = new GameObject("StatusPill", typeof(RectTransform), typeof(Image));
-            statusPill.transform.SetParent(headerContainer.transform, false);
-            RectTransform stRt = statusPill.GetComponent<RectTransform>();
-            stRt.anchorMin = new Vector2(0f, 1f);
-            stRt.anchorMax = new Vector2(0f, 1f);
-            stRt.pivot = new Vector2(0f, 1f);
-            stRt.anchoredPosition = new Vector2(10f, -70f);
-            stRt.sizeDelta = new Vector2(440f, 52f);
+                statusPill = null;
+                statusText = null;
+                replayButton = null;
+                replayBtnObj = null;
+            }
+            else
+            {
+                // ==================== FULL GAME MODE UI ====================
+                // Top-Left Watermark Pill
+                watermarkPill = new GameObject("WatermarkPill", typeof(RectTransform), typeof(Image));
+                watermarkPill.transform.SetParent(headerContainer.transform, false);
+                RectTransform wmRt = watermarkPill.GetComponent<RectTransform>();
+                wmRt.anchorMin = new Vector2(0f, 1f);
+                wmRt.anchorMax = new Vector2(0f, 1f);
+                wmRt.pivot = new Vector2(0f, 1f);
+                wmRt.anchoredPosition = new Vector2(10f, 0f);
+                wmRt.sizeDelta = new Vector2(520f, 62f);
 
-            Image stImg = statusPill.GetComponent<Image>();
-            stImg.sprite = pillSprite;
-            stImg.type = Image.Type.Sliced;
-            stImg.color = new Color(0.96f, 0.86f, 0.88f, 0.92f); // Soft Sakura Blush
+                Image wmImg = watermarkPill.GetComponent<Image>();
+                wmImg.sprite = pillSprite;
+                wmImg.type = Image.Type.Sliced;
+                wmImg.color = new Color(1f, 1f, 1f, 0.94f);
 
-            GameObject statusTextObj = new GameObject("StatusText", typeof(RectTransform), typeof(Text));
-            statusTextObj.transform.SetParent(statusPill.transform, false);
-            RectTransform stTextRt = statusTextObj.GetComponent<RectTransform>();
-            stTextRt.anchorMin = Vector2.zero;
-            stTextRt.anchorMax = Vector2.one;
-            stTextRt.sizeDelta = Vector2.zero;
+                GameObject titleObj = new GameObject("TitleText", typeof(RectTransform), typeof(Text));
+                titleObj.transform.SetParent(watermarkPill.transform, false);
+                RectTransform titleRt = titleObj.GetComponent<RectTransform>();
+                titleRt.anchorMin = Vector2.zero;
+                titleRt.anchorMax = Vector2.one;
+                titleRt.sizeDelta = Vector2.zero;
+                titleRt.anchoredPosition = Vector2.zero;
 
-            statusText = statusTextObj.GetComponent<Text>();
-            statusText.font = defaultFont;
-            statusText.fontSize = 21;
-            statusText.fontStyle = FontStyle.Bold;
-            statusText.alignment = TextAnchor.MiddleCenter;
-            statusText.color = new Color32(0x3B, 0x42, 0x52, 0xFF);
-            statusText.text = "420 on Track • 10 Queued";
+                titleText = titleObj.GetComponent<Text>();
+                titleText.font = defaultFont;
+                titleText.fontSize = 24;
+                titleText.fontStyle = FontStyle.Bold;
+                titleText.alignment = TextAnchor.MiddleCenter;
+                titleText.color = new Color32(0x2C, 0x3E, 0x50, 0xFF);
+                titleText.text = "430 Chilbis Parade • Sakura Park";
 
-            // 4. Top-Right Replay / Cheer Button
-            GameObject replayBtnObj = new GameObject("ReplayButton", typeof(RectTransform), typeof(Image), typeof(Button));
-            replayBtnObj.transform.SetParent(headerContainer.transform, false);
-            RectTransform btnRt = replayBtnObj.GetComponent<RectTransform>();
-            btnRt.anchorMin = new Vector2(1f, 1f);
-            btnRt.anchorMax = new Vector2(1f, 1f);
-            btnRt.pivot = new Vector2(1f, 1f);
-            btnRt.anchoredPosition = new Vector2(-10f, 0f);
-            btnRt.sizeDelta = new Vector2(230f, 62f);
+                // Status Pill
+                statusPill = new GameObject("StatusPill", typeof(RectTransform), typeof(Image));
+                statusPill.transform.SetParent(headerContainer.transform, false);
+                RectTransform stRt = statusPill.GetComponent<RectTransform>();
+                stRt.anchorMin = new Vector2(0f, 1f);
+                stRt.anchorMax = new Vector2(0f, 1f);
+                stRt.pivot = new Vector2(0f, 1f);
+                stRt.anchoredPosition = new Vector2(10f, -70f);
+                stRt.sizeDelta = new Vector2(440f, 52f);
 
-            Image btnImg = replayBtnObj.GetComponent<Image>();
-            btnImg.sprite = pillSprite;
-            btnImg.type = Image.Type.Sliced;
-            btnImg.color = new Color32(0x27, 0xAE, 0x60, 0xFA); // Polished Green #27ae60
+                Image stImg = statusPill.GetComponent<Image>();
+                stImg.sprite = pillSprite;
+                stImg.type = Image.Type.Sliced;
+                stImg.color = new Color(0.96f, 0.86f, 0.88f, 0.92f);
 
-            replayButton = replayBtnObj.GetComponent<Button>();
-            replayButton.targetGraphic = btnImg;
-            ColorBlock cb = replayButton.colors;
-            cb.highlightedColor = new Color32(0x2E, 0xCC, 0x71, 0xFF);
-            cb.pressedColor = new Color32(0x1E, 0x84, 0x49, 0xFF);
-            replayButton.colors = cb;
-            replayButton.onClick.RemoveAllListeners();
-            replayButton.onClick.AddListener(OnReplayClicked);
+                GameObject statusTextObj = new GameObject("StatusText", typeof(RectTransform), typeof(Text));
+                statusTextObj.transform.SetParent(statusPill.transform, false);
+                RectTransform stTextRt = statusTextObj.GetComponent<RectTransform>();
+                stTextRt.anchorMin = Vector2.zero;
+                stTextRt.anchorMax = Vector2.one;
+                stTextRt.sizeDelta = Vector2.zero;
 
-            GameObject btnTextObj = new GameObject("BtnText", typeof(RectTransform), typeof(Text));
-            btnTextObj.transform.SetParent(replayBtnObj.transform, false);
-            RectTransform btnTextRt = btnTextObj.GetComponent<RectTransform>();
-            btnTextRt.anchorMin = Vector2.zero;
-            btnTextRt.anchorMax = Vector2.one;
-            btnTextRt.sizeDelta = Vector2.zero;
+                statusText = statusTextObj.GetComponent<Text>();
+                statusText.font = defaultFont;
+                statusText.fontSize = 21;
+                statusText.fontStyle = FontStyle.Bold;
+                statusText.alignment = TextAnchor.MiddleCenter;
+                statusText.color = new Color32(0x3B, 0x42, 0x52, 0xFF);
+                statusText.text = "420 on Track • 10 Queued";
 
-            replayBtnText = btnTextObj.GetComponent<Text>();
-            replayBtnText.font = defaultFont;
-            replayBtnText.fontSize = 22;
-            replayBtnText.fontStyle = FontStyle.Bold;
-            replayBtnText.alignment = TextAnchor.MiddleCenter;
-            replayBtnText.color = Color.white;
-            replayBtnText.text = "Replay Cheer";
+                // Replay Button
+                replayBtnObj = new GameObject("ReplayButton", typeof(RectTransform), typeof(Image), typeof(Button));
+                replayBtnObj.transform.SetParent(headerContainer.transform, false);
+                RectTransform btnRt = replayBtnObj.GetComponent<RectTransform>();
+                btnRt.anchorMin = new Vector2(1f, 1f);
+                btnRt.anchorMax = new Vector2(1f, 1f);
+                btnRt.pivot = new Vector2(1f, 1f);
+                btnRt.anchoredPosition = new Vector2(-10f, 0f);
+                btnRt.sizeDelta = new Vector2(230f, 62f);
+
+                Image btnImg = replayBtnObj.GetComponent<Image>();
+                btnImg.sprite = pillSprite;
+                btnImg.type = Image.Type.Sliced;
+                btnImg.color = new Color32(0x27, 0xAE, 0x60, 0xFA);
+
+                replayButton = replayBtnObj.GetComponent<Button>();
+                replayButton.targetGraphic = btnImg;
+                ColorBlock cb = replayButton.colors;
+                cb.highlightedColor = new Color32(0x2E, 0xCC, 0x71, 0xFF);
+                cb.pressedColor = new Color32(0x1E, 0x84, 0x49, 0xFF);
+                replayButton.colors = cb;
+                replayButton.onClick.RemoveAllListeners();
+                replayButton.onClick.AddListener(OnReplayClicked);
+
+                GameObject btnTextObj = new GameObject("BtnText", typeof(RectTransform), typeof(Text));
+                btnTextObj.transform.SetParent(replayBtnObj.transform, false);
+                RectTransform btnTextRt = btnTextObj.GetComponent<RectTransform>();
+                btnTextRt.anchorMin = Vector2.zero;
+                btnTextRt.anchorMax = Vector2.one;
+                btnTextRt.sizeDelta = Vector2.zero;
+
+                replayBtnText = btnTextObj.GetComponent<Text>();
+                replayBtnText.font = defaultFont;
+                replayBtnText.fontSize = 22;
+                replayBtnText.fontStyle = FontStyle.Bold;
+                replayBtnText.alignment = TextAnchor.MiddleCenter;
+                replayBtnText.color = Color.white;
+                replayBtnText.text = "Replay Cheer";
+            }
         }
 
         private void EnsureEventSystem()
@@ -298,7 +392,7 @@ namespace RoadwaysGame
 
         private void UpdateStatusDisplay()
         {
-            if (statusText != null)
+            if (statusText != null && !parkOnlyMode)
             {
                 if (clearedChilbis > 0)
                 {

@@ -13,6 +13,48 @@ namespace RoadwaysGame.Editor
             EditorApplication.delayCall += EnsureUIInScene;
         }
 
+        [MenuItem("Roadways/Force Open MainGame Scene")]
+        public static void ForceOpenMainGame()
+        {
+            if (EditorApplication.isPlaying)
+            {
+                EditorApplication.isPlaying = false;
+            }
+            EditorSceneManager.OpenScene("Assets/_Project/Scenes/MainGame.unity", OpenSceneMode.Single);
+            EnsureUIInScene();
+        }
+
+        [MenuItem("Roadways/View/1. Show Cherry Blossom Park Only")]
+        public static void ShowCherryBlossomParkOnly()
+        {
+            SetParkOnlyMode(true);
+        }
+
+        [MenuItem("Roadways/View/2. Show Full Game (All Systems)")]
+        public static void ShowFullGame()
+        {
+            SetParkOnlyMode(false);
+        }
+
+        public static void SetParkOnlyMode(bool parkOnly)
+        {
+            GameObject uiRoot = GameObject.Find("--- [UI] ---");
+            if (uiRoot != null)
+            {
+                GameUIController uiController = uiRoot.GetComponent<GameUIController>();
+                if (uiController != null)
+                {
+                    uiController.ParkOnlyMode = parkOnly;
+                    if (!EditorApplication.isPlaying)
+                    {
+                        EditorUtility.SetDirty(uiRoot);
+                        EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+                    }
+                    Debug.Log($"<color=#2ecc71>[UIAutoSetup] View updated: ParkOnlyMode = {parkOnly}</color>");
+                }
+            }
+        }
+
         [MenuItem("Tools/Roadways/Ensure Game UI")]
         public static void EnsureUIInScene()
         {
@@ -21,12 +63,7 @@ namespace RoadwaysGame.Editor
             EditorSettings.unityRemoteCompression = "JPEG";
             EditorSettings.unityRemoteResolution = "Normal";
 
-            // 2. Force reload URP settings so cached memory picks up the assigned Mobile_Renderer
-            AssetDatabase.ImportAsset("Assets/_Project/Settings/Mobile_Renderer.asset", ImportAssetOptions.ForceUpdate);
-            AssetDatabase.ImportAsset("Assets/_Project/Settings/Mobile_RPAsset.asset", ImportAssetOptions.ForceUpdate);
-            AssetDatabase.ImportAsset("Assets/_Project/Settings/Mobile_URP_Asset.asset", ImportAssetOptions.ForceUpdate);
-
-            // 2. Open / Load MainGame scene
+            // 2. Open / Load MainGame scene if not active
             Scene scene = SceneManager.GetActiveScene();
             string targetScenePath = "Assets/_Project/Scenes/MainGame.unity";
 
@@ -60,6 +97,8 @@ namespace RoadwaysGame.Editor
 
             if (uiController != null)
             {
+                uiController.ParkOnlyMode = true;
+                uiController.ApplyDisplayMode();
                 uiController.BuildUI();
                 if (!EditorApplication.isPlaying)
                 {
@@ -67,7 +106,7 @@ namespace RoadwaysGame.Editor
                     EditorSceneManager.MarkSceneDirty(scene);
                     EditorSceneManager.SaveScene(scene);
                 }
-                Debug.Log("<color=#2ecc71>[UIAutoSetup] Game UI successfully built and validated!</color>");
+                Debug.Log("<color=#2ecc71>[UIAutoSetup] Cherry Blossom Park view successfully applied!</color>");
             }
         }
     }
