@@ -18,6 +18,8 @@ namespace RoadwaysGame
     [ExecuteAlways]
     public class GameUIController : MonoBehaviour
     {
+        public static GameUIController Instance { get; private set; }
+
         [Header("Display Mode")]
         [Tooltip("When enabled, hides Ring Road, Parking Lot, Buses, and Chilbis to show ONLY Cherry Blossom Park.")]
         [SerializeField] private bool parkOnlyMode = false;
@@ -81,6 +83,7 @@ namespace RoadwaysGame
 
         private void Awake()
         {
+            Instance = this;
             bottomPanelColor = new Color32(0xD3, 0xDA, 0xED, 0xFF);
             trapeziumColor = new Color32(0x52, 0x57, 0x69, 0xFF);
             showRoadCircuit = true;
@@ -90,6 +93,7 @@ namespace RoadwaysGame
 
         private void OnEnable()
         {
+            Instance = this;
             ApplyDisplayMode();
             if (mainCanvas == null || transform.Find("MainGameCanvas") == null)
             {
@@ -552,34 +556,21 @@ namespace RoadwaysGame
             }
         }
 
-        private void EnsureFont()
+        public static Font DefaultFont { get { EnsureFontStatic(); return defaultFont; } }
+
+        public static void EnsureFontStatic()
         {
             if (defaultFont == null)
             {
-                try
-                {
-                    defaultFont = Resources.GetBuiltinResource<Font>("Arial.ttf");
-                }
-                catch { }
-
-                if (defaultFont == null)
-                {
-                    try
-                    {
-                        defaultFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                    }
-                    catch { }
-                }
-
-                if (defaultFont == null)
-                {
-                    try
-                    {
-                        defaultFont = Font.CreateDynamicFontFromOSFont(new string[] { "Arial", "Roboto", "Helvetica", "sans-serif" }, 24);
-                    }
-                    catch { }
-                }
+                try { defaultFont = Resources.GetBuiltinResource<Font>("Arial.ttf"); } catch { }
+                if (defaultFont == null) { try { defaultFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"); } catch { } }
+                if (defaultFont == null) { try { defaultFont = Font.CreateDynamicFontFromOSFont(new string[] { "Arial", "Roboto", "Helvetica", "sans-serif" }, 24); } catch { } }
             }
+        }
+
+        private void EnsureFont()
+        {
+            EnsureFontStatic();
         }
 
         public void UpdateProgress(int cleared, int remaining)
@@ -600,7 +591,7 @@ namespace RoadwaysGame
 
                 if (BusFleetUIController.Instance != null)
                 {
-                    statusText.text = $"⚡ HOT RELOAD • {BusFleetUIController.Instance.TotalClearedChilbis} Cleared • {BusFleetUIController.Instance.OpenBaysCount} Bays Free";
+                    statusText.text = $"⚡ ⭐ {BusFleetUIController.Instance.TotalScore} • {BusFleetUIController.Instance.TotalClearedChilbis}/56 Cleared • {BusFleetUIController.Instance.OpenBaysCount} Bays Free";
                 }
                 else if (clearedChilbis > 0)
                 {
@@ -724,7 +715,7 @@ namespace RoadwaysGame
             AndroidHaptics.DoubleBuzz();
         }
 
-        private static Sprite CreatePillSprite(int width, int height, int radius)
+        public static Sprite CreatePillSprite(int width, int height, int radius)
         {
             Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
             tex.name = "Gen_PillSpriteTex";

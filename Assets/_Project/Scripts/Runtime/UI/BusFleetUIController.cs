@@ -219,7 +219,7 @@ namespace RoadwaysGame
                 yield return null;
             }
 
-            PlayBoardingPop();
+            PlayBoardingPop(passengerNum);
             AndroidHaptics.LightClick();
             UpdatePassengerCount(bayIndex, passengerNum, maxPassengers);
 
@@ -439,21 +439,37 @@ namespace RoadwaysGame
             aImg.raycastTarget = false;
 
             // Passenger Counter Container (badge shown when passengers board)
-            GameObject badgeObj = new GameObject("PassengerBadge", typeof(RectTransform), typeof(Text));
+            GameObject badgeObj = new GameObject("PassengerBadge", typeof(RectTransform), typeof(Image));
             badgeObj.transform.SetParent(travelerObj.transform, false);
             RectTransform bRt = badgeObj.GetComponent<RectTransform>();
             bRt.anchorMin = new Vector2(0.5f, 0.5f);
             bRt.anchorMax = new Vector2(0.5f, 0.5f);
             bRt.pivot = new Vector2(0.5f, 0.5f);
-            bRt.anchoredPosition = Vector2.zero;
-            bRt.sizeDelta = new Vector2(60f, 30f);
-            Text badgeText = badgeObj.GetComponent<Text>();
-            badgeText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            badgeText.fontSize = 20;
+            bRt.anchoredPosition = new Vector2(0f, -2f);
+            bRt.sizeDelta = new Vector2(56f, 26f);
+
+            Image bImg = badgeObj.GetComponent<Image>();
+            bImg.sprite = GameUIController.CreatePillSprite(64, 32, 16);
+            bImg.type = Image.Type.Sliced;
+            bImg.color = new Color(0.12f, 0.16f, 0.24f, 0.90f);
+            bImg.raycastTarget = false;
+
+            GameObject bTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            bTextObj.transform.SetParent(badgeObj.transform, false);
+            RectTransform btRt = bTextObj.GetComponent<RectTransform>();
+            btRt.anchorMin = Vector2.zero;
+            btRt.anchorMax = Vector2.one;
+            btRt.sizeDelta = Vector2.zero;
+
+            Text badgeText = bTextObj.GetComponent<Text>();
+            badgeText.font = GameUIController.DefaultFont;
+            badgeText.fontSize = 17;
             badgeText.fontStyle = FontStyle.Bold;
             badgeText.alignment = TextAnchor.MiddleCenter;
             badgeText.color = Color.white;
-            badgeText.text = "";
+            badgeText.text = "0/7";
+            badgeText.raycastTarget = false;
+
             badgeObj.SetActive(false);
 
             Vector3 targetWorldPos = targetBayRt.position;
@@ -518,6 +534,7 @@ namespace RoadwaysGame
                 yield return null;
             }
             arrowObj.SetActive(false);
+            badgeObj.SetActive(true);
 
             parkedBusObjects[bayIndex] = travelerObj;
             isInFlight = false;
@@ -605,7 +622,28 @@ namespace RoadwaysGame
                 audioSource.PlayOneShot(hornClips[busIdx], 1.0f);
             }
 
-            // 2. Accelerate forward out of the bay along its tilted longitudinal axis
+            // 2. Combo streak & score award
+            float now = Time.unscaledTime;
+            if (now - lastDepartureTime < 8.5f)
+            {
+                comboStreak++;
+            }
+            else
+            {
+                comboStreak = 1;
+            }
+            lastDepartureTime = now;
+            if (comboStreak > maxCombo) maxCombo = comboStreak;
+
+            int departurePts = 100 * comboStreak;
+            currentScore += departurePts;
+            totalClearedChilbis += 7;
+
+            string comboMsg = comboStreak > 1 ? $"COMBO x{comboStreak}! +{departurePts}" : $"+{departurePts}";
+            Color scoreCol = comboStreak > 1 ? new Color(1f, 0.85f, 0.2f) : new Color(0.2f, 0.9f, 0.4f);
+            StartCoroutine(FloatingScoreRoutine(bRt.position + new Vector3(0f, 40f, 0f), comboMsg, scoreCol));
+
+            // 3. Accelerate forward out of the bay along its tilted longitudinal axis
             float targetAngle = bRt.localEulerAngles.z;
             float rad = targetAngle * Mathf.Deg2Rad;
             Vector3 exitDir = new Vector3(-Mathf.Sin(rad), Mathf.Cos(rad), 0f);
@@ -628,7 +666,6 @@ namespace RoadwaysGame
             parkedBusObjects[bayIndex] = null;
             bayOccupants[bayIndex] = -1;
 
-            totalClearedChilbis += 7;
             AndroidHaptics.HeavyThud();
             UpdateStatusHUD();
 
@@ -639,13 +676,21 @@ namespace RoadwaysGame
             }
 
             OnBusLeftBay?.Invoke(bayIndex, busIdx);
+
+            // Win condition check
+            if (totalClearedChilbis >= 56)
+            {
+                ShowVictoryModal();
+            }
         }
 
-        public void PlayBoardingPop()
+        public void PlayBoardingPop(int passengerNum = 1)
         {
             if (popClip != null && audioSource != null)
             {
-                audioSource.PlayOneShot(popClip, 0.6f);
+                audioSource.pitch = 0.95f + (passengerNum * 0.08f);
+                audioSource.PlayOneShot(popClip, 0.65f);
+                audioSource.pitch = 1.0f;
             }
         }
 
@@ -658,9 +703,82 @@ namespace RoadwaysGame
             if (badgeTransform != null)
             {
                 badgeTransform.gameObject.SetActive(true);
-                Text t = badgeTransform.GetComponent<Text>();
-                if (t != null) t.text = $"{count}/{max}";
+                Image bImg = badgeTransform.GetComponent<Image>();
+                Transform tObj = badgeTransform.Find("Text");
+                Text t = tObj != null ? tObj.GetComponent<Text>() : badgeTransform.GetComponent<Text>();
+
+                if (count >= max)
+                {
+                    if (t != null) t.text = "FULL! ⭐️";
+                    if (bImg != null) bImg.color = new Color(0.95f, 0.65f, 0.12f, 0.95f);
+                }
+                else
+                {
+                    if (t != null) t.text = $"{count}/{max}";
+                    if (bImg != null) bImg.color = new Color(0.12f, 0.16f, 0.24f, 0.90f);
+                }
+
+                StartCoroutine(PunchBadge(badgeTransform));
             }
+
+            currentScore += 10;
+            StartCoroutine(FloatingScoreRoutine(busObj.transform.position + new Vector3(0f, 25f, 0f), "+10", new Color(0.2f, 0.9f, 1f)));
+            UpdateStatusHUD();
+        }
+
+        private IEnumerator PunchBadge(Transform badgeTrans)
+        {
+            float elapsed = 0f;
+            float dur = 0.22f;
+            while (elapsed < dur)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float p = elapsed / dur;
+                float scale = 1f + 0.35f * Mathf.Sin(p * Mathf.PI);
+                if (badgeTrans != null) badgeTrans.localScale = new Vector3(scale, scale, 1f);
+                yield return null;
+            }
+            if (badgeTrans != null) badgeTrans.localScale = Vector3.one;
+        }
+
+        private IEnumerator FloatingScoreRoutine(Vector3 worldPos, string text, Color color)
+        {
+            Transform canvasTrans = transform.root.Find("MainGameCanvas");
+            if (canvasTrans == null) yield break;
+
+            GameObject scoreObj = new GameObject("FloatingScore", typeof(RectTransform), typeof(Text), typeof(Outline));
+            scoreObj.transform.SetParent(canvasTrans, false);
+            scoreObj.transform.position = worldPos;
+
+            Text t = scoreObj.GetComponent<Text>();
+            t.font = GameUIController.DefaultFont;
+            t.fontSize = 26;
+            t.fontStyle = FontStyle.Bold;
+            t.alignment = TextAnchor.MiddleCenter;
+            t.color = color;
+            t.text = text;
+
+            Outline ol = scoreObj.GetComponent<Outline>();
+            ol.effectColor = new Color(0, 0, 0, 0.6f);
+            ol.effectDistance = new Vector2(1.5f, -1.5f);
+
+            float elapsed = 0f;
+            float duration = 0.85f;
+            Vector3 start = scoreObj.transform.position;
+            Vector3 target = start + new Vector3(0f, 70f, 0f);
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float p = Mathf.Clamp01(elapsed / duration);
+                scoreObj.transform.position = Vector3.Lerp(start, target, Mathf.SmoothStep(0f, 1f, p));
+                Color c = color;
+                c.a = Mathf.Lerp(1f, 0f, p * p);
+                t.color = c;
+                yield return null;
+            }
+
+            Destroy(scoreObj);
         }
 
         #region Procedural Asset Generation
@@ -853,11 +971,19 @@ namespace RoadwaysGame
         }
         #endregion
 
-        #region Bay Unlocking & Status HUD
+        #region Bay Unlocking, Scoring, Gridlock & Victory HUD
         [System.NonSerialized] private int totalClearedChilbis = 0;
+        [System.NonSerialized] private int currentScore = 0;
+        [System.NonSerialized] private int comboStreak = 0;
+        [System.NonSerialized] private int maxCombo = 1;
+        [System.NonSerialized] private float lastDepartureTime = -10f;
         [System.NonSerialized] private Text statusText;
+        [System.NonSerialized] private GameObject victoryModalObj;
+        [System.NonSerialized] private GameObject gridlockBannerObj;
 
         public int TotalClearedChilbis => totalClearedChilbis;
+        public int TotalScore => currentScore;
+        public int ComboStreak => comboStreak;
         public int OpenBaysCount
         {
             get
@@ -897,7 +1023,185 @@ namespace RoadwaysGame
             }
             AndroidHaptics.MediumClick();
 
+            SetGridlockWarning(false);
             UpdateStatusHUD();
+        }
+
+        public void SetGridlockWarning(bool show)
+        {
+            if (show)
+            {
+                if (gridlockBannerObj == null)
+                {
+                    Transform canvasTrans = transform.root.Find("MainGameCanvas");
+                    if (canvasTrans == null) return;
+
+                    gridlockBannerObj = new GameObject("GridlockBanner", typeof(RectTransform), typeof(Image));
+                    gridlockBannerObj.transform.SetParent(canvasTrans, false);
+                    RectTransform gRt = gridlockBannerObj.GetComponent<RectTransform>();
+                    gRt.anchorMin = new Vector2(0.5f, 0.5f);
+                    gRt.anchorMax = new Vector2(0.5f, 0.5f);
+                    gRt.pivot = new Vector2(0.5f, 0.5f);
+                    gRt.anchoredPosition = new Vector2(0f, 150f);
+                    gRt.sizeDelta = new Vector2(560f, 48f);
+
+                    Image gImg = gridlockBannerObj.GetComponent<Image>();
+                    gImg.sprite = GameUIController.CreatePillSprite(64, 32, 16);
+                    gImg.type = Image.Type.Sliced;
+                    gImg.color = new Color(0.92f, 0.22f, 0.22f, 0.95f);
+
+                    GameObject textObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+                    textObj.transform.SetParent(gridlockBannerObj.transform, false);
+                    RectTransform tRt = textObj.GetComponent<RectTransform>();
+                    tRt.anchorMin = Vector2.zero;
+                    tRt.anchorMax = Vector2.one;
+                    tRt.sizeDelta = Vector2.zero;
+
+                    Text t = textObj.GetComponent<Text>();
+                    t.font = GameUIController.DefaultFont;
+                    t.fontSize = 20;
+                    t.fontStyle = FontStyle.Bold;
+                    t.alignment = TextAnchor.MiddleCenter;
+                    t.color = Color.white;
+                    t.text = "⚠️ GRIDLOCK! No matching bay • Tap bus to return";
+                }
+
+                if (!gridlockBannerObj.activeSelf)
+                {
+                    gridlockBannerObj.SetActive(true);
+                    AndroidHaptics.DoubleBuzz();
+                    if (warningClip != null && audioSource != null) audioSource.PlayOneShot(warningClip, 0.8f);
+                }
+            }
+            else
+            {
+                if (gridlockBannerObj != null && gridlockBannerObj.activeSelf)
+                {
+                    gridlockBannerObj.SetActive(false);
+                }
+            }
+        }
+
+        public void ShowVictoryModal()
+        {
+            if (victoryModalObj != null)
+            {
+                victoryModalObj.SetActive(true);
+                return;
+            }
+
+            Transform canvasTrans = transform.root.Find("MainGameCanvas");
+            if (canvasTrans == null) return;
+
+            victoryModalObj = new GameObject("VictoryModal", typeof(RectTransform), typeof(Image));
+            victoryModalObj.transform.SetParent(canvasTrans, false);
+            RectTransform vmRt = victoryModalObj.GetComponent<RectTransform>();
+            vmRt.anchorMin = Vector2.zero;
+            vmRt.anchorMax = Vector2.one;
+            vmRt.sizeDelta = Vector2.zero;
+
+            Image bgImg = victoryModalObj.GetComponent<Image>();
+            bgImg.color = new Color(0f, 0f, 0f, 0.65f);
+
+            // Card
+            GameObject cardObj = new GameObject("Card", typeof(RectTransform), typeof(Image));
+            cardObj.transform.SetParent(victoryModalObj.transform, false);
+            RectTransform cardRt = cardObj.GetComponent<RectTransform>();
+            cardRt.sizeDelta = new Vector2(460f, 360f);
+
+            Image cardImg = cardObj.GetComponent<Image>();
+            cardImg.sprite = GameUIController.CreatePillSprite(128, 128, 28);
+            cardImg.type = Image.Type.Sliced;
+            cardImg.color = new Color32(0xFF, 0xFA, 0xFA, 0xFF);
+
+            // Title
+            GameObject titleObj = new GameObject("Title", typeof(RectTransform), typeof(Text));
+            titleObj.transform.SetParent(cardObj.transform, false);
+            RectTransform tRt = titleObj.GetComponent<RectTransform>();
+            tRt.anchoredPosition = new Vector2(0f, 120f);
+            tRt.sizeDelta = new Vector2(400f, 50f);
+            Text tText = titleObj.GetComponent<Text>();
+            tText.font = GameUIController.DefaultFont;
+            tText.fontSize = 28;
+            tText.fontStyle = FontStyle.Bold;
+            tText.alignment = TextAnchor.MiddleCenter;
+            tText.color = new Color32(0x2C, 0x3E, 0x50, 0xFF);
+            tText.text = "🏆 LEVEL COMPLETE! 🏆";
+
+            // Stars
+            GameObject starsObj = new GameObject("Stars", typeof(RectTransform), typeof(Text));
+            starsObj.transform.SetParent(cardObj.transform, false);
+            RectTransform sRt = starsObj.GetComponent<RectTransform>();
+            sRt.anchoredPosition = new Vector2(0f, 65f);
+            sRt.sizeDelta = new Vector2(300f, 50f);
+            Text sText = starsObj.GetComponent<Text>();
+            sText.font = GameUIController.DefaultFont;
+            sText.fontSize = 36;
+            sText.alignment = TextAnchor.MiddleCenter;
+            sText.color = new Color(1f, 0.82f, 0.1f);
+            sText.text = "⭐️ ⭐️ ⭐️";
+
+            // Stats
+            GameObject statsObj = new GameObject("Stats", typeof(RectTransform), typeof(Text));
+            statsObj.transform.SetParent(cardObj.transform, false);
+            RectTransform stRt = statsObj.GetComponent<RectTransform>();
+            stRt.anchoredPosition = new Vector2(0f, -5f);
+            stRt.sizeDelta = new Vector2(380f, 70f);
+            Text stText = statsObj.GetComponent<Text>();
+            stText.font = GameUIController.DefaultFont;
+            stText.fontSize = 20;
+            stText.alignment = TextAnchor.MiddleCenter;
+            stText.lineSpacing = 1.3f;
+            stText.color = new Color32(0x55, 0x5F, 0x72, 0xFF);
+            stText.text = $"56 Chilbis Boarded!\nScore: <b>{currentScore}</b>  •  Max Combo: <b>x{maxCombo}</b>";
+
+            // Play Again Button
+            GameObject btnObj = new GameObject("PlayAgainBtn", typeof(RectTransform), typeof(Image), typeof(Button));
+            btnObj.transform.SetParent(cardObj.transform, false);
+            RectTransform bRt = btnObj.GetComponent<RectTransform>();
+            bRt.anchoredPosition = new Vector2(0f, -110f);
+            bRt.sizeDelta = new Vector2(240f, 56f);
+
+            Image bImg = btnObj.GetComponent<Image>();
+            bImg.sprite = GameUIController.CreatePillSprite(64, 32, 16);
+            bImg.type = Image.Type.Sliced;
+            bImg.color = new Color32(0x2E, 0xCC, 0x71, 0xFF);
+
+            Button btn = btnObj.GetComponent<Button>();
+            btn.onClick.AddListener(() =>
+            {
+                victoryModalObj.SetActive(false);
+                ResetGame();
+                if (ChilbiFlowController.Instance != null) ChilbiFlowController.Instance.ResetParade();
+                if (GameUIController.Instance != null)
+                {
+                    GameUIController.Instance.PlayCheerSound();
+                    GameUIController.Instance.TriggerConfettiBurst(60);
+                }
+            });
+
+            GameObject btnTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            btnTextObj.transform.SetParent(btnObj.transform, false);
+            RectTransform btRt = btnTextObj.GetComponent<RectTransform>();
+            btRt.anchorMin = Vector2.zero;
+            btRt.anchorMax = Vector2.one;
+            btRt.sizeDelta = Vector2.zero;
+
+            Text btnText = btnTextObj.GetComponent<Text>();
+            btnText.font = GameUIController.DefaultFont;
+            btnText.fontSize = 22;
+            btnText.fontStyle = FontStyle.Bold;
+            btnText.alignment = TextAnchor.MiddleCenter;
+            btnText.color = Color.white;
+            btnText.text = "PLAY AGAIN";
+
+            // Trigger celebration
+            if (GameUIController.Instance != null)
+            {
+                GameUIController.Instance.TriggerConfettiBurst(80);
+                GameUIController.Instance.PlayCheerSound();
+            }
+            AndroidHaptics.HeavyThud();
         }
 
         public void UpdateStatusHUD()
@@ -914,19 +1218,13 @@ namespace RoadwaysGame
             if (totalClearedChilbis >= 56)
             {
                 statusText.text = $"🏆 All Chilbis Boarded! Victory!";
-                GameUIController gui = FindAnyObjectByType<GameUIController>();
-                if (gui != null)
-                {
-                    gui.TriggerConfettiBurst(80);
-                    gui.PlayCheerSound();
-                }
-                AndroidHaptics.HeavyThud();
                 return;
             }
 
             if (isBoardingActive)
             {
                 statusText.text = $"⚡ Boarding... ({totalClearedChilbis} Cleared)";
+                SetGridlockWarning(false);
                 return;
             }
 
@@ -943,11 +1241,13 @@ namespace RoadwaysGame
                 if (!hasMatch)
                 {
                     statusText.text = $"⚠️ Gridlock! Tap bus to recall";
+                    SetGridlockWarning(true);
                     return;
                 }
             }
 
-            statusText.text = $"⚡ HOT RELOAD • {totalClearedChilbis} Cleared • {openBays} Bays Free";
+            SetGridlockWarning(false);
+            statusText.text = $"⚡ ⭐ {currentScore} • {totalClearedChilbis}/56 Cleared • {openBays} Bays Free";
         }
 
         public void ResetGame()
@@ -976,6 +1276,11 @@ namespace RoadwaysGame
             }
 
             totalClearedChilbis = 0;
+            currentScore = 0;
+            comboStreak = 0;
+            if (victoryModalObj != null) victoryModalObj.SetActive(false);
+            SetGridlockWarning(false);
+
             AndroidHaptics.DoubleBuzz();
             UpdateStatusHUD();
         }

@@ -240,48 +240,48 @@ flowchart TD
 
 ---
 
-### Phase 5: Passenger Boarding & Sorting Game Loop (12 Detailed Steps)
+### Phase 5: Passenger Boarding & Sorting Game Loop (12 Detailed Steps) - COMPLETED
 
-- [ ] **Step 5.1: Bay-to-Circuit Color Match Detector**:
+- [x] **Step 5.1: Bay-to-Circuit Color Match Detector**:
   - Implement `BoardingController.cs` monitoring active bus color in Bay 0.
   - Compare with the color of the front waiting row on the circuit.
-- [ ] **Step 5.2: Highway Peeling-Off Spline Route**:
+- [x] **Step 5.2: Highway Peeling-Off Spline Route**:
   - Generate a smooth exit spline branching from the bottom straight ($Y = 236$) through the highway neck directly to the docked bus door ($118, 320$).
-- [ ] **Step 5.3: Row-by-Row Peeling Animation**:
+- [x] **Step 5.3: Row-by-Row Peeling Animation**:
   - When colors match, the 7 Chilbis in the front row break formation one by one (cascading $0.08\text{s}$ stagger).
   - Walk down the highway neck toward the parked bus.
-- [ ] **Step 5.4: Passenger Hop-In Animation**:
+- [x] **Step 5.4: Passenger Hop-In Animation**:
   - Parabolic hop into bus entry: $Y = Y_{base} + \sin(\pi u) \times 12\text{px}$.
   - Scale squash-and-stretch on landing.
   - Play cheerful boarding pop sound.
-- [ ] **Step 5.5: Seat Capacity Counter**:
+- [x] **Step 5.5: Seat Capacity Counter**:
   - Track passenger capacity (7 passengers per bus = 1 full row).
   - Display floating passenger pill over bus (e.g. `0/7` $\to$ `7/7`).
-- [ ] **Step 5.6: Bus Full State & Departure Acceleration**:
+- [x] **Step 5.6: Bus Full State & Departure Acceleration**:
   - When capacity reaches 7/7:
     - Doors seal.
     - Double departure horn honk.
     - Accelerate forward along $-30^\circ$ axis out of the parking bay up through the highway exit.
-- [ ] **Step 5.7: Bay Reset & Next Vehicle Signal**:
+- [x] **Step 5.7: Bay Reset & Next Vehicle Signal**:
   - Mark Bay 0 as vacant.
   - Signal depot that parking spot is ready for next bus.
-- [ ] **Step 5.8: Circuit Queue Advance**:
+- [x] **Step 5.8: Circuit Queue Advance**:
   - Remaining circuit rows advance forward by 1 row gap ($13.82\text{px}$).
   - Feeder queue advances: 1 row leaves feeder and enters circuit.
-- [ ] **Step 5.9: Multi-Bay Management (Bays 0 to 8)**:
+- [x] **Step 5.9: Multi-Bay Management (Bays 0 to 8)**:
   - Expand logic to manage all 9 trapezium bays simultaneously:
     - 5 Standard Bays active by default.
     - 1 VIP Bay (double coin bonus / special passenger).
     - 3 Unlock Bays (unlocked with in-game currency or ads).
-- [ ] **Step 5.10: Scoring & Streak Combo System**:
+- [x] **Step 5.10: Scoring & Streak Combo System**:
   - Award coins per passenger boarded.
   - Streak multiplier for consecutive matching departures without mis-parking.
-- [ ] **Step 5.11: Win Condition & Celebration**:
+- [x] **Step 5.11: Win Condition & Celebration**:
   - Trigger win screen when all 430 Chilbis have boarded:
     - Confetti particle burst.
     - Victory fanfare audio.
     - Level complete stats (Time, Stars, Coins).
-- [ ] **Step 5.12: Gridlock / Game Over Detection**:
+- [x] **Step 5.12: Gridlock / Game Over Detection**:
   - If all active parking bays are occupied, and none match the color of the front waiting circuit row:
     - Trigger "Out of Moves" warning.
     - Gridlock game over modal with option to Revive / Undo / Shuffle.
@@ -296,9 +296,9 @@ flowchart TD
     - Music (Pastel park background melody)
     - SFX (Horns, Pops, Air Brakes)
     - UI (Clicks, Fanfares)
-- [ ] **Step 6.2: 12-Voice Kids Cheer Chorus**:
-  - Import high-fidelity audio clip ("Hey! Goooo! Let's gooo!") triggered during high-speed feeder entrance.
-- [ ] **Step 6.3: 8 Harmonic Bus Horn Synthesizers / Clips**:
+- [x] **Step 6.2: 12-Voice Kids Cheer Chorus**:
+  - Import high-fidelity audio clip ("Hey! Goooo! Let's gooo!") triggered during high-speed feeder entrance and replay.
+- [x] **Step 6.3: 8 Harmonic Bus Horn Synthesizers / Clips**:
   - 8 harmonic dual-tone bus horn clips matching project frequencies:
     1. Red: $440\text{ Hz}$
     2. Yellow: $392\text{ Hz}$
@@ -312,20 +312,20 @@ flowchart TD
   - Bandpass-filtered air hiss and mechanical latch click ("pssshh-clack!") upon vehicle parking.
 - [ ] **Step 6.5: Engine Acceleration Rumble**:
   - Pitch-shifted low-frequency engine loop accelerating with vehicle speed.
-- [ ] **Step 6.6: Boarding Pop Sound FX**:
-  - Crisp, playful popping sounds ascending in pitch as passengers 1 through 7 board.
-- [ ] **Step 6.7: Android Native Haptics Plugin**:
+- [x] **Step 6.6: Boarding Pop Sound FX**:
+  - Crisp, playful popping sounds ascending in pitch ($0.95\times \to 1.5\times$) as passengers 1 through 7 board.
+- [x] **Step 6.7: Android Native Haptics Plugin**:
   - Create `AndroidHaptics.cs` calling Android `Vibrator` and `VibrationEffect` via JNI:
     - Lightweight fallback for devices below API 26 (`Handheld.Vibrate()`).
-- [ ] **Step 6.8: Light Tick Haptic on Bus Tap**:
+- [x] **Step 6.8: Light Tick Haptic on Bus Tap**:
   - $15\text{ms}$ light vibration tick upon selecting and dispatching a bus.
-- [ ] **Step 6.9: Double Buzz Haptic on Blocked Path**:
+- [x] **Step 6.9: Double Buzz Haptic on Blocked Path**:
   - $40\text{ms}$ rumble, $30\text{ms}$ pause, $60\text{ms}$ rumble when path is blocked.
-- [ ] **Step 6.10: Firm Click Haptic on Bay Docking**:
+- [x] **Step 6.10: Firm Click Haptic on Bay Docking**:
   - $25\text{ms}$ firm tactile click when bus locks into parking bay.
-- [ ] **Step 6.11: Soft Pop Haptic on Passenger Boarding**:
+- [x] **Step 6.11: Soft Pop Haptic on Passenger Boarding**:
   - $10\text{ms}$ subtle micro-vibration as each Chilbi hops aboard.
-- [ ] **Step 6.12: UI Header & Replay Button**:
+- [x] **Step 6.12: UI Header & Replay Button**:
   - Responsive header watermark pill showing level progress, Chilbis remaining, and active queue counts.
   - Glassmorphic "Replay Cheer & Run" button.
 
