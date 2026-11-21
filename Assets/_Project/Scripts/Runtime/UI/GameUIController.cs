@@ -340,6 +340,10 @@ namespace RoadwaysGame
 
                 Image tbImg = topBorderObj.GetComponent<Image>();
                 tbImg.color = topBorderColor;
+
+                // 8 Top-Down Buses Fleet Row (100% Parity with 3D_Showcase_Preview.html)
+                BusFleetUIController busFleet = bottomPanelObj.AddComponent<BusFleetUIController>();
+                busFleet.BuildFleet(canvasObj.GetComponent<RectTransform>());
             }
 
             // 3. Road Network Circuit (positioned directly above the trapezium)
