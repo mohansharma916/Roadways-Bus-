@@ -857,6 +857,20 @@ namespace RoadwaysGame
         [System.NonSerialized] private int totalClearedChilbis = 0;
         [System.NonSerialized] private Text statusText;
 
+        public int TotalClearedChilbis => totalClearedChilbis;
+        public int OpenBaysCount
+        {
+            get
+            {
+                int open = 0;
+                for (int i = 0; i < 9; i++)
+                {
+                    if (bayUnlocked[i] && bayOccupants[i] < 0) open++;
+                }
+                return open;
+            }
+        }
+
         private void FindStatusText()
         {
             if (statusText != null) return;
@@ -933,7 +947,7 @@ namespace RoadwaysGame
                 }
             }
 
-            statusText.text = $"🌸 {totalClearedChilbis} Cleared • {openBays} Bays Free";
+            statusText.text = $"⚡ HOT RELOAD • {totalClearedChilbis} Cleared • {openBays} Bays Free";
         }
 
         public void ResetGame()

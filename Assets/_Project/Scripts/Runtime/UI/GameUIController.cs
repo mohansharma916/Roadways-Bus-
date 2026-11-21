@@ -464,7 +464,7 @@ namespace RoadwaysGame
                 titleText.fontStyle = FontStyle.Bold;
                 titleText.alignment = TextAnchor.MiddleCenter;
                 titleText.color = new Color32(0x2C, 0x3E, 0x50, 0xFF);
-                titleText.text = "430 Chilbis Parade • Sakura Park";
+                titleText.text = "⚡ HOT RELOAD • Sakura Park";
 
                 // Status Pill
                 statusPill = new GameObject("StatusPill", typeof(RectTransform), typeof(Image));
@@ -593,7 +593,16 @@ namespace RoadwaysGame
         {
             if (statusText != null && !parkOnlyMode)
             {
-                if (clearedChilbis > 0)
+                if (titleText != null && !titleText.text.StartsWith("⚡"))
+                {
+                    titleText.text = "⚡ HOT RELOAD • Sakura Park";
+                }
+
+                if (BusFleetUIController.Instance != null)
+                {
+                    statusText.text = $"⚡ HOT RELOAD • {BusFleetUIController.Instance.TotalClearedChilbis} Cleared • {BusFleetUIController.Instance.OpenBaysCount} Bays Free";
+                }
+                else if (clearedChilbis > 0)
                 {
                     statusText.text = $"{clearedChilbis} Cleared • {totalChilbis - clearedChilbis} Left" + (dockedBusesCount > 0 ? $" | {dockedBusesCount}/9 Bays" : "");
                 }

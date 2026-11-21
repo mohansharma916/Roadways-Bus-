@@ -138,7 +138,7 @@ namespace RoadwaysGame.Editor
                         so.ApplyModifiedProperties();
                     }
                 }
-                uiController.ParkOnlyMode = true;
+                uiController.ParkOnlyMode = false;
                 uiController.ApplyDisplayMode();
                 uiController.BuildUI();
                 if (!EditorApplication.isPlaying)
@@ -147,7 +147,7 @@ namespace RoadwaysGame.Editor
                     EditorSceneManager.MarkSceneDirty(scene);
                     EditorSceneManager.SaveScene(scene);
                 }
-                Debug.Log("<color=#2ecc71>[UIAutoSetup] Cherry Blossom Park view successfully applied!</color>");
+                Debug.Log("<color=#2ecc71>[UIAutoSetup] Full Game view successfully applied!</color>");
             }
         }
     }
