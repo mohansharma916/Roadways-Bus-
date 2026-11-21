@@ -21,6 +21,14 @@ namespace RoadwaysGame
         [Tooltip("When enabled, hides Ring Road, Parking Lot, Buses, and Chilbis to show ONLY Cherry Blossom Park.")]
         [SerializeField] private bool parkOnlyMode = true;
 
+        [Header("Bottom Panel Specifications")]
+        [Tooltip("Covers 50% of height from bottom, full width, filled with grey, 2px white top border only.")]
+        [SerializeField] private bool showBottomPanel = true;
+        [SerializeField] private float bottomPanelHeightRatio = 0.50f; // 50% height
+        [SerializeField] private Color bottomPanelColor = new Color32(0x52, 0x57, 0x69, 0xFF); // Solid grey (#525769)
+        [SerializeField] private float topBorderThickness = 2.0f; // 2px
+        [SerializeField] private Color topBorderColor = Color.white;
+
         [Header("UI State (Dynamic)")]
         [SerializeField] private int clearedChilbis = 0;
         [SerializeField] private int totalChilbis = GameConstants.TotalChilbis; // 430
@@ -184,7 +192,36 @@ namespace RoadwaysGame
             // Generate rounded pill sprite with 24px smooth corner radii
             Sprite pillSprite = CreatePillSprite(128, 64, 24);
 
-            // 1. Top Header Container (Safe area top padding: 48px down from screen top)
+            // 1. Bottom 50% Grey Rectangular Panel (Full width, 2px white top border only)
+            if (showBottomPanel)
+            {
+                GameObject bottomPanelObj = new GameObject("BottomGreyPanel", typeof(RectTransform), typeof(Image));
+                bottomPanelObj.transform.SetParent(canvasObj.transform, false);
+                RectTransform bpRt = bottomPanelObj.GetComponent<RectTransform>();
+                bpRt.anchorMin = new Vector2(0f, 0f);
+                bpRt.anchorMax = new Vector2(1f, bottomPanelHeightRatio); // 50% height from bottom
+                bpRt.pivot = new Vector2(0.5f, 0f);
+                bpRt.offsetMin = Vector2.zero;
+                bpRt.offsetMax = Vector2.zero;
+
+                Image bpImg = bottomPanelObj.GetComponent<Image>();
+                bpImg.color = bottomPanelColor;
+
+                // 2px solid white border visible ONLY on the top side
+                GameObject topBorderObj = new GameObject("TopBorderLine", typeof(RectTransform), typeof(Image));
+                topBorderObj.transform.SetParent(bottomPanelObj.transform, false);
+                RectTransform tbRt = topBorderObj.GetComponent<RectTransform>();
+                tbRt.anchorMin = new Vector2(0f, 1f);
+                tbRt.anchorMax = new Vector2(1f, 1f);
+                tbRt.pivot = new Vector2(0.5f, 1f);
+                tbRt.anchoredPosition = Vector2.zero;
+                tbRt.sizeDelta = new Vector2(0f, topBorderThickness); // 2px thickness
+
+                Image tbImg = topBorderObj.GetComponent<Image>();
+                tbImg.color = topBorderColor;
+            }
+
+            // 2. Top Header Container (Safe area top padding: 48px down from screen top)
             GameObject headerContainer = new GameObject("HeaderContainer", typeof(RectTransform));
             headerContainer.transform.SetParent(canvasObj.transform, false);
             RectTransform headerRt = headerContainer.GetComponent<RectTransform>();
