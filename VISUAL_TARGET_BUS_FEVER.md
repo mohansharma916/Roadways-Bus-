@@ -17,7 +17,7 @@ Describing only what is visible. Measurements are proportions of a ~720 × 1600 
 | :--- | :--- | :--- |
 | Top HUD | ~9 % | Three elements only, floating over the scene |
 | **Queue zone** | **~21 %** | Horseshoe track packed with characters, on a beach backdrop |
-| **Bay apron** | **~14 %** | Grey apron, 7 slots |
+| **Bay apron** | **~14 %** | Grey apron, 8 slots |
 | **Depot puzzle** | **~44 %** | ~30 vehicles, the actual puzzle |
 | Booster bar | ~9 % | Three large buttons |
 | | **~97 %** | **Functional. Almost nothing is empty.** |
@@ -47,7 +47,7 @@ That is a **simpler and better answer than the one I proposed** in roadmap Phase
 
 ### 1.4 The bay apron
 
-- **7 slots**, not 9.
+- **8 slots**, not 9. *(Corrected 2026-11-21: an earlier version of this doc said 7, an addition error — the reference shows 1 VIP + 4 standard + 3 locked = 8.)*
 - Tilted only **~10–15°**, not the −30° in `GameConstants.ParkingBayAngleDeg`. Shallow tilt reads as "angled parking" while keeping the slots wide and legible; −30° makes them narrow lozenges.
 - Left-to-right: **1 VIP** (gold border, "VIP" set vertically) → **4 standard** (grey fill, light border) → **3 locked** (green tint, "+").
 - Slots are **empty outlines** — unmistakably destinations. Generous size relative to the vehicles.
@@ -103,7 +103,7 @@ The orange circular icon on the right edge is an Android accessibility-service o
 | Queue legibility | Horseshoe with visible exits — self-evident | Closed loop, invisible trigger point | **Large, and now cheaply solvable** |
 | Crowd density | 4–5 abreast, packed, overlapping | 7 abreast, thin single-file band | **Medium** |
 | Depot | ~30 vehicles, varied length/angle, arrow-based unblock puzzle | 8 identical buses in a row, auto-assigned bays | **Core-loop difference** — §6 Decision A |
-| Bays | 7, shallow ~12° tilt, large | 9, −30° tilt, narrow | **Small** |
+| Bays | 8, shallow ~12° tilt, large | 9, −30° tilt, narrow | **Small** |
 | HUD | 3 elements, no containers | 2 pills, 4 metrics, level duplicated | **Small, already planned** |
 | Boosters | 3, bottom centre, ~70 dp, 3D icons | 2, top of panel, 18 dp tall, emoji | **Small, already planned** |
 | Theme | Beach | Cherry blossom park | **Deliberate — see §6 Decision B** |
@@ -123,7 +123,7 @@ Mostly good news: the reference **simplifies** two phases and **sharpens** three
 | **17** Readable puzzle | **Simplified.** Replace my "world-space gate + next-up strip" with the horseshoe-with-exit-gates. Less work, better result. Save ~2 d. The HUD scale/ergonomics half of the phase is unchanged. |
 | **18** Lighting & HD | **Sharpened.** Now has a reference to grade against: lit top faces, darker sides, specular edges, soft contact shadows, saturated backdrop. |
 | **19** Performance | **Harder.** A packed 4–5-abreast crowd *plus* ~30 scattered vehicles is more on screen than the current design. The GPU-instancing and Burst work in 19.2–19.3 moves from "important" to "mandatory". |
-| **20** Identity & stakes | **Sharpened.** HUD → 3 elements. Boosters → 3 large bottom-centre buttons with 3D icons and count badges. Bays → 7 at ~12°. |
+| **20** Identity & stakes | **Sharpened.** HUD → 3 elements. Boosters → 3 large bottom-centre buttons with 3D icons and count badges. Bays → 8 at ~12°. |
 
 ---
 
@@ -134,7 +134,7 @@ Mostly good news: the reference **simplifies** two phases and **sharpens** three
 ```
 HUD overlay        ~9 %   floating, no panel
 Queue zone         ~21 %  horseshoe + backdrop
-Bay apron          ~14 %  7 slots
+Bay apron          ~14 %  8 slots
 Depot puzzle       ~44 %  the jam
 Booster bar        ~9 %   3 buttons
 Empty / decorative ≤ 5 %
@@ -147,7 +147,7 @@ Empty / decorative ≤ 5 %
 | `CameraPitch` | `35.0f` | **`52.0f`** | 35° is too shallow to show vehicle tops *and* sides the way the reference does |
 | `CameraPosition` | `(0, 30, 42)` | re-derive from the framing requirement | Must fit all three bands at the 4.1 budget across 16:9 → 20:9 |
 | `ParkingBayAngleDeg` | `-30.0f` | **`-12.0f`** | Shallow tilt keeps slots wide and legible |
-| `TotalParkingBays` | `9` | **`7`** | 1 VIP + 3 standard + 3 locked, matching the reference's rhythm |
+| `TotalParkingBays` | `9` | **`8`** | 1 VIP + 4 standard + 3 locked, matching the reference |
 | `ChilbisPerRow` | `7` | **`5`** | Reference packs 4–5 abreast; 5 on a denser band reads as a crowd |
 | Row spacing | `13.84f` | tighter, overlapping | The crowd must read as packed, not as a queue of individuals |
 | `CircuitMaxChilbis` | `420` | re-derive | A horseshoe holds fewer than a closed loop; 420 was tuned for the loop |
@@ -214,6 +214,6 @@ Note also `Requirements.md` FR-1.3 currently forbids this: *"Strictly zero trees
 
 With both decisions resolved, the target is:
 
-> A **perspective-3D golden-hour beach** where a dense, colour-blocked crowd of **candy-bean Chilbis** files around a **horseshoe** toward two exit gates; the player clears an **arrow-based vehicle jam** below to get the right-coloured bus into one of **7 shallow-angled bays** before the crowd backs up — rendered with saturated colour, a low warm key light and long soft contact shadows filling **~97 %** of the screen.
+> A **perspective-3D golden-hour beach** where a dense, colour-blocked crowd of **candy-bean Chilbis** files around a **horseshoe** toward two exit gates; the player clears an **arrow-based vehicle jam** below to get the right-coloured bus into one of **8 shallow-angled bays** before the crowd backs up — rendered with saturated colour, a low warm key light and long soft contact shadows filling **~97 %** of the screen.
 
 Same genre and same production standard as the reference. The distinctness now rests on three things — golden-hour lighting, the Chilbi characters, and one signature prop line (§5) — so treat those as requirements, not polish.

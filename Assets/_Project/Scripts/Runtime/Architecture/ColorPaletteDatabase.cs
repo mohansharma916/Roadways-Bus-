@@ -36,15 +36,17 @@ namespace RoadwaysGame
 
     /// <summary>
     /// Master single-source-of-truth color palette database for Chilbis and Buses.
+    /// Candy values per FIX_ROADMAP 14.7/18.5: red/yellow/blue brightened to match the Chilbi bodies;
+    /// green moved from teal toward pure green so it no longer reads as a near-miss for cyan.
     /// </summary>
     public static class ColorPaletteDatabase
     {
         public static readonly ColorTheme[] Themes = new ColorTheme[]
         {
-            new ColorTheme(ChilbiColorType.Red,    "Crimson Express",    "#c0392b", "#a82c1f", 440f),
-            new ColorTheme(ChilbiColorType.Yellow, "Amber School Buggy", "#f39c12", "#d4880f", 392f),
-            new ColorTheme(ChilbiColorType.Blue,   "Cobalt Commuter",    "#2548ad", "#1c3987", 494f),
-            new ColorTheme(ChilbiColorType.Green,  "Emerald Eco",        "#20bf6b", "#168d4f", 523f),
+            new ColorTheme(ChilbiColorType.Red,    "Crimson Express",    "#ee5253", "#c93d3e", 440f),
+            new ColorTheme(ChilbiColorType.Yellow, "Amber School Buggy", "#fed330", "#d9ae14", 392f),
+            new ColorTheme(ChilbiColorType.Blue,   "Cobalt Commuter",    "#1e90ff", "#1670c9", 494f),
+            new ColorTheme(ChilbiColorType.Green,  "Emerald Eco",        "#2bd97c", "#1fae60", 523f),
             new ColorTheme(ChilbiColorType.Purple, "Royal Violet",       "#8854d0", "#6c3db5", 587f),
             new ColorTheme(ChilbiColorType.Orange, "Tangerine Transit",  "#e67e22", "#cf6717", 622f),
             new ColorTheme(ChilbiColorType.Pink,   "Bubblegum Shuttle",  "#e84393", "#cf2d7c", 659f),

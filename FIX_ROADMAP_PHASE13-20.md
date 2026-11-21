@@ -363,7 +363,7 @@ The audit measured the cause of "dull": **≈ 6 % of screen pixels carry any chr
 | 20.3 | **Three control shapes** | `CreatePillSprite(128,64,24)` is used for buttons, badges, HUD pills, toggles *and* map nodes, so primary, secondary and destructive actions are identical geometry in different colours. Soft-rect primary / pill secondary / circular icon. |
 | **20.0** | **HUD → three elements** *(reference)* | Delete both pills. Circular restart (top-left), **level number as bare outlined text, no container** (top-centre), circular pause (top-right). All ≥ 50 dp, inside the safe area. No score, no counters, no status line on the play screen — the reference carries exactly three elements and is far more readable for it. Score and high score live in the victory modal. *(supersedes 17.4's progress bar — the reference does not show one)* |
 | **20.0b** | **Boosters → three, bottom centre** *(reference)* | ~70 dp rounded squares with chunky 3D icons, white outlined labels and circular count badges. Roadways' Recall and Shuffle map onto the reference's Arrange and Jumble; the third slot takes VIP. From 290 × 54 units (97 × **18 dp**, at the top of the depot panel) to large, thumb-reachable and bottom-centre. |
-| **20.0c** | **Bays → seven, shallow tilt** *(reference)* | `TotalParkingBays: 9 → 7` and `ParkingBayAngleDeg: −30° → ~−12°`. Layout: 1 VIP (gold) → 3 standard (grey) → 3 locked (green `+`). −30° makes slots narrow lozenges; a shallow tilt keeps them wide and legible as destinations. Amend `Requirements.md` FR-6.2 and FR-7.3. |
+| **20.0c** | **Bays → eight, shallow tilt** *(reference)* | `TotalParkingBays: 9 → 8` and `ParkingBayAngleDeg: −30° → ~−12°`. Layout: 1 VIP (gold) → 4 standard (grey) → 3 locked (green `+`) — *corrected from 7: the reference shows 1 + 4 + 3 = 8*. −30° makes slots narrow lozenges; a shallow tilt keeps them wide and legible as destinations. Amend `Requirements.md` FR-6.2 and FR-7.3. |
 | 20.4 | **Start screen declutter** | Keep the title, `PLAY LEVEL n` (the only well-sized control in the build — don't touch it) and one progress line. Delete "🌸 SAKURA TRAFFIC SORTING 🌸" and "🚌 Bus Fleet & Chilbi Parade Challenge" — both are park-themed and now wrong as well as redundant. Card over the live 3D beach, which is now worth showing. |
 | 20.5 | **Branded splash** | `m_ShowUnitySplashScreen: 1` with `m_SplashScreenLogos: []` — the first frame says "Made with Unity". |
 | 20.6 | **Honest haptics** | All four "distinct" patterns call `Handheld.Vibrate()` and **discard the duration argument** (`:2338-2356`), so every haptic is the same fixed buzz — fired 7× in ~0.6 s during boarding. Either a real `VibrationEffect` JNI bridge per FR-12.2, or cut to two patterns rate-limited to one per 150 ms. **Current behaviour is worse than no haptics.** |
@@ -494,7 +494,7 @@ Every item from the audit's §F priority list and §J.5, mapped to a phase. Noth
 | Five-part vehicle material recipe | 18.8 | Matches the reference's moulded look |
 | HUD → 3 elements, no containers | **20.0** | Supersedes 17.4's progress bar |
 | Boosters → 3, bottom centre, ~70 dp | **20.0b** | From 2, top of panel, 18 dp |
-| Bays → 7 at ~−12° | **20.0c** | From 9 at −30°; amend FR-6.2, FR-7.3 |
+| Bays → 8 at ~−12° | **20.0c** | From 9 at −30°; amend FR-6.2, FR-7.3 |
 | Jam difficulty curve | **20.11b** | **+2 d**; where difficulty now lives |
 
 ### Spec amendments this plan requires
@@ -510,7 +510,7 @@ Every item from the audit's §F priority list and §J.5, mapped to a phase. Noth
 | FR-3.2 / FR-3.9 | 7 abreast / 60-row loop lock → 5 abreast, horseshoe capacity | 15.0 |
 | **FR-4.3** | "Matte" redefined as *no mirror specular*, **not** *no shading or shadow* | 18.4 |
 | FR-4.1 | Keep, and enforce with the CI parity assert | 14.7 |
-| FR-6.2 / FR-7.3 | 9 bays at −30° → 7 bays at ~−12° | 20.0c |
+| FR-6.2 / FR-7.3 | 9 bays at −30° → 8 bays at ~−12° | 20.0c |
 | FR-11.1 | 430-Chilbi win never occurs; reconcile with the real level curve | 20.11 |
 | FR-11.2 | Gridlock → a real cost, since today it cannot be lost | 20.9 |
 | **New FR** | Arrow/unblock depot mechanic + solvability guarantee | 15.10–15.13 |
