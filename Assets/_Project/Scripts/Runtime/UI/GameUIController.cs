@@ -362,6 +362,10 @@ namespace RoadwaysGame
                     roadImg.sprite = circuitSprite;
                     roadImg.type = Image.Type.Simple;
                     roadImg.color = Color.white;
+
+                    // Attach ChilbiFlowController to animate Chilbi parade along the ring road
+                    ChilbiFlowController flowController = roadObj.AddComponent<ChilbiFlowController>();
+                    flowController.CreateFormation();
                 }
             }
 
