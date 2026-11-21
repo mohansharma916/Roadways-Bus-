@@ -17,9 +17,9 @@ namespace RoadwaysGame
     public class ChilbiFlowController : MonoBehaviour
     {
         [Header("Formation Settings")]
-        [SerializeField] private int rowCount = 5; // 5 rows = 35 Chilbis
+        [SerializeField] private int rowCount = 8; // 8 rows = 56 Chilbis (cycling all 8 master candy themes)
         [SerializeField] private float walkSpeed = 95f; // px/s on 1080 canvas
-        [SerializeField] private float rowSpacing = 36f; // distance between rows along track
+        [SerializeField] private float rowSpacing = 18f; // distance between rows along track (one after another with zero gap)
         [SerializeField] private float laneSpacing = 12.5f; // spacing between the 7 Chilbis in each row
         [SerializeField] private float baseScale = 1.0f;
 
