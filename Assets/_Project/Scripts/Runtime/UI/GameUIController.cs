@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -77,6 +78,16 @@ namespace RoadwaysGame
         [System.NonSerialized] private Image sfxToggleImg;
         [System.NonSerialized] private Image musicToggleImg;
         [System.NonSerialized] private Image hapticsToggleImg;
+        [System.NonSerialized] private GameObject startScreenObj;
+        [System.NonSerialized] private CanvasGroup startScreenCg;
+        [System.NonSerialized] private RectTransform startPlayBtnRt;
+        [System.NonSerialized] private Text startPlayBtnText;
+        [System.NonSerialized] private Text startMissionLevelText;
+        [System.NonSerialized] private Text startMissionScoreText;
+        [System.NonSerialized] private Text startMissionUnlockText;
+        [System.NonSerialized] private bool isGameStarted = false;
+
+        public bool IsGameStarted => isGameStarted;
 
         public AudioSource AudioSource => GetComponent<AudioSource>();
 
@@ -593,6 +604,9 @@ namespace RoadwaysGame
                 replayButton = null;
                 replayBtnText = null;
             }
+
+            CreateStartScreen();
+            ShowStartScreen(true);
         }
 
         public void UpdateTitle(string newTitle)
@@ -784,6 +798,419 @@ namespace RoadwaysGame
             {
                 shuffleBtnText.text = $"🔀 SHUFFLE ({shufCount})";
             }
+        }
+
+        public void ShowStartScreen(bool show)
+        {
+            if (!show)
+            {
+                if (startScreenObj != null) startScreenObj.SetActive(false);
+                isGameStarted = true;
+                return;
+            }
+
+            if (startScreenObj == null)
+            {
+                CreateStartScreen();
+            }
+            else
+            {
+                RefreshStartScreenInfo();
+            }
+
+            if (startScreenCg != null)
+            {
+                startScreenCg.alpha = 1f;
+                startScreenCg.blocksRaycasts = true;
+            }
+
+            startScreenObj.SetActive(true);
+            startScreenObj.transform.SetAsLastSibling();
+            isGameStarted = false;
+            StartCoroutine(StartPlayButtonPulseRoutine());
+        }
+
+        public void CreateStartScreen()
+        {
+            Transform canvasTrans = mainCanvas != null ? mainCanvas.transform : transform.Find("MainGameCanvas");
+            if (canvasTrans == null) return;
+
+            Transform old = canvasTrans.Find("StartScreenOverlay");
+            if (old != null)
+            {
+                if (Application.isPlaying) Destroy(old.gameObject);
+                else DestroyImmediate(old.gameObject);
+            }
+
+            Sprite pillSprite = CreatePillSprite(128, 64, 24);
+
+            // 1. Fullscreen Backdrop Overlay
+            startScreenObj = new GameObject("StartScreenOverlay", typeof(RectTransform), typeof(Image), typeof(CanvasGroup));
+            startScreenObj.transform.SetParent(canvasTrans, false);
+            RectTransform bgRt = startScreenObj.GetComponent<RectTransform>();
+            bgRt.anchorMin = Vector2.zero;
+            bgRt.anchorMax = Vector2.one;
+            bgRt.sizeDelta = Vector2.zero;
+
+            Image bgImg = startScreenObj.GetComponent<Image>();
+            bgImg.color = new Color(0.06f, 0.09f, 0.16f, 0.94f);
+            bgImg.raycastTarget = true;
+
+            startScreenCg = startScreenObj.GetComponent<CanvasGroup>();
+
+            // 2. Central Card
+            GameObject cardObj = new GameObject("StartCard", typeof(RectTransform), typeof(Image));
+            cardObj.transform.SetParent(startScreenObj.transform, false);
+            RectTransform cardRt = cardObj.GetComponent<RectTransform>();
+            cardRt.anchorMin = new Vector2(0.5f, 0.5f);
+            cardRt.anchorMax = new Vector2(0.5f, 0.5f);
+            cardRt.pivot = new Vector2(0.5f, 0.5f);
+            cardRt.anchoredPosition = Vector2.zero;
+            cardRt.sizeDelta = new Vector2(820f, 780f);
+
+            Image cardImg = cardObj.GetComponent<Image>();
+            cardImg.sprite = CreateRoundedBoxSprite(820, 780, 36, 4, new Color32(0x4B, 0xCF, 0xFA, 0x88), new Color32(0x16, 0x20, 0x30, 0xF8));
+            cardImg.type = Image.Type.Simple;
+
+            // 3. Top Decorative Pill Tag
+            GameObject tagObj = new GameObject("TopTagPill", typeof(RectTransform), typeof(Image));
+            tagObj.transform.SetParent(cardObj.transform, false);
+            RectTransform tagRt = tagObj.GetComponent<RectTransform>();
+            tagRt.anchorMin = new Vector2(0.5f, 1f);
+            tagRt.anchorMax = new Vector2(0.5f, 1f);
+            tagRt.pivot = new Vector2(0.5f, 1f);
+            tagRt.anchoredPosition = new Vector2(0f, -28f);
+            tagRt.sizeDelta = new Vector2(460f, 44f);
+
+            Image tagImg = tagObj.GetComponent<Image>();
+            tagImg.sprite = pillSprite;
+            tagImg.type = Image.Type.Sliced;
+            tagImg.color = new Color32(0x24, 0x33, 0x48, 0xFF);
+
+            GameObject tagTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            tagTextObj.transform.SetParent(tagObj.transform, false);
+            RectTransform ttRt = tagTextObj.GetComponent<RectTransform>();
+            ttRt.anchorMin = Vector2.zero;
+            ttRt.anchorMax = Vector2.one;
+            ttRt.sizeDelta = Vector2.zero;
+            Text tt = tagTextObj.GetComponent<Text>();
+            tt.font = DefaultFont;
+            tt.fontSize = 19;
+            tt.fontStyle = FontStyle.Bold;
+            tt.alignment = TextAnchor.MiddleCenter;
+            tt.color = new Color(1f, 0.82f, 0.86f, 1f);
+            tt.text = "🌸 SAKURA TRAFFIC SORTING 🌸";
+
+            // 4. Hero Logo / Title: ROADWAYS
+            GameObject titleObj = new GameObject("HeroTitle", typeof(RectTransform), typeof(Text), typeof(Shadow));
+            titleObj.transform.SetParent(cardObj.transform, false);
+            RectTransform titleRt = titleObj.GetComponent<RectTransform>();
+            titleRt.anchorMin = new Vector2(0.5f, 1f);
+            titleRt.anchorMax = new Vector2(0.5f, 1f);
+            titleRt.pivot = new Vector2(0.5f, 1f);
+            titleRt.anchoredPosition = new Vector2(0f, -88f);
+            titleRt.sizeDelta = new Vector2(740f, 76f);
+
+            Text title = titleObj.GetComponent<Text>();
+            title.font = DefaultFont;
+            title.fontSize = 64;
+            title.fontStyle = FontStyle.Bold;
+            title.alignment = TextAnchor.MiddleCenter;
+            title.color = new Color32(0xF1, 0xC4, 0x0F, 0xFF);
+            title.text = "ROADWAYS";
+
+            Shadow titleShadow = titleObj.GetComponent<Shadow>();
+            titleShadow.effectColor = new Color(0f, 0f, 0f, 0.65f);
+            titleShadow.effectDistance = new Vector2(3f, -3f);
+
+            // 5. Subtitle
+            GameObject subObj = new GameObject("HeroSubtitle", typeof(RectTransform), typeof(Text));
+            subObj.transform.SetParent(cardObj.transform, false);
+            RectTransform subRt = subObj.GetComponent<RectTransform>();
+            subRt.anchorMin = new Vector2(0.5f, 1f);
+            subRt.anchorMax = new Vector2(0.5f, 1f);
+            subRt.pivot = new Vector2(0.5f, 1f);
+            subRt.anchoredPosition = new Vector2(0f, -164f);
+            subRt.sizeDelta = new Vector2(680f, 38f);
+
+            Text sub = subObj.GetComponent<Text>();
+            sub.font = DefaultFont;
+            sub.fontSize = 22;
+            sub.fontStyle = FontStyle.Bold;
+            sub.alignment = TextAnchor.MiddleCenter;
+            sub.color = new Color32(0xDF, 0xE6, 0xE9, 0xFF);
+            sub.text = "🚌 Bus Fleet & Chilbi Parade Challenge";
+
+            // 6. Active Mission Info Card
+            GameObject missionObj = new GameObject("MissionCard", typeof(RectTransform), typeof(Image));
+            missionObj.transform.SetParent(cardObj.transform, false);
+            RectTransform mRt = missionObj.GetComponent<RectTransform>();
+            mRt.anchorMin = new Vector2(0.5f, 1f);
+            mRt.anchorMax = new Vector2(0.5f, 1f);
+            mRt.pivot = new Vector2(0.5f, 1f);
+            mRt.anchoredPosition = new Vector2(0f, -220f);
+            mRt.sizeDelta = new Vector2(720f, 175f);
+
+            Image mImg = missionObj.GetComponent<Image>();
+            mImg.sprite = CreateRoundedBoxSprite(720, 175, 24, 3, new Color32(0xF1, 0xC4, 0x0F, 0x88), new Color32(0x1E, 0x2B, 0x3E, 0xFA));
+            mImg.type = Image.Type.Simple;
+
+            GameObject lvlObj = new GameObject("LevelText", typeof(RectTransform), typeof(Text));
+            lvlObj.transform.SetParent(missionObj.transform, false);
+            RectTransform lRt = lvlObj.GetComponent<RectTransform>();
+            lRt.anchorMin = new Vector2(0.5f, 1f);
+            lRt.anchorMax = new Vector2(0.5f, 1f);
+            lRt.pivot = new Vector2(0.5f, 1f);
+            lRt.anchoredPosition = new Vector2(0f, -16f);
+            lRt.sizeDelta = new Vector2(680f, 54f);
+            startMissionLevelText = lvlObj.GetComponent<Text>();
+            startMissionLevelText.font = DefaultFont;
+            startMissionLevelText.fontSize = 44;
+            startMissionLevelText.fontStyle = FontStyle.Bold;
+            startMissionLevelText.alignment = TextAnchor.MiddleCenter;
+            startMissionLevelText.color = Color.white;
+
+            GameObject hiObj = new GameObject("HighScoreText", typeof(RectTransform), typeof(Text));
+            hiObj.transform.SetParent(missionObj.transform, false);
+            RectTransform hRt = hiObj.GetComponent<RectTransform>();
+            hRt.anchorMin = new Vector2(0.5f, 1f);
+            hRt.anchorMax = new Vector2(0.5f, 1f);
+            hRt.pivot = new Vector2(0.5f, 1f);
+            hRt.anchoredPosition = new Vector2(0f, -72f);
+            hRt.sizeDelta = new Vector2(680f, 36f);
+            startMissionScoreText = hiObj.GetComponent<Text>();
+            startMissionScoreText.font = DefaultFont;
+            startMissionScoreText.fontSize = 22;
+            startMissionScoreText.fontStyle = FontStyle.Bold;
+            startMissionScoreText.alignment = TextAnchor.MiddleCenter;
+            startMissionScoreText.color = new Color32(0xBD, 0xC3, 0xC7, 0xFF);
+
+            GameObject unlObj = new GameObject("UnlockTagText", typeof(RectTransform), typeof(Text));
+            unlObj.transform.SetParent(missionObj.transform, false);
+            RectTransform uRt = unlObj.GetComponent<RectTransform>();
+            uRt.anchorMin = new Vector2(0.5f, 1f);
+            uRt.anchorMax = new Vector2(0.5f, 1f);
+            uRt.pivot = new Vector2(0.5f, 1f);
+            uRt.anchoredPosition = new Vector2(0f, -118f);
+            uRt.sizeDelta = new Vector2(680f, 36f);
+            startMissionUnlockText = unlObj.GetComponent<Text>();
+            startMissionUnlockText.font = DefaultFont;
+            startMissionUnlockText.fontSize = 19;
+            startMissionUnlockText.fontStyle = FontStyle.Bold;
+            startMissionUnlockText.alignment = TextAnchor.MiddleCenter;
+            startMissionUnlockText.color = new Color32(0x2E, 0xCC, 0x71, 0xFF);
+
+            // 7. PRIMARY JUICY CTA: PLAY BUTTON
+            GameObject playBtnObj = new GameObject("Btn_Play", typeof(RectTransform), typeof(Image), typeof(Button));
+            playBtnObj.transform.SetParent(cardObj.transform, false);
+            startPlayBtnRt = playBtnObj.GetComponent<RectTransform>();
+            startPlayBtnRt.anchorMin = new Vector2(0.5f, 1f);
+            startPlayBtnRt.anchorMax = new Vector2(0.5f, 1f);
+            startPlayBtnRt.pivot = new Vector2(0.5f, 1f);
+            startPlayBtnRt.anchoredPosition = new Vector2(0f, -425f);
+            startPlayBtnRt.sizeDelta = new Vector2(640f, 110f);
+
+            Image playImg = playBtnObj.GetComponent<Image>();
+            playImg.sprite = pillSprite;
+            playImg.type = Image.Type.Sliced;
+            playImg.color = new Color32(0x27, 0xAE, 0x60, 0xFF);
+
+            Button playBtn = playBtnObj.GetComponent<Button>();
+            playBtn.transition = Selectable.Transition.None;
+            playBtn.onClick.AddListener(StartGameFromStartScreen);
+
+            GameObject playTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text), typeof(Shadow));
+            playTextObj.transform.SetParent(playBtnObj.transform, false);
+            RectTransform ptRt = playTextObj.GetComponent<RectTransform>();
+            ptRt.anchorMin = Vector2.zero;
+            ptRt.anchorMax = Vector2.one;
+            ptRt.sizeDelta = Vector2.zero;
+            startPlayBtnText = playTextObj.GetComponent<Text>();
+            startPlayBtnText.font = DefaultFont;
+            startPlayBtnText.fontSize = 38;
+            startPlayBtnText.fontStyle = FontStyle.Bold;
+            startPlayBtnText.alignment = TextAnchor.MiddleCenter;
+            startPlayBtnText.color = Color.white;
+
+            Shadow playShadow = playTextObj.GetComponent<Shadow>();
+            playShadow.effectColor = new Color(0f, 0f, 0f, 0.5f);
+            playShadow.effectDistance = new Vector2(2f, -2f);
+
+            // 8. Secondary Row: Saga Map & Settings Buttons
+            GameObject mapBtnObj = new GameObject("Btn_StartMap", typeof(RectTransform), typeof(Image), typeof(Button));
+            mapBtnObj.transform.SetParent(cardObj.transform, false);
+            RectTransform mbRt = mapBtnObj.GetComponent<RectTransform>();
+            mbRt.anchorMin = new Vector2(0.5f, 1f);
+            mbRt.anchorMax = new Vector2(0.5f, 1f);
+            mbRt.pivot = new Vector2(0.5f, 1f);
+            mbRt.anchoredPosition = new Vector2(-165f, -565f);
+            mbRt.sizeDelta = new Vector2(300f, 68f);
+
+            Image mbImg = mapBtnObj.GetComponent<Image>();
+            mbImg.sprite = pillSprite;
+            mbImg.type = Image.Type.Sliced;
+            mbImg.color = new Color32(0x34, 0x49, 0x5E, 0xFF);
+
+            Button mbBtn = mapBtnObj.GetComponent<Button>();
+            mbBtn.onClick.AddListener(() => ShowCampaignMapModal(true));
+
+            GameObject mbTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            mbTextObj.transform.SetParent(mapBtnObj.transform, false);
+            RectTransform mbtRt = mbTextObj.GetComponent<RectTransform>();
+            mbtRt.anchorMin = Vector2.zero;
+            mbtRt.anchorMax = Vector2.one;
+            mbtRt.sizeDelta = Vector2.zero;
+            Text mbt = mbTextObj.GetComponent<Text>();
+            mbt.font = DefaultFont;
+            mbt.fontSize = 22;
+            mbt.fontStyle = FontStyle.Bold;
+            mbt.alignment = TextAnchor.MiddleCenter;
+            mbt.color = Color.white;
+            mbt.text = "🗺️ SAGA MAP";
+
+            GameObject setBtnObj = new GameObject("Btn_StartSettings", typeof(RectTransform), typeof(Image), typeof(Button));
+            setBtnObj.transform.SetParent(cardObj.transform, false);
+            RectTransform sbRt = setBtnObj.GetComponent<RectTransform>();
+            sbRt.anchorMin = new Vector2(0.5f, 1f);
+            sbRt.anchorMax = new Vector2(0.5f, 1f);
+            sbRt.pivot = new Vector2(0.5f, 1f);
+            sbRt.anchoredPosition = new Vector2(165f, -565f);
+            sbRt.sizeDelta = new Vector2(300f, 68f);
+
+            Image sbImg = setBtnObj.GetComponent<Image>();
+            sbImg.sprite = pillSprite;
+            sbImg.type = Image.Type.Sliced;
+            sbImg.color = new Color32(0x34, 0x49, 0x5E, 0xFF);
+
+            Button sbBtn = setBtnObj.GetComponent<Button>();
+            sbBtn.onClick.AddListener(() => ShowSettingsModal(true));
+
+            GameObject sbTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            sbTextObj.transform.SetParent(setBtnObj.transform, false);
+            RectTransform sbtRt = sbTextObj.GetComponent<RectTransform>();
+            sbtRt.anchorMin = Vector2.zero;
+            sbtRt.anchorMax = Vector2.one;
+            sbtRt.sizeDelta = Vector2.zero;
+            Text sbt = sbTextObj.GetComponent<Text>();
+            sbt.font = DefaultFont;
+            sbt.fontSize = 22;
+            sbt.fontStyle = FontStyle.Bold;
+            sbt.alignment = TextAnchor.MiddleCenter;
+            sbt.color = Color.white;
+            sbt.text = "⚙️ SETTINGS";
+
+            // 9. Bottom Casual Tip
+            GameObject tipObj = new GameObject("BottomTipText", typeof(RectTransform), typeof(Text));
+            tipObj.transform.SetParent(cardObj.transform, false);
+            RectTransform tipRt = tipObj.GetComponent<RectTransform>();
+            tipRt.anchorMin = new Vector2(0.5f, 1f);
+            tipRt.anchorMax = new Vector2(0.5f, 1f);
+            tipRt.pivot = new Vector2(0.5f, 1f);
+            tipRt.anchoredPosition = new Vector2(0f, -665f);
+            tipRt.sizeDelta = new Vector2(720f, 44f);
+
+            Text tipText = tipObj.GetComponent<Text>();
+            tipText.font = DefaultFont;
+            tipText.fontSize = 19;
+            tipText.fontStyle = FontStyle.Italic;
+            tipText.alignment = TextAnchor.MiddleCenter;
+            tipText.color = new Color32(0x95, 0xA5, 0xA6, 0xFF);
+            tipText.text = "💡 Match bus colors to the active Chilbi parade row!";
+
+            RefreshStartScreenInfo();
+        }
+
+        public void RefreshStartScreenInfo()
+        {
+            int curLvl = PlayerPrefs.GetInt("Roadways_Level", 1);
+            int hiScore = PlayerPrefs.GetInt("Roadways_HighScore", 0);
+
+            if (startMissionLevelText != null)
+            {
+                startMissionLevelText.text = $"★ LEVEL {curLvl} ★";
+            }
+            if (startMissionScoreText != null)
+            {
+                startMissionScoreText.text = $"👑 BEST SCORE: {hiScore} PTS";
+            }
+            if (startMissionUnlockText != null)
+            {
+                if (curLvl < 3) startMissionUnlockText.text = "🎁 Milestone: Bay 6 Unlocks at Level 3!";
+                else if (curLvl < 5) startMissionUnlockText.text = "🎁 Milestone: Bay 7 Unlocks at Level 5!";
+                else if (curLvl < 8) startMissionUnlockText.text = "🎁 Milestone: Bay 8 Unlocks at Level 8!";
+                else startMissionUnlockText.text = "🏆 All 9 Bays Unlocked • Master Mode!";
+            }
+            if (startPlayBtnText != null)
+            {
+                startPlayBtnText.text = $"▶ PLAY LEVEL {curLvl}";
+            }
+        }
+
+        public void StartGameFromStartScreen()
+        {
+            if (isGameStarted) return;
+            AndroidHaptics.HeavyThud();
+            if (BusFleetUIController.SfxEnabled && AudioSource != null)
+            {
+                AudioClip horn = Resources.Load<AudioClip>("Audio/chilbi_cheer");
+                if (horn != null) AudioSource.PlayOneShot(horn, 0.7f);
+            }
+            StartCoroutine(DismissStartScreenRoutine());
+        }
+
+        private IEnumerator DismissStartScreenRoutine()
+        {
+            if (startScreenCg == null)
+            {
+                if (startScreenObj != null) startScreenObj.SetActive(false);
+                isGameStarted = true;
+                yield break;
+            }
+
+            float dur = 0.28f;
+            float elapsed = 0f;
+            startScreenCg.blocksRaycasts = false;
+
+            Transform card = startScreenObj.transform.Find("StartCard");
+            Vector3 origCardScale = card != null ? card.localScale : Vector3.one;
+
+            while (elapsed < dur)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float p = Mathf.Clamp01(elapsed / dur);
+                startScreenCg.alpha = 1f - p;
+                if (card != null)
+                {
+                    float s = Mathf.Lerp(1f, 1.05f, p);
+                    card.localScale = origCardScale * s;
+                }
+                yield return null;
+            }
+
+            startScreenCg.alpha = 0f;
+            if (card != null) card.localScale = origCardScale;
+            startScreenObj.SetActive(false);
+            isGameStarted = true;
+
+            int curLvl = PlayerPrefs.GetInt("Roadways_Level", 1);
+            if (BusFleetUIController.Instance != null)
+            {
+                BusFleetUIController.Instance.ShowFloatingTip($"🚦 LEVEL {curLvl} • READY!");
+            }
+        }
+
+        private IEnumerator StartPlayButtonPulseRoutine()
+        {
+            while (startScreenObj != null && startScreenObj.activeSelf)
+            {
+                if (startPlayBtnRt != null)
+                {
+                    float scale = 1.0f + Mathf.Sin(Time.unscaledTime * 4.5f) * 0.04f;
+                    startPlayBtnRt.localScale = new Vector3(scale, scale, 1f);
+                }
+                yield return null;
+            }
+            if (startPlayBtnRt != null) startPlayBtnRt.localScale = Vector3.one;
         }
 
         public void ShowSettingsModal(bool show)
@@ -1166,10 +1593,10 @@ namespace RoadwaysGame
             cardRt.anchorMax = new Vector2(0.5f, 0.5f);
             cardRt.pivot = new Vector2(0.5f, 0.5f);
             cardRt.anchoredPosition = Vector2.zero;
-            cardRt.sizeDelta = new Vector2(740f, 820f);
+            cardRt.sizeDelta = new Vector2(740f, 850f);
 
             Image cardImg = cardObj.GetComponent<Image>();
-            cardImg.sprite = CreateRoundedBoxSprite(740, 820, 36, 4, new Color32(0x4B, 0xCF, 0xFA, 0xFF), new Color32(0x1E, 0x27, 0x2E, 0xFC));
+            cardImg.sprite = CreateRoundedBoxSprite(740, 850, 36, 4, new Color32(0x4B, 0xCF, 0xFA, 0xFF), new Color32(0x1E, 0x27, 0x2E, 0xFC));
             cardImg.type = Image.Type.Simple;
 
             // Header Title
@@ -1341,6 +1768,42 @@ namespace RoadwaysGame
             rest.alignment = TextAnchor.MiddleCenter;
             rest.color = Color.white;
             rest.text = "▶ RESUME GAME";
+
+            // Button: Return to Start Screen / Main Menu
+            GameObject menuBtnObj = new GameObject("Btn_MainMenu", typeof(RectTransform), typeof(Image), typeof(Button));
+            menuBtnObj.transform.SetParent(cardObj.transform, false);
+            RectTransform mbRt = menuBtnObj.GetComponent<RectTransform>();
+            mbRt.anchorMin = new Vector2(0.5f, 1f);
+            mbRt.anchorMax = new Vector2(0.5f, 1f);
+            mbRt.pivot = new Vector2(0.5f, 1f);
+            mbRt.anchoredPosition = new Vector2(0f, -736f);
+            mbRt.sizeDelta = new Vector2(560f, 66f);
+
+            Image mbImg = menuBtnObj.GetComponent<Image>();
+            mbImg.sprite = pillSprite;
+            mbImg.type = Image.Type.Sliced;
+            mbImg.color = new Color32(0x34, 0x49, 0x5E, 0xFF);
+
+            Button mbBtn = menuBtnObj.GetComponent<Button>();
+            mbBtn.onClick.AddListener(() =>
+            {
+                ShowSettingsModal(false);
+                ShowStartScreen(true);
+            });
+
+            GameObject mbTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            mbTextObj.transform.SetParent(menuBtnObj.transform, false);
+            RectTransform mbtRt = mbTextObj.GetComponent<RectTransform>();
+            mbtRt.anchorMin = Vector2.zero;
+            mbtRt.anchorMax = Vector2.one;
+            mbtRt.sizeDelta = Vector2.zero;
+            Text mbt = mbTextObj.GetComponent<Text>();
+            mbt.font = DefaultFont;
+            mbt.fontSize = 22;
+            mbt.fontStyle = FontStyle.Bold;
+            mbt.alignment = TextAnchor.MiddleCenter;
+            mbt.color = Color.white;
+            mbt.text = "🏠 Start Screen / Main Menu";
         }
 
         private void CreateSettingToggleRow(Transform parent, Sprite pillSprite, float yPos, string labelText, UnityEngine.Events.UnityAction onToggle, out Text stateText, out Image buttonImg)

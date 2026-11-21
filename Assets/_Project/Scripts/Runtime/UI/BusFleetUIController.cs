@@ -274,6 +274,12 @@ namespace RoadwaysGame
 
         private void UpdateFTUEGuide()
         {
+            if (GameUIController.Instance != null && !GameUIController.Instance.IsGameStarted)
+            {
+                HideFTUEPointer();
+                return;
+            }
+
             bool isFTUELevel = currentLevel == 1 && PlayerPrefs.GetInt("Roadways_FTUE_Completed", 0) == 0;
 
             idleTimer += Time.unscaledDeltaTime;
@@ -771,6 +777,7 @@ namespace RoadwaysGame
 
         private void OnBusClicked(int busIndex)
         {
+            if (GameUIController.Instance != null && !GameUIController.Instance.IsGameStarted) return;
             if (isInFlight) return;
             if (IsBusAlreadyDispatched(busIndex)) return;
 
