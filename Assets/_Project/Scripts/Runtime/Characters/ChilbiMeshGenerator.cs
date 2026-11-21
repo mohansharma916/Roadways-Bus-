@@ -12,15 +12,17 @@ namespace RoadwaysGame
     public static class ChilbiMeshGenerator
     {
         /// <summary>
-        /// Builds the organic candy bean body mesh (normalized centered at pelvic origin).
+        /// Builds the sculpted 3D vinyl figurine mesh with spherical head, neck crease,
+        /// rounded shoulders, and baked crevice ambient occlusion in vertex colors.
         /// </summary>
-        public static Mesh CreateCandyBeanMesh(float width = 1.7f, float height = 2.7f, float depth = 1.2f, int radialSegments = 16, int heightSegments = 12)
+        public static Mesh CreateCandyBeanMesh(float width = 1.7f, float height = 2.7f, float depth = 1.3f, int radialSegments = 18, int heightSegments = 16)
         {
-            Mesh mesh = new Mesh { name = "ChilbiCandyBeanMesh" };
+            Mesh mesh = new Mesh { name = "ChilbiSculptedFigurineMesh" };
 
             int vertCount = (radialSegments + 1) * (heightSegments + 1);
             Vector3[] verts = new Vector3[vertCount];
             Vector3[] normals = new Vector3[vertCount];
+            Color[] colors = new Color[vertCount];
             Vector2[] uvs = new Vector2[vertCount];
 
             float radiusX = width * 0.5f;
@@ -28,25 +30,46 @@ namespace RoadwaysGame
 
             for (int y = 0; y <= heightSegments; y++)
             {
-                float v = (float)y / heightSegments;
-                // Vertical profile: pill shape with dome on top (v > 0.6) and rounded bottom (v < 0.2)
-                float phi = (v - 0.5f) * Mathf.PI;
+                float v = (float)y / heightSegments; // 0.0 (feet) to 1.0 (head crown)
                 float localY = (v - 0.5f) * height;
 
+                // Profile curve for a collectible vinyl figurine (Fall Guys / Lego style):
+                // v > 0.68: Spherical Head Dome
+                // v in [0.54, 0.68]: Neck Crease (pinch inward)
+                // v in [0.30, 0.54]: Rounded Shoulders & Chest (widen outward)
+                // v in [0.08, 0.30]: Torso / Hips
+                // v < 0.08: Rounded Pelvic Base
                 float profileRadius;
-                if (v > 0.6f)
+                float verticalAO;
+
+                if (v >= 0.68f)
                 {
-                    float domeT = (v - 0.6f) / 0.4f;
-                    profileRadius = Mathf.Cos(domeT * Mathf.PI * 0.5f);
+                    // Spherical head dome
+                    float t = (v - 0.68f) / 0.32f; // 0 to 1
+                    profileRadius = 0.88f * Mathf.Cos(t * Mathf.PI * 0.5f);
+                    verticalAO = Mathf.Lerp(0.85f, 1.0f, t); // Brightest at top crown
                 }
-                else if (v < 0.2f)
+                else if (v >= 0.54f)
                 {
-                    float baseT = (0.2f - v) / 0.2f;
-                    profileRadius = Mathf.Cos(baseT * Mathf.PI * 0.35f);
+                    // Neck indentation
+                    float t = (v - 0.54f) / 0.14f;
+                    float sinPinch = Mathf.Sin(t * Mathf.PI);
+                    profileRadius = Mathf.Lerp(1.10f, 0.88f, t) - (sinPinch * 0.18f); // Pinches to 0.70
+                    verticalAO = Mathf.Lerp(0.55f, 0.85f, t) - (sinPinch * 0.35f); // Deep neck shadow
+                }
+                else if (v >= 0.28f)
+                {
+                    // Shoulders & Chest
+                    float t = (v - 0.28f) / 0.26f;
+                    profileRadius = Mathf.Lerp(1.0f, 1.15f, Mathf.Sin(t * Mathf.PI * 0.5f));
+                    verticalAO = Mathf.Lerp(0.65f, 0.85f, t);
                 }
                 else
                 {
-                    profileRadius = 1.0f;
+                    // Lower Torso & Pelvis
+                    float t = v / 0.28f;
+                    profileRadius = Mathf.Lerp(0.65f, 1.0f, Mathf.Sin(t * Mathf.PI * 0.5f));
+                    verticalAO = Mathf.Lerp(0.48f, 0.65f, t); // Shaded base
                 }
 
                 for (int r = 0; r <= radialSegments; r++)
@@ -62,7 +85,19 @@ namespace RoadwaysGame
 
                     int idx = y * (radialSegments + 1) + r;
                     verts[idx] = new Vector3(x, localY, z);
-                    normals[idx] = new Vector3(cosTheta, Mathf.Sin(phi) * 0.5f, sinTheta).normalized;
+
+                    // Lateral Crevice AO: characters in a 7-abreast row touch on left (cos < 0) and right (cos > 0)
+                    // We darken lateral sides (|cosTheta| > 0.6) so touching neighbors have distinct shadow borders!
+                    float lateralCrevice = 1.0f - (Mathf.Abs(cosTheta) * 0.28f * (1.0f - Mathf.Abs(v - 0.5f)));
+                    float finalAO = Mathf.Clamp01(verticalAO * lateralCrevice);
+
+                    colors[idx] = new Color(finalAO, finalAO, finalAO, 1.0f);
+
+                    // Calculate smooth normals with dome rounding
+                    float ny = (v > 0.68f) ? Mathf.Sin(((v - 0.68f) / 0.32f) * Mathf.PI * 0.5f) : 0f;
+                    if (v < 0.12f) ny = -Mathf.Cos((v / 0.12f) * Mathf.PI * 0.5f) * 0.6f;
+                    normals[idx] = new Vector3(cosTheta * 0.8f, ny, sinTheta * 0.8f).normalized;
+
                     uvs[idx] = new Vector2(u, v);
                 }
             }
@@ -92,6 +127,7 @@ namespace RoadwaysGame
 
             mesh.vertices = verts;
             mesh.normals = normals;
+            mesh.colors = colors;
             mesh.uv = uvs;
             mesh.triangles = tris;
             mesh.RecalculateBounds();

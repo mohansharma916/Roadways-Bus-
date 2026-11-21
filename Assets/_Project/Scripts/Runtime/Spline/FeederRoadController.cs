@@ -66,10 +66,19 @@ namespace RoadwaysGame
 
             if (asphaltMaterial == null)
                 asphaltMaterial = new Material(unlitShader) { name = "M_FeederAsphalt", color = GameConstants.AsphaltColor };
+            else
+                asphaltMaterial.color = GameConstants.AsphaltColor;
+
             if (curbMaterial == null)
                 curbMaterial = new Material(unlitShader) { name = "M_FeederCurb", color = GameConstants.WhiteCurbColor };
+            else
+                curbMaterial.color = GameConstants.WhiteCurbColor;
+
             if (shoulderMaterial == null)
                 shoulderMaterial = new Material(unlitShader) { name = "M_FeederShoulder", color = GameConstants.DirtShoulderColor };
+            else
+                shoulderMaterial.color = GameConstants.DirtShoulderColor;
+
             if (stopBarMaterial == null)
                 stopBarMaterial = new Material(unlitShader) { name = "M_FeederStopBar", color = Color.white };
         }

@@ -47,10 +47,18 @@ namespace RoadwaysGame
 
             if (asphaltMaterial == null)
                 asphaltMaterial = new Material(unlitShader) { name = "M_NeckAsphalt", color = GameConstants.AsphaltColor };
+            else
+                asphaltMaterial.color = GameConstants.AsphaltColor;
+
             if (curbMaterial == null)
                 curbMaterial = new Material(unlitShader) { name = "M_NeckCurb", color = GameConstants.WhiteCurbColor };
+            else
+                curbMaterial.color = GameConstants.WhiteCurbColor;
+
             if (shoulderMaterial == null)
                 shoulderMaterial = new Material(unlitShader) { name = "M_NeckShoulder", color = GameConstants.DirtShoulderColor };
+            else
+                shoulderMaterial.color = GameConstants.DirtShoulderColor;
         }
 
         private static Vector3 P(float px, float py) => new Vector3(px - 250f, 0f, py - 170f);

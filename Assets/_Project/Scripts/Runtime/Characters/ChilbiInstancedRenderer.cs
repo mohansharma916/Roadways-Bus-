@@ -57,24 +57,21 @@ namespace RoadwaysGame
 
         private void EnsureMeshesAndMaterials()
         {
-            if (bodyMesh == null) bodyMesh = ChilbiMeshGenerator.CreateCandyBeanMesh(1.7f, 2.7f, 1.2f);
+            bodyMesh = ChilbiMeshGenerator.CreateCandyBeanMesh(1.7f, 2.7f, 1.3f);
             if (legMesh == null) legMesh = ChilbiMeshGenerator.CreateLimbMesh(1.0f, 0.2f, true);
             if (armMesh == null) armMesh = ChilbiMeshGenerator.CreateLimbMesh(1.05f, 0.18f, false);
             if (shadowMesh == null) shadowMesh = ChilbiMeshGenerator.CreateOvalShadowMesh(0.85f, 0.45f);
 
             Shader matteShader = Shader.Find("Roadways/ChilbiMatte") ?? Shader.Find("Universal Render Pipeline/Unlit");
-            if (matteInstancedMaterial == null)
-            {
-                matteInstancedMaterial = new Material(matteShader) { name = "M_ChilbiGPUInstanced" };
-                matteInstancedMaterial.enableInstancing = true;
-            }
+            matteInstancedMaterial = new Material(matteShader) { name = "M_ChilbiGPUInstanced" };
+            matteInstancedMaterial.enableInstancing = true;
 
             if (shadowMaterial == null)
             {
                 shadowMaterial = new Material(Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Color"))
                 {
                     name = "M_ChilbiShadowInstanced",
-                    color = new Color(0f, 0f, 0f, 0.22f)
+                    color = new Color(0f, 0f, 0f, 0.32f)
                 };
                 shadowMaterial.SetFloat("_Surface", 1);
                 shadowMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
@@ -128,13 +125,15 @@ namespace RoadwaysGame
             {
                 matProps = propBlock,
                 shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off,
-                receiveShadows = false
+                receiveShadows = false,
+                worldBounds = new Bounds(Vector3.zero, new Vector3(200f, 100f, 200f))
             };
 
             RenderParams shadowParams = new RenderParams(shadowMaterial)
             {
                 shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off,
-                receiveShadows = false
+                receiveShadows = false,
+                worldBounds = new Bounds(Vector3.zero, new Vector3(200f, 100f, 200f))
             };
 
             // Single GPU draw call for shadows

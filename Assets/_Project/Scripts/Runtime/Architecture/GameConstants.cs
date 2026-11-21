@@ -19,17 +19,17 @@ namespace RoadwaysGame
         public static readonly Vector3 CameraLookTarget = new Vector3(0f, 0f, 8f);
         public const float CameraPitch = 35.0f;
 
-        // Environment Colors (Cherry Blossom Theme)
-        public static readonly Color LawnColor = new Color32(0xFF, 0xF1, 0xF2, 0xFF);          // #fff1f2 Soft warm pastel
-        public static readonly Color LawnPathwayColor = new Color32(0xF2, 0xD5, 0xDB, 0x59);   // #f2d5db alpha 0.35
-        public static readonly Color AsphaltColor = new Color32(0x52, 0x57, 0x69, 0xFF);       // #525769 Dark slate asphalt
-        public static readonly Color WhiteCurbColor = new Color32(0xE6, 0xE9, 0xEE, 0xFF);     // #e6e9ee Crisp white
-        public static readonly Color DirtShoulderColor = new Color32(0xCB, 0xB2, 0x7A, 0xFF);  // #cbb27a Tan dirt border
-        public static readonly Color DepotFloorColor = new Color32(0xD3, 0xDA, 0xED, 0xFF);    // #d3daed Soft blue-grey
+        // Environment Colors (Tropical Beach Resort Theme)
+        public static readonly Color LawnColor = new Color32(0xF5, 0xCD, 0x79, 0xFF);          // #f5cd79 Warm sun-baked sand
+        public static readonly Color LawnPathwayColor = new Color32(0xED, 0xD3, 0x96, 0x4D);   // #edd396 Sand ripple accent
+        public static readonly Color AsphaltColor = new Color32(0x47, 0x52, 0x5E, 0xFF);       // #47525e Dark slate asphalt
+        public static readonly Color WhiteCurbColor = new Color32(0xFF, 0xFF, 0xFF, 0xFF);     // #ffffff Crisp white curb
+        public static readonly Color DirtShoulderColor = new Color32(0xEC, 0xCC, 0x68, 0xFF);  // #eccc68 Golden sand shoulder
+        public static readonly Color DepotFloorColor = new Color32(0xDC, 0xDD, 0xE1, 0xFF);    // #dcdde1 Cool studio depot floor
         public static readonly Color ApexKerbRed = new Color32(0xE7, 0x4C, 0x3C, 0xFF);        // #e74c3c
         public static readonly Color ApexKerbWhite = new Color32(0xFF, 0xFF, 0xFF, 0xFF);      // #ffffff
-        public static readonly Color AmbientLightColor = new Color32(0xF7, 0xE8, 0xEA, 0xFF);  // #f7e8ea
-        public static readonly Color DirectionalLightColor = new Color32(0xFF, 0xF9, 0xF5, 0xFF); // #fff9f5
+        public static readonly Color AmbientLightColor = new Color32(0xFF, 0xF5, 0xEB, 0xFF);  // #fff5eb Warm sunlit ambient
+        public static readonly Color DirectionalLightColor = new Color32(0xFF, 0xFA, 0xF0, 0xFF); // #fffaf0 Bright sunlight
 
         // Road Geometry Constants
         public const float RoadWidth = 82f;

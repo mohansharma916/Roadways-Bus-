@@ -63,9 +63,13 @@ namespace RoadwaysGame
         [ContextMenu("Initialize Formation")]
         public void InitializeFormation()
         {
-            if (trackNetwork == null) trackNetwork = FindObjectOfType<TrackNetworkManager>();
+            if (trackNetwork == null) trackNetwork = FindAnyObjectByType<TrackNetworkManager>();
             if (trackNetwork != null)
             {
+                if (trackNetwork.CircuitLut == null || !trackNetwork.CircuitLut.IsValid)
+                {
+                    trackNetwork.BuildCompleteTrackNetwork();
+                }
                 circuitLut = trackNetwork.CircuitLut;
                 feederLut = trackNetwork.GetComponentInChildren<FeederRoadController>()?.LeftFeederLut;
             }
@@ -120,7 +124,11 @@ namespace RoadwaysGame
 
         private void UpdateKinematics(float dt)
         {
-            if (circuitLut == null || !circuitLut.IsValid) return;
+            if (circuitLut == null || !circuitLut.IsValid)
+            {
+                InitializeFormation();
+                if (circuitLut == null || !circuitLut.IsValid) return;
+            }
 
             float feederLen = (feederLut != null && feederLut.IsValid) ? feederLut.TotalLength : 150f;
             float circuitLen = circuitLut.TotalLength;
@@ -236,8 +244,8 @@ namespace RoadwaysGame
                 float sign = facingDirX >= 0f ? 1f : -1f;
                 Vector3 charScale = new Vector3(visualScale * sign, visualScale, visualScale);
 
-                // Billboard facing camera
-                Quaternion billboardRot = Quaternion.identity;
+                // Figurine tilt facing overhead camera (camera pitch ~35-40 deg)
+                Quaternion billboardRot = Quaternion.Euler(-35f, 0f, 0f);
 
                 // Queue to GPU Instancer
                 if (i < renderCount)

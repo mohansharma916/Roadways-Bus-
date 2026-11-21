@@ -294,8 +294,8 @@ namespace RoadwaysGame
                 else DestroyImmediate(transform.GetChild(i).gameObject);
             }
 
-            Shader litShader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
             Shader unlitShader = Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Color");
+            Shader litShader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Universal Render Pipeline/Simple Lit") ?? unlitShader;
             Color primary = ColorPaletteDatabase.GetPrimaryColor(colorType);
 
             BusMeshGenerator.GetDimensions(archetype, out float width, out float length, out float height, out _, out int cap);
