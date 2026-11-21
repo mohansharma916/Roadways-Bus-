@@ -65,6 +65,19 @@ namespace RoadwaysGame
         [SerializeField] private Text replayBtnText;
         [SerializeField] private Button replayButton;
 
+        [System.NonSerialized] private GameObject settingsModalObj;
+        [System.NonSerialized] private GameObject boosterDockObj;
+        [System.NonSerialized] private Text recallBtnText;
+        [System.NonSerialized] private Text shuffleBtnText;
+        [System.NonSerialized] private Text sfxToggleText;
+        [System.NonSerialized] private Text musicToggleText;
+        [System.NonSerialized] private Text hapticsToggleText;
+        [System.NonSerialized] private Image sfxToggleImg;
+        [System.NonSerialized] private Image musicToggleImg;
+        [System.NonSerialized] private Image hapticsToggleImg;
+
+        public AudioSource AudioSource => GetComponent<AudioSource>();
+
         private static Font defaultFont;
         private ChilbiFormationManager formationManager;
         private BusFleetController fleetController;
@@ -358,6 +371,8 @@ namespace RoadwaysGame
                 // 8 Top-Down Buses Fleet Row (100% Parity with 3D_Showcase_Preview.html)
                 BusFleetUIController busFleet = bottomPanelObj.AddComponent<BusFleetUIController>();
                 busFleet.BuildFleet(canvasObj.GetComponent<RectTransform>());
+
+                CreateBoosterDock(bottomPanelObj.transform, pillSprite);
             }
 
             // 3. Road Network Circuit (positioned directly above the trapezium)
@@ -439,7 +454,7 @@ namespace RoadwaysGame
             else
             {
                 // ==================== FULL GAME MODE UI ====================
-                // Top-Left Watermark Pill
+                // Top-Left Watermark Pill (Level & High Score)
                 watermarkPill = new GameObject("WatermarkPill", typeof(RectTransform), typeof(Image));
                 watermarkPill.transform.SetParent(headerContainer.transform, false);
                 RectTransform wmRt = watermarkPill.GetComponent<RectTransform>();
@@ -447,7 +462,7 @@ namespace RoadwaysGame
                 wmRt.anchorMax = new Vector2(0f, 1f);
                 wmRt.pivot = new Vector2(0f, 1f);
                 wmRt.anchoredPosition = new Vector2(10f, 0f);
-                wmRt.sizeDelta = new Vector2(520f, 62f);
+                wmRt.sizeDelta = new Vector2(540f, 62f);
 
                 Image wmImg = watermarkPill.GetComponent<Image>();
                 wmImg.sprite = pillSprite;
@@ -468,7 +483,9 @@ namespace RoadwaysGame
                 titleText.fontStyle = FontStyle.Bold;
                 titleText.alignment = TextAnchor.MiddleCenter;
                 titleText.color = new Color32(0x2C, 0x3E, 0x50, 0xFF);
-                titleText.text = "⚡ HOT RELOAD • Sakura Park";
+                int initLvl = PlayerPrefs.GetInt("Roadways_Level", 1);
+                int initHi = PlayerPrefs.GetInt("Roadways_HighScore", 0);
+                titleText.text = $"⭐ LEVEL {initLvl}  •  👑 HIGH: {initHi}";
 
                 // Status Pill
                 statusPill = new GameObject("StatusPill", typeof(RectTransform), typeof(Image));
@@ -500,116 +517,42 @@ namespace RoadwaysGame
                 statusText.color = new Color32(0x3B, 0x42, 0x52, 0xFF);
                 statusText.text = "420 on Track • 10 Queued";
 
-                // Replay Button
-                replayBtnObj = new GameObject("ReplayButton", typeof(RectTransform), typeof(Image), typeof(Button));
-                replayBtnObj.transform.SetParent(headerContainer.transform, false);
-                RectTransform btnRt = replayBtnObj.GetComponent<RectTransform>();
-                btnRt.anchorMin = new Vector2(1f, 1f);
-                btnRt.anchorMax = new Vector2(1f, 1f);
-                btnRt.pivot = new Vector2(1f, 1f);
-                btnRt.anchoredPosition = new Vector2(-10f, 0f);
-                btnRt.sizeDelta = new Vector2(230f, 62f);
+                // Settings & Pause Button (Top-Right)
+                GameObject settingsBtnObj = new GameObject("SettingsButton", typeof(RectTransform), typeof(Image), typeof(Button));
+                settingsBtnObj.transform.SetParent(headerContainer.transform, false);
+                RectTransform setRt = settingsBtnObj.GetComponent<RectTransform>();
+                setRt.anchorMin = new Vector2(1f, 1f);
+                setRt.anchorMax = new Vector2(1f, 1f);
+                setRt.pivot = new Vector2(1f, 1f);
+                setRt.anchoredPosition = new Vector2(-10f, 0f);
+                setRt.sizeDelta = new Vector2(64f, 62f);
 
-                Image btnImg = replayBtnObj.GetComponent<Image>();
-                btnImg.sprite = pillSprite;
-                btnImg.type = Image.Type.Sliced;
-                btnImg.color = new Color32(0x27, 0xAE, 0x60, 0xFA);
+                Image setImg = settingsBtnObj.GetComponent<Image>();
+                setImg.sprite = pillSprite;
+                setImg.type = Image.Type.Sliced;
+                setImg.color = new Color32(0x2C, 0x3E, 0x50, 0xF5);
 
-                replayButton = replayBtnObj.GetComponent<Button>();
-                replayButton.targetGraphic = btnImg;
-                ColorBlock cb = replayButton.colors;
-                cb.highlightedColor = new Color32(0x2E, 0xCC, 0x71, 0xFF);
-                cb.pressedColor = new Color32(0x1E, 0x84, 0x49, 0xFF);
-                replayButton.colors = cb;
-                replayButton.onClick.RemoveAllListeners();
-                replayButton.onClick.AddListener(OnReplayClicked);
+                Button setBtn = settingsBtnObj.GetComponent<Button>();
+                setBtn.onClick.AddListener(() => ShowSettingsModal(true));
 
-                GameObject btnTextObj = new GameObject("BtnText", typeof(RectTransform), typeof(Text));
-                btnTextObj.transform.SetParent(replayBtnObj.transform, false);
-                RectTransform btnTextRt = btnTextObj.GetComponent<RectTransform>();
-                btnTextRt.anchorMin = Vector2.zero;
-                btnTextRt.anchorMax = Vector2.one;
-                btnTextRt.sizeDelta = Vector2.zero;
+                GameObject setIconObj = new GameObject("Icon", typeof(RectTransform), typeof(Text));
+                setIconObj.transform.SetParent(settingsBtnObj.transform, false);
+                RectTransform setIconRt = setIconObj.GetComponent<RectTransform>();
+                setIconRt.anchorMin = Vector2.zero;
+                setIconRt.anchorMax = Vector2.one;
+                setIconRt.sizeDelta = Vector2.zero;
 
-                replayBtnText = btnTextObj.GetComponent<Text>();
-                replayBtnText.font = defaultFont;
-                replayBtnText.fontSize = 22;
-                replayBtnText.fontStyle = FontStyle.Bold;
-                replayBtnText.alignment = TextAnchor.MiddleCenter;
-                replayBtnText.color = Color.white;
-                replayBtnText.text = "Replay Cheer";
+                Text setIconText = setIconObj.GetComponent<Text>();
+                setIconText.font = defaultFont;
+                setIconText.fontSize = 28;
+                setIconText.alignment = TextAnchor.MiddleCenter;
+                setIconText.color = Color.white;
+                setIconText.raycastTarget = false;
+                setIconText.text = "⚙️";
 
-                // Recall Booster Button
-                GameObject recallBtnObj = new GameObject("RecallButton", typeof(RectTransform), typeof(Image), typeof(Button));
-                recallBtnObj.transform.SetParent(headerContainer.transform, false);
-                RectTransform recRt = recallBtnObj.GetComponent<RectTransform>();
-                recRt.anchorMin = new Vector2(1f, 1f);
-                recRt.anchorMax = new Vector2(1f, 1f);
-                recRt.pivot = new Vector2(1f, 1f);
-                recRt.anchoredPosition = new Vector2(-10f, -70f);
-                recRt.sizeDelta = new Vector2(130f, 52f);
-
-                Image recImg = recallBtnObj.GetComponent<Image>();
-                recImg.sprite = pillSprite;
-                recImg.type = Image.Type.Sliced;
-                recImg.color = new Color32(0x34, 0x49, 0x5E, 0xF5);
-
-                Button recBtn = recallBtnObj.GetComponent<Button>();
-                recBtn.onClick.AddListener(() =>
-                {
-                    if (BusFleetUIController.Instance != null) BusFleetUIController.Instance.RecallLastBus();
-                });
-
-                GameObject recTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
-                recTextObj.transform.SetParent(recallBtnObj.transform, false);
-                RectTransform recTextRt = recTextObj.GetComponent<RectTransform>();
-                recTextRt.anchorMin = Vector2.zero;
-                recTextRt.anchorMax = Vector2.one;
-                recTextRt.sizeDelta = Vector2.zero;
-                Text recText = recTextObj.GetComponent<Text>();
-                recText.font = defaultFont;
-                recText.fontSize = 18;
-                recText.fontStyle = FontStyle.Bold;
-                recText.alignment = TextAnchor.MiddleCenter;
-                recText.color = Color.white;
-                recText.raycastTarget = false;
-                recText.text = "↺ Recall";
-
-                // Shuffle Booster Button
-                GameObject shufBtnObj = new GameObject("ShuffleButton", typeof(RectTransform), typeof(Image), typeof(Button));
-                shufBtnObj.transform.SetParent(headerContainer.transform, false);
-                RectTransform shufRt = shufBtnObj.GetComponent<RectTransform>();
-                shufRt.anchorMin = new Vector2(1f, 1f);
-                shufRt.anchorMax = new Vector2(1f, 1f);
-                shufRt.pivot = new Vector2(1f, 1f);
-                shufRt.anchoredPosition = new Vector2(-150f, -70f);
-                shufRt.sizeDelta = new Vector2(130f, 52f);
-
-                Image shufImg = shufBtnObj.GetComponent<Image>();
-                shufImg.sprite = pillSprite;
-                shufImg.type = Image.Type.Sliced;
-                shufImg.color = new Color32(0x8E, 0x44, 0xAD, 0xF5);
-
-                Button shufBtn = shufBtnObj.GetComponent<Button>();
-                shufBtn.onClick.AddListener(() =>
-                {
-                    if (BusFleetUIController.Instance != null) BusFleetUIController.Instance.ShuffleParade();
-                });
-
-                GameObject shufTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
-                shufTextObj.transform.SetParent(shufBtnObj.transform, false);
-                RectTransform shufTextRt = shufTextObj.GetComponent<RectTransform>();
-                shufTextRt.anchorMin = Vector2.zero;
-                shufTextRt.anchorMax = Vector2.one;
-                shufTextRt.sizeDelta = Vector2.zero;
-                Text shufText = shufTextObj.GetComponent<Text>();
-                shufText.font = defaultFont;
-                shufText.fontSize = 18;
-                shufText.fontStyle = FontStyle.Bold;
-                shufText.alignment = TextAnchor.MiddleCenter;
-                shufText.color = Color.white;
-                shufText.raycastTarget = false;
-                shufText.text = "🔀 Shuffle";
+                replayBtnObj = null;
+                replayButton = null;
+                replayBtnText = null;
             }
         }
 
@@ -664,14 +607,16 @@ namespace RoadwaysGame
         {
             if (statusText != null && !parkOnlyMode)
             {
-                if (titleText != null && !titleText.text.StartsWith("⚡"))
+                if (titleText != null)
                 {
-                    titleText.text = "⚡ HOT RELOAD • Sakura Park";
+                    int curLvl = PlayerPrefs.GetInt("Roadways_Level", 1);
+                    int hiScore = PlayerPrefs.GetInt("Roadways_HighScore", 0);
+                    titleText.text = $"⭐ LEVEL {curLvl}  •  👑 HIGH: {hiScore}";
                 }
 
                 if (BusFleetUIController.Instance != null)
                 {
-                    statusText.text = $"⚡ ⭐ {BusFleetUIController.Instance.TotalScore} • {BusFleetUIController.Instance.TotalClearedChilbis}/56 Cleared • {BusFleetUIController.Instance.OpenBaysCount} Bays Free";
+                    statusText.text = $"🌸 {BusFleetUIController.Instance.TotalClearedChilbis} Cleared • 🅿️ {BusFleetUIController.Instance.OpenBaysCount} Free • {BusFleetUIController.Instance.TotalScore} pts";
                 }
                 else if (clearedChilbis > 0)
                 {
@@ -688,6 +633,7 @@ namespace RoadwaysGame
 
         public void PlayCheerSound()
         {
+            if (!BusFleetUIController.SfxEnabled) return;
             if (cheerClip == null)
             {
                 cheerClip = Resources.Load<AudioClip>("Audio/chilbi_cheer");
@@ -698,6 +644,406 @@ namespace RoadwaysGame
                 if (src == null) src = gameObject.AddComponent<AudioSource>();
                 src.PlayOneShot(cheerClip, 0.9f);
             }
+        }
+
+        public void CreateBoosterDock(Transform parent, Sprite pillSprite)
+        {
+            if (boosterDockObj != null) Destroy(boosterDockObj);
+
+            boosterDockObj = new GameObject("BoosterDock", typeof(RectTransform));
+            boosterDockObj.transform.SetParent(parent, false);
+            RectTransform dockRt = boosterDockObj.GetComponent<RectTransform>();
+            dockRt.anchorMin = new Vector2(0.5f, 1f);
+            dockRt.anchorMax = new Vector2(0.5f, 1f);
+            dockRt.pivot = new Vector2(0.5f, 1f);
+            dockRt.anchoredPosition = new Vector2(0f, -16f);
+            dockRt.sizeDelta = new Vector2(620f, 58f);
+
+            // 1. Recall Button (Left side of dock)
+            GameObject recBtnObj = new GameObject("Booster_Recall", typeof(RectTransform), typeof(Image), typeof(Button));
+            recBtnObj.transform.SetParent(boosterDockObj.transform, false);
+            RectTransform recRt = recBtnObj.GetComponent<RectTransform>();
+            recRt.anchorMin = new Vector2(0.5f, 0.5f);
+            recRt.anchorMax = new Vector2(0.5f, 0.5f);
+            recRt.pivot = new Vector2(0.5f, 0.5f);
+            recRt.anchoredPosition = new Vector2(-155f, 0f);
+            recRt.sizeDelta = new Vector2(290f, 54f);
+
+            Image recImg = recBtnObj.GetComponent<Image>();
+            recImg.sprite = pillSprite;
+            recImg.type = Image.Type.Sliced;
+            recImg.color = new Color32(0x2C, 0x3E, 0x50, 0xF5);
+
+            Button recBtn = recBtnObj.GetComponent<Button>();
+            recBtn.onClick.AddListener(() =>
+            {
+                if (BusFleetUIController.Instance != null) BusFleetUIController.Instance.RecallLastBus();
+            });
+
+            GameObject recTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            recTextObj.transform.SetParent(recBtnObj.transform, false);
+            RectTransform recTextRt = recTextObj.GetComponent<RectTransform>();
+            recTextRt.anchorMin = Vector2.zero;
+            recTextRt.anchorMax = Vector2.one;
+            recTextRt.sizeDelta = Vector2.zero;
+            recallBtnText = recTextObj.GetComponent<Text>();
+            recallBtnText.font = DefaultFont;
+            recallBtnText.fontSize = 20;
+            recallBtnText.fontStyle = FontStyle.Bold;
+            recallBtnText.alignment = TextAnchor.MiddleCenter;
+            recallBtnText.color = Color.white;
+            recallBtnText.raycastTarget = false;
+
+            // 2. Shuffle Button (Right side of dock)
+            GameObject shufBtnObj = new GameObject("Booster_Shuffle", typeof(RectTransform), typeof(Image), typeof(Button));
+            shufBtnObj.transform.SetParent(boosterDockObj.transform, false);
+            RectTransform shufRt = shufBtnObj.GetComponent<RectTransform>();
+            shufRt.anchorMin = new Vector2(0.5f, 0.5f);
+            shufRt.anchorMax = new Vector2(0.5f, 0.5f);
+            shufRt.pivot = new Vector2(0.5f, 0.5f);
+            shufRt.anchoredPosition = new Vector2(155f, 0f);
+            shufRt.sizeDelta = new Vector2(290f, 54f);
+
+            Image shufImg = shufBtnObj.GetComponent<Image>();
+            shufImg.sprite = pillSprite;
+            shufImg.type = Image.Type.Sliced;
+            shufImg.color = new Color32(0x8E, 0x44, 0xAD, 0xF5);
+
+            Button shufBtn = shufBtnObj.GetComponent<Button>();
+            shufBtn.onClick.AddListener(() =>
+            {
+                if (BusFleetUIController.Instance != null) BusFleetUIController.Instance.ShuffleParade();
+            });
+
+            GameObject shufTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            shufTextObj.transform.SetParent(shufBtnObj.transform, false);
+            RectTransform shufTextRt = shufTextObj.GetComponent<RectTransform>();
+            shufTextRt.anchorMin = Vector2.zero;
+            shufTextRt.anchorMax = Vector2.one;
+            shufTextRt.sizeDelta = Vector2.zero;
+            shuffleBtnText = shufTextObj.GetComponent<Text>();
+            shuffleBtnText.font = DefaultFont;
+            shuffleBtnText.fontSize = 20;
+            shuffleBtnText.fontStyle = FontStyle.Bold;
+            shuffleBtnText.alignment = TextAnchor.MiddleCenter;
+            shuffleBtnText.color = Color.white;
+            shuffleBtnText.raycastTarget = false;
+
+            UpdateBoosterLabels();
+        }
+
+        public void UpdateBoosterLabels()
+        {
+            int recCount = BusFleetUIController.Instance != null ? BusFleetUIController.Instance.RecallCount : 3;
+            int shufCount = BusFleetUIController.Instance != null ? BusFleetUIController.Instance.ShuffleCount : 2;
+
+            if (recallBtnText != null)
+            {
+                recallBtnText.text = $"↺ RECALL ({recCount})";
+            }
+            if (shuffleBtnText != null)
+            {
+                shuffleBtnText.text = $"🔀 SHUFFLE ({shufCount})";
+            }
+        }
+
+        public void ShowSettingsModal(bool show)
+        {
+            if (!show)
+            {
+                if (settingsModalObj != null) settingsModalObj.SetActive(false);
+                return;
+            }
+
+            if (settingsModalObj == null)
+            {
+                CreateSettingsModal();
+            }
+
+            RefreshSettingsToggles();
+            settingsModalObj.SetActive(true);
+            settingsModalObj.transform.SetAsLastSibling();
+            AndroidHaptics.LightClick();
+        }
+
+        private void CreateSettingsModal()
+        {
+            Transform canvasTrans = mainCanvas != null ? mainCanvas.transform : transform.Find("MainGameCanvas");
+            if (canvasTrans == null) return;
+
+            Sprite pillSprite = CreatePillSprite(128, 64, 24);
+
+            // Fullscreen Backdrop
+            settingsModalObj = new GameObject("Modal_PauseSettings", typeof(RectTransform), typeof(Image));
+            settingsModalObj.transform.SetParent(canvasTrans, false);
+            RectTransform bgRt = settingsModalObj.GetComponent<RectTransform>();
+            bgRt.anchorMin = Vector2.zero;
+            bgRt.anchorMax = Vector2.one;
+            bgRt.sizeDelta = Vector2.zero;
+
+            Image bgImg = settingsModalObj.GetComponent<Image>();
+            bgImg.color = new Color(0f, 0f, 0f, 0.72f);
+
+            // Modal Card
+            GameObject cardObj = new GameObject("SettingsCard", typeof(RectTransform), typeof(Image));
+            cardObj.transform.SetParent(settingsModalObj.transform, false);
+            RectTransform cardRt = cardObj.GetComponent<RectTransform>();
+            cardRt.anchorMin = new Vector2(0.5f, 0.5f);
+            cardRt.anchorMax = new Vector2(0.5f, 0.5f);
+            cardRt.pivot = new Vector2(0.5f, 0.5f);
+            cardRt.anchoredPosition = Vector2.zero;
+            cardRt.sizeDelta = new Vector2(740f, 820f);
+
+            Image cardImg = cardObj.GetComponent<Image>();
+            cardImg.sprite = CreateRoundedBoxSprite(740, 820, 36, 4, new Color32(0x4B, 0xCF, 0xFA, 0xFF), new Color32(0x1E, 0x27, 0x2E, 0xFC));
+            cardImg.type = Image.Type.Simple;
+
+            // Header Title
+            GameObject titleObj = new GameObject("ModalTitle", typeof(RectTransform), typeof(Text));
+            titleObj.transform.SetParent(cardObj.transform, false);
+            RectTransform titleRt = titleObj.GetComponent<RectTransform>();
+            titleRt.anchorMin = new Vector2(0.5f, 1f);
+            titleRt.anchorMax = new Vector2(0.5f, 1f);
+            titleRt.pivot = new Vector2(0.5f, 1f);
+            titleRt.anchoredPosition = new Vector2(0f, -32f);
+            titleRt.sizeDelta = new Vector2(680f, 60f);
+
+            Text t = titleObj.GetComponent<Text>();
+            t.font = DefaultFont;
+            t.fontSize = 32;
+            t.fontStyle = FontStyle.Bold;
+            t.alignment = TextAnchor.MiddleCenter;
+            t.color = new Color32(0xFF, 0xD7, 0x00, 0xFF);
+            t.text = "⚙️ SETTINGS & PAUSE";
+
+            // Subtitle / Level Info
+            GameObject subObj = new GameObject("LevelInfo", typeof(RectTransform), typeof(Text));
+            subObj.transform.SetParent(cardObj.transform, false);
+            RectTransform subRt = subObj.GetComponent<RectTransform>();
+            subRt.anchorMin = new Vector2(0.5f, 1f);
+            subRt.anchorMax = new Vector2(0.5f, 1f);
+            subRt.pivot = new Vector2(0.5f, 1f);
+            subRt.anchoredPosition = new Vector2(0f, -96f);
+            subRt.sizeDelta = new Vector2(680f, 40f);
+
+            Text subT = subObj.GetComponent<Text>();
+            subT.font = DefaultFont;
+            subT.fontSize = 20;
+            subT.alignment = TextAnchor.MiddleCenter;
+            subT.color = new Color32(0xD2, 0xDA, 0xE2, 0xFF);
+            int curLvl = PlayerPrefs.GetInt("Roadways_Level", 1);
+            int hiScore = PlayerPrefs.GetInt("Roadways_HighScore", 0);
+            subT.text = $"🌸 Cherry Blossom Park  •  Level {curLvl}  •  Best: {hiScore}";
+
+            // Toggle 1: Sound FX
+            CreateSettingToggleRow(cardObj.transform, pillSprite, -170f, "🔊 Sound FX", () =>
+            {
+                BusFleetUIController.SfxEnabled = !BusFleetUIController.SfxEnabled;
+                RefreshSettingsToggles();
+                AndroidHaptics.LightClick();
+            }, out sfxToggleText, out sfxToggleImg);
+
+            // Toggle 2: Zen Music
+            CreateSettingToggleRow(cardObj.transform, pillSprite, -260f, "🎵 Zen Music", () =>
+            {
+                BusFleetUIController.MusicEnabled = !BusFleetUIController.MusicEnabled;
+                RefreshSettingsToggles();
+                AndroidHaptics.LightClick();
+            }, out musicToggleText, out musicToggleImg);
+
+            // Toggle 3: Native Haptics
+            CreateSettingToggleRow(cardObj.transform, pillSprite, -350f, "📳 Haptics", () =>
+            {
+                BusFleetUIController.HapticsEnabled = !BusFleetUIController.HapticsEnabled;
+                RefreshSettingsToggles();
+                AndroidHaptics.LightClick();
+            }, out hapticsToggleText, out hapticsToggleImg);
+
+            // Button: Replay Cheer
+            GameObject cheerBtnObj = new GameObject("Btn_ReplayCheer", typeof(RectTransform), typeof(Image), typeof(Button));
+            cheerBtnObj.transform.SetParent(cardObj.transform, false);
+            RectTransform cheerRt = cheerBtnObj.GetComponent<RectTransform>();
+            cheerRt.anchorMin = new Vector2(0.5f, 1f);
+            cheerRt.anchorMax = new Vector2(0.5f, 1f);
+            cheerRt.pivot = new Vector2(0.5f, 1f);
+            cheerRt.anchoredPosition = new Vector2(0f, -460f);
+            cheerRt.sizeDelta = new Vector2(560f, 62f);
+
+            Image cheerImg = cheerBtnObj.GetComponent<Image>();
+            cheerImg.sprite = pillSprite;
+            cheerImg.type = Image.Type.Sliced;
+            cheerImg.color = new Color32(0x9B, 0x59, 0xB6, 0xFF);
+
+            Button cheerBtn = cheerBtnObj.GetComponent<Button>();
+            cheerBtn.onClick.AddListener(() =>
+            {
+                PlayCheerSound();
+                TriggerConfettiBurst(50);
+                AndroidHaptics.MediumClick();
+            });
+
+            GameObject cheerTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            cheerTextObj.transform.SetParent(cheerBtnObj.transform, false);
+            RectTransform ctRt = cheerTextObj.GetComponent<RectTransform>();
+            ctRt.anchorMin = Vector2.zero;
+            ctRt.anchorMax = Vector2.one;
+            ctRt.sizeDelta = Vector2.zero;
+            Text ct = cheerTextObj.GetComponent<Text>();
+            ct.font = DefaultFont;
+            ct.fontSize = 22;
+            ct.fontStyle = FontStyle.Bold;
+            ct.alignment = TextAnchor.MiddleCenter;
+            ct.color = Color.white;
+            ct.text = "🎉 Replay Chilbi Cheer";
+
+            // Button: Restart Level
+            GameObject rstBtnObj = new GameObject("Btn_RestartLevel", typeof(RectTransform), typeof(Image), typeof(Button));
+            rstBtnObj.transform.SetParent(cardObj.transform, false);
+            RectTransform rstRt = rstBtnObj.GetComponent<RectTransform>();
+            rstRt.anchorMin = new Vector2(0.5f, 1f);
+            rstRt.anchorMax = new Vector2(0.5f, 1f);
+            rstRt.pivot = new Vector2(0.5f, 1f);
+            rstRt.anchoredPosition = new Vector2(0f, -540f);
+            rstRt.sizeDelta = new Vector2(560f, 62f);
+
+            Image rstImg = rstBtnObj.GetComponent<Image>();
+            rstImg.sprite = pillSprite;
+            rstImg.type = Image.Type.Sliced;
+            rstImg.color = new Color32(0xE7, 0x4C, 0x3C, 0xFF);
+
+            Button rstBtn = rstBtnObj.GetComponent<Button>();
+            rstBtn.onClick.AddListener(() =>
+            {
+                ShowSettingsModal(false);
+                if (BusFleetUIController.Instance != null) BusFleetUIController.Instance.ResetGame();
+            });
+
+            GameObject rstTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            rstTextObj.transform.SetParent(rstBtnObj.transform, false);
+            RectTransform rtRt = rstTextObj.GetComponent<RectTransform>();
+            rtRt.anchorMin = Vector2.zero;
+            rtRt.anchorMax = Vector2.one;
+            rtRt.sizeDelta = Vector2.zero;
+            Text rt = rstTextObj.GetComponent<Text>();
+            rt.font = DefaultFont;
+            rt.fontSize = 22;
+            rt.fontStyle = FontStyle.Bold;
+            rt.alignment = TextAnchor.MiddleCenter;
+            rt.color = Color.white;
+            rt.text = "↺ Restart Level";
+
+            // Button: Resume Game
+            GameObject resBtnObj = new GameObject("Btn_Resume", typeof(RectTransform), typeof(Image), typeof(Button));
+            resBtnObj.transform.SetParent(cardObj.transform, false);
+            RectTransform resRt = resBtnObj.GetComponent<RectTransform>();
+            resRt.anchorMin = new Vector2(0.5f, 1f);
+            resRt.anchorMax = new Vector2(0.5f, 1f);
+            resRt.pivot = new Vector2(0.5f, 1f);
+            resRt.anchoredPosition = new Vector2(0f, -640f);
+            resRt.sizeDelta = new Vector2(560f, 76f);
+
+            Image resImg = resBtnObj.GetComponent<Image>();
+            resImg.sprite = pillSprite;
+            resImg.type = Image.Type.Sliced;
+            resImg.color = new Color32(0x2E, 0xCC, 0x71, 0xFF);
+
+            Button resBtn = resBtnObj.GetComponent<Button>();
+            resBtn.onClick.AddListener(() =>
+            {
+                ShowSettingsModal(false);
+                AndroidHaptics.LightClick();
+            });
+
+            GameObject resTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            resTextObj.transform.SetParent(resBtnObj.transform, false);
+            RectTransform restRt = resTextObj.GetComponent<RectTransform>();
+            restRt.anchorMin = Vector2.zero;
+            restRt.anchorMax = Vector2.one;
+            restRt.sizeDelta = Vector2.zero;
+            Text rest = resTextObj.GetComponent<Text>();
+            rest.font = DefaultFont;
+            rest.fontSize = 26;
+            rest.fontStyle = FontStyle.Bold;
+            rest.alignment = TextAnchor.MiddleCenter;
+            rest.color = Color.white;
+            rest.text = "▶ RESUME GAME";
+        }
+
+        private void CreateSettingToggleRow(Transform parent, Sprite pillSprite, float yPos, string labelText, UnityEngine.Events.UnityAction onToggle, out Text stateText, out Image buttonImg)
+        {
+            GameObject rowObj = new GameObject($"Row_{labelText}", typeof(RectTransform));
+            rowObj.transform.SetParent(parent, false);
+            RectTransform rowRt = rowObj.GetComponent<RectTransform>();
+            rowRt.anchorMin = new Vector2(0.5f, 1f);
+            rowRt.anchorMax = new Vector2(0.5f, 1f);
+            rowRt.pivot = new Vector2(0.5f, 1f);
+            rowRt.anchoredPosition = new Vector2(0f, yPos);
+            rowRt.sizeDelta = new Vector2(580f, 64f);
+
+            // Label
+            GameObject lblObj = new GameObject("Label", typeof(RectTransform), typeof(Text));
+            lblObj.transform.SetParent(rowObj.transform, false);
+            RectTransform lRt = lblObj.GetComponent<RectTransform>();
+            lRt.anchorMin = new Vector2(0f, 0.5f);
+            lRt.anchorMax = new Vector2(0f, 0.5f);
+            lRt.pivot = new Vector2(0f, 0.5f);
+            lRt.anchoredPosition = new Vector2(10f, 0f);
+            lRt.sizeDelta = new Vector2(340f, 50f);
+
+            Text lbl = lblObj.GetComponent<Text>();
+            lbl.font = DefaultFont;
+            lbl.fontSize = 24;
+            lbl.fontStyle = FontStyle.Bold;
+            lbl.alignment = TextAnchor.MiddleLeft;
+            lbl.color = Color.white;
+            lbl.text = labelText;
+
+            // Toggle Button
+            GameObject btnObj = new GameObject("ToggleBtn", typeof(RectTransform), typeof(Image), typeof(Button));
+            btnObj.transform.SetParent(rowObj.transform, false);
+            RectTransform bRt = btnObj.GetComponent<RectTransform>();
+            bRt.anchorMin = new Vector2(1f, 0.5f);
+            bRt.anchorMax = new Vector2(1f, 0.5f);
+            bRt.pivot = new Vector2(1f, 0.5f);
+            bRt.anchoredPosition = new Vector2(-10f, 0f);
+            bRt.sizeDelta = new Vector2(160f, 52f);
+
+            buttonImg = btnObj.GetComponent<Image>();
+            buttonImg.sprite = pillSprite;
+            buttonImg.type = Image.Type.Sliced;
+
+            Button btn = btnObj.GetComponent<Button>();
+            btn.onClick.AddListener(onToggle);
+
+            GameObject tObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            tObj.transform.SetParent(btnObj.transform, false);
+            RectTransform tRt = tObj.GetComponent<RectTransform>();
+            tRt.anchorMin = Vector2.zero;
+            tRt.anchorMax = Vector2.one;
+            tRt.sizeDelta = Vector2.zero;
+
+            stateText = tObj.GetComponent<Text>();
+            stateText.font = DefaultFont;
+            stateText.fontSize = 20;
+            stateText.fontStyle = FontStyle.Bold;
+            stateText.alignment = TextAnchor.MiddleCenter;
+            stateText.color = Color.white;
+        }
+
+        private void RefreshSettingsToggles()
+        {
+            bool sfx = BusFleetUIController.SfxEnabled;
+            bool music = BusFleetUIController.MusicEnabled;
+            bool haptics = BusFleetUIController.HapticsEnabled;
+
+            if (sfxToggleText != null) sfxToggleText.text = sfx ? "ON" : "OFF";
+            if (sfxToggleImg != null) sfxToggleImg.color = sfx ? new Color32(0x2E, 0xCC, 0x71, 0xFF) : new Color32(0x7F, 0x8C, 0x8D, 0xFF);
+
+            if (musicToggleText != null) musicToggleText.text = music ? "ON" : "OFF";
+            if (musicToggleImg != null) musicToggleImg.color = music ? new Color32(0x2E, 0xCC, 0x71, 0xFF) : new Color32(0x7F, 0x8C, 0x8D, 0xFF);
+
+            if (hapticsToggleText != null) hapticsToggleText.text = haptics ? "ON" : "OFF";
+            if (hapticsToggleImg != null) hapticsToggleImg.color = haptics ? new Color32(0x2E, 0xCC, 0x71, 0xFF) : new Color32(0x7F, 0x8C, 0x8D, 0xFF);
         }
 
         public void TriggerConfettiBurst(int count = 60)

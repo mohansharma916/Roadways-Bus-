@@ -86,6 +86,61 @@ namespace RoadwaysGame
         public event Action<int, int> OnBusDockedInBay; // (bayIndex, busIndex)
         public event Action<int, int> OnBusLeftBay;     // (bayIndex, busIndex)
 
+        [System.NonSerialized] private int recallCount = 3;
+        [System.NonSerialized] private int shuffleCount = 2;
+
+        public int RecallCount => recallCount;
+        public int ShuffleCount => shuffleCount;
+
+        public static bool SfxEnabled
+        {
+            get => PlayerPrefs.GetInt("Roadways_SfxEnabled", 1) == 1;
+            set
+            {
+                PlayerPrefs.SetInt("Roadways_SfxEnabled", value ? 1 : 0);
+                PlayerPrefs.Save();
+                if (Instance != null) Instance.ApplyAudioMutes();
+            }
+        }
+
+        public static bool MusicEnabled
+        {
+            get => PlayerPrefs.GetInt("Roadways_MusicEnabled", 1) == 1;
+            set
+            {
+                PlayerPrefs.SetInt("Roadways_MusicEnabled", value ? 1 : 0);
+                PlayerPrefs.Save();
+                if (Instance != null) Instance.ApplyAudioMutes();
+            }
+        }
+
+        public static bool HapticsEnabled
+        {
+            get => PlayerPrefs.GetInt("Roadways_HapticsEnabled", 1) == 1;
+            set
+            {
+                PlayerPrefs.SetInt("Roadways_HapticsEnabled", value ? 1 : 0);
+                PlayerPrefs.Save();
+            }
+        }
+
+        public void ApplyAudioMutes()
+        {
+            if (audioSource != null) audioSource.mute = !SfxEnabled;
+            if (ambientAudioSource != null)
+            {
+                ambientAudioSource.mute = !MusicEnabled;
+                if (MusicEnabled && !ambientAudioSource.isPlaying && ambientAudioSource.clip != null)
+                {
+                    ambientAudioSource.Play();
+                }
+            }
+            if (GameUIController.Instance != null && GameUIController.Instance.AudioSource != null)
+            {
+                GameUIController.Instance.AudioSource.mute = !SfxEnabled;
+            }
+        }
+
         public Transform GetCanvasTransform()
         {
             if (canvasRt != null) return canvasRt;
@@ -102,11 +157,15 @@ namespace RoadwaysGame
         private void Awake()
         {
             Instance = this;
+            topPadding = 110f;
             currentLevel = PlayerPrefs.GetInt("Roadways_Level", 1);
             highScore = PlayerPrefs.GetInt("Roadways_HighScore", 0);
+            recallCount = PlayerPrefs.GetInt("Roadways_RecallCount", 3);
+            shuffleCount = PlayerPrefs.GetInt("Roadways_ShuffleCount", 2);
             GetCanvasTransform();
             EnsureAudioSource();
             EnsureAssets();
+            ApplyAudioMutes();
             for (int i = 0; i < 9; i++) bayOccupants[i] = -1;
         }
 
@@ -1460,6 +1519,14 @@ namespace RoadwaysGame
             nText.color = Color.white;
             nText.text = "NEXT LEVEL ➔";
 
+            // Replenish booster inventory (+1 each, up to 5 max)
+            recallCount = Mathf.Min(recallCount + 1, 5);
+            shuffleCount = Mathf.Min(shuffleCount + 1, 5);
+            PlayerPrefs.SetInt("Roadways_RecallCount", recallCount);
+            PlayerPrefs.SetInt("Roadways_ShuffleCount", shuffleCount);
+            PlayerPrefs.Save();
+            if (GameUIController.Instance != null) GameUIController.Instance.UpdateBoosterLabels();
+
             // Trigger celebration
             if (GameUIController.Instance != null)
             {
@@ -1472,6 +1539,15 @@ namespace RoadwaysGame
         public void RecallLastBus()
         {
             if (isBoardingActive || isInFlight) return;
+
+            if (recallCount <= 0)
+            {
+                AndroidHaptics.DoubleBuzz();
+                if (warningClip != null && audioSource != null && SfxEnabled) audioSource.PlayOneShot(warningClip, 0.7f);
+                Vector3 centerPos = new Vector3(Screen.width * 0.5f, Screen.height * 0.45f, 0f);
+                StartCoroutine(FloatingScoreRoutine(centerPos, "No Recalls Left!", new Color(1f, 0.4f, 0.4f)));
+                return;
+            }
 
             int targetBay = -1;
             if (lastDispatchedBayIndex >= 0 && bayOccupants[lastDispatchedBayIndex] >= 0)
@@ -1493,16 +1569,21 @@ namespace RoadwaysGame
 
             if (targetBay >= 0)
             {
+                recallCount--;
+                PlayerPrefs.SetInt("Roadways_RecallCount", recallCount);
+                PlayerPrefs.Save();
+                if (GameUIController.Instance != null) GameUIController.Instance.UpdateBoosterLabels();
+
                 int busIdx = bayOccupants[targetBay];
                 StartCoroutine(ReturnToDepotRoutine(busIdx, targetBay));
                 Vector3 bayPos = parkedBusObjects[targetBay] != null ? parkedBusObjects[targetBay].transform.position : new Vector3(Screen.width * 0.5f, Screen.height * 0.4f, 0f);
-                StartCoroutine(FloatingScoreRoutine(bayPos + new Vector3(0f, 40f, 0f), "↺ RECALLED", new Color(0.3f, 0.7f, 1f)));
+                StartCoroutine(FloatingScoreRoutine(bayPos + new Vector3(0f, 40f, 0f), $"↺ RECALLED ({recallCount} left)", new Color(0.3f, 0.7f, 1f)));
                 AndroidHaptics.LightClick();
             }
             else
             {
                 AndroidHaptics.DoubleBuzz();
-                if (warningClip != null && audioSource != null) audioSource.PlayOneShot(warningClip, 0.7f);
+                if (warningClip != null && audioSource != null && SfxEnabled) audioSource.PlayOneShot(warningClip, 0.7f);
             }
         }
 
@@ -1510,16 +1591,30 @@ namespace RoadwaysGame
         {
             if (isBoardingActive || isInFlight) return;
 
+            if (shuffleCount <= 0)
+            {
+                AndroidHaptics.DoubleBuzz();
+                if (warningClip != null && audioSource != null && SfxEnabled) audioSource.PlayOneShot(warningClip, 0.7f);
+                Vector3 centerPos = new Vector3(Screen.width * 0.5f, Screen.height * 0.45f, 0f);
+                StartCoroutine(FloatingScoreRoutine(centerPos, "No Shuffles Left!", new Color(1f, 0.4f, 0.4f)));
+                return;
+            }
+
             if (ChilbiFlowController.Instance != null)
             {
+                shuffleCount--;
+                PlayerPrefs.SetInt("Roadways_ShuffleCount", shuffleCount);
+                PlayerPrefs.Save();
+                if (GameUIController.Instance != null) GameUIController.Instance.UpdateBoosterLabels();
+
                 ChilbiFlowController.Instance.ShuffleRows();
                 AndroidHaptics.MediumClick();
-                if (audioSource != null && hornClips != null && hornClips.Length > 0)
+                if (audioSource != null && hornClips != null && hornClips.Length > 0 && SfxEnabled)
                 {
                     audioSource.PlayOneShot(hornClips[UnityEngine.Random.Range(0, hornClips.Length)], 0.7f);
                 }
                 Vector3 centerPos = new Vector3(Screen.width * 0.5f, Screen.height * 0.55f, 0f);
-                StartCoroutine(FloatingScoreRoutine(centerPos, "🔀 SHUFFLED!", new Color(0.85f, 0.45f, 1f)));
+                StartCoroutine(FloatingScoreRoutine(centerPos, $"🔀 SHUFFLED! ({shuffleCount} left)", new Color(0.85f, 0.45f, 1f)));
                 UpdateStatusHUD();
             }
         }
@@ -1615,6 +1710,7 @@ namespace RoadwaysGame
     {
         public static void Vibrate(long milliseconds = 20)
         {
+            if (!BusFleetUIController.HapticsEnabled) return;
 #if UNITY_ANDROID && !UNITY_EDITOR
             try
             {
