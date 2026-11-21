@@ -88,6 +88,10 @@ namespace RoadwaysGame
 
         [System.NonSerialized] private int recallCount = 3;
         [System.NonSerialized] private int shuffleCount = 2;
+        [System.NonSerialized] private GameObject ftuePointerObj;
+        [System.NonSerialized] private RectTransform ftuePointerRt;
+        [System.NonSerialized] private Text ftuePointerText;
+        [System.NonSerialized] private float idleTimer = 0f;
 
         public int RecallCount => recallCount;
         public int ShuffleCount => shuffleCount;
@@ -158,7 +162,16 @@ namespace RoadwaysGame
         {
             Instance = this;
             topPadding = 110f;
-            currentLevel = PlayerPrefs.GetInt("Roadways_Level", 1);
+            if (PlayerPrefs.GetInt("Roadways_FTUE_Completed", 0) == 0)
+            {
+                currentLevel = 1;
+                PlayerPrefs.SetInt("Roadways_Level", 1);
+                PlayerPrefs.Save();
+            }
+            else
+            {
+                currentLevel = PlayerPrefs.GetInt("Roadways_Level", 1);
+            }
             highScore = PlayerPrefs.GetInt("Roadways_HighScore", 0);
             recallCount = PlayerPrefs.GetInt("Roadways_RecallCount", 3);
             shuffleCount = PlayerPrefs.GetInt("Roadways_ShuffleCount", 2);
@@ -176,10 +189,150 @@ namespace RoadwaysGame
 
         private void Update()
         {
-            if (isBoardingActive || isInFlight) return;
+            if (isBoardingActive || isInFlight)
+            {
+                HideFTUEPointer();
+                return;
+            }
             if (ChilbiFlowController.Instance == null) return;
 
             CheckBoarding();
+            UpdateFTUEGuide();
+        }
+
+        private void EnsureFTUEPointer(Transform parent)
+        {
+            if (ftuePointerObj != null) return;
+
+            ftuePointerObj = new GameObject("FTUE_Pointer", typeof(RectTransform));
+            ftuePointerObj.transform.SetParent(parent, false);
+            ftuePointerRt = ftuePointerObj.GetComponent<RectTransform>();
+            ftuePointerRt.anchorMin = new Vector2(0.5f, 0.5f);
+            ftuePointerRt.anchorMax = new Vector2(0.5f, 0.5f);
+            ftuePointerRt.pivot = new Vector2(0.5f, 0f);
+            ftuePointerRt.sizeDelta = new Vector2(140f, 48f);
+
+            // 1. Text Pill: "TAP TO DOCK"
+            GameObject pillObj = new GameObject("Pill", typeof(RectTransform), typeof(Image));
+            pillObj.transform.SetParent(ftuePointerObj.transform, false);
+            RectTransform pRt = pillObj.GetComponent<RectTransform>();
+            pRt.anchorMin = new Vector2(0.5f, 1f);
+            pRt.anchorMax = new Vector2(0.5f, 1f);
+            pRt.pivot = new Vector2(0.5f, 1f);
+            pRt.anchoredPosition = new Vector2(0f, 0f);
+            pRt.sizeDelta = new Vector2(140f, 26f);
+
+            Image pImg = pillObj.GetComponent<Image>();
+            pImg.sprite = GameUIController.CreatePillSprite(32, 16, 8);
+            pImg.type = Image.Type.Sliced;
+            pImg.color = new Color32(0xFF, 0xD7, 0x00, 0xFF); // Solid Gold
+
+            GameObject textObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            textObj.transform.SetParent(pillObj.transform, false);
+            RectTransform tRt = textObj.GetComponent<RectTransform>();
+            tRt.anchorMin = Vector2.zero;
+            tRt.anchorMax = Vector2.one;
+            tRt.sizeDelta = Vector2.zero;
+
+            ftuePointerText = textObj.GetComponent<Text>();
+            ftuePointerText.font = GameUIController.DefaultFont;
+            ftuePointerText.fontSize = 13;
+            ftuePointerText.fontStyle = FontStyle.Bold;
+            ftuePointerText.alignment = TextAnchor.MiddleCenter;
+            ftuePointerText.color = new Color32(0x2C, 0x3E, 0x50, 0xFF);
+            ftuePointerText.raycastTarget = false;
+            ftuePointerText.text = "TAP TO DOCK";
+
+            // 2. Pointing Down Arrow (procedural arrowSprite rotated 180 degrees)
+            GameObject arrowObj = new GameObject("PointerArrow", typeof(RectTransform), typeof(Image));
+            arrowObj.transform.SetParent(ftuePointerObj.transform, false);
+            RectTransform aRt = arrowObj.GetComponent<RectTransform>();
+            aRt.anchorMin = new Vector2(0.5f, 0f);
+            aRt.anchorMax = new Vector2(0.5f, 0f);
+            aRt.pivot = new Vector2(0.5f, 0f);
+            aRt.anchoredPosition = new Vector2(0f, 0f);
+            aRt.sizeDelta = new Vector2(24f, 20f);
+            aRt.localEulerAngles = new Vector3(0f, 0f, 180f); // Rotate 180 to point down
+
+            Image aImg = arrowObj.GetComponent<Image>();
+            aImg.sprite = arrowSprite;
+            aImg.color = new Color32(0xFF, 0xD7, 0x00, 0xFF);
+            aImg.raycastTarget = false;
+
+            ftuePointerObj.SetActive(false);
+        }
+
+        private void UpdateFTUEGuide()
+        {
+            bool isFTUELevel = currentLevel == 1 && PlayerPrefs.GetInt("Roadways_FTUE_Completed", 0) == 0;
+
+            idleTimer += Time.unscaledDeltaTime;
+            bool isIdleHint = idleTimer > 6.0f;
+
+            if (!isFTUELevel && !isIdleHint)
+            {
+                HideFTUEPointer();
+                return;
+            }
+
+            int frontRow = ChilbiFlowController.Instance != null ? ChilbiFlowController.Instance.GetFrontRowIndex() : -1;
+            if (frontRow < 0)
+            {
+                HideFTUEPointer();
+                return;
+            }
+
+            int matchColor = ChilbiFlowController.Instance.GetRowColorTheme(frontRow);
+            if (matchColor < 0 || matchColor >= depotBusRts.Count)
+            {
+                HideFTUEPointer();
+                return;
+            }
+
+            RectTransform targetBusRt = depotBusRts[matchColor];
+            if (targetBusRt == null || !targetBusRt.gameObject.activeSelf || IsBusAlreadyDispatched(matchColor))
+            {
+                HideFTUEPointer();
+                return;
+            }
+
+            if (ftuePointerObj == null)
+            {
+                EnsureFTUEPointer(targetBusRt.parent);
+            }
+
+            if (ftuePointerObj != null)
+            {
+                if (!ftuePointerObj.activeSelf) ftuePointerObj.SetActive(true);
+                ftuePointerObj.transform.SetAsLastSibling();
+
+                float bob = Mathf.Sin(Time.unscaledTime * 5.5f) * 4f;
+                ftuePointerRt.anchoredPosition = new Vector2(targetBusRt.anchoredPosition.x, 66f + bob);
+
+                // Gentle pulsing beacon on target bus
+                float pulse = 1.0f + Mathf.PingPong(Time.unscaledTime * 1.2f, 0.08f);
+                targetBusRt.localScale = new Vector3(pulse, pulse, 1f);
+
+                if (ftuePointerText != null)
+                {
+                    ftuePointerText.text = isFTUELevel ? "TAP TO DOCK" : "MATCHING";
+                }
+            }
+        }
+
+        private void HideFTUEPointer()
+        {
+            if (ftuePointerObj != null && ftuePointerObj.activeSelf)
+            {
+                ftuePointerObj.SetActive(false);
+            }
+            for (int i = 0; i < depotBusRts.Count; i++)
+            {
+                if (depotBusRts[i] != null && depotBusRts[i].localScale != Vector3.one)
+                {
+                    depotBusRts[i].localScale = Vector3.one;
+                }
+            }
         }
 
         public void CheckBoarding()
@@ -205,6 +358,13 @@ namespace RoadwaysGame
         private IEnumerator ExecuteBoardingSequence(int row, int bayIndex, int colorIndex)
         {
             isBoardingActive = true;
+            HideFTUEPointer();
+
+            if (currentLevel == 1)
+            {
+                Vector3 neckPos = new Vector3(Screen.width * 0.5f, Screen.height * 0.52f, 0f);
+                StartCoroutine(FloatingScoreRoutine(neckPos, "🌟 PERFECT MATCH!", new Color(1f, 0.85f, 0.2f)));
+            }
 
             List<ChilbiFlowController.ChilbiInstance> rowChilbis = ChilbiFlowController.Instance.GetRowInstances(row);
             if (rowChilbis == null || rowChilbis.Count == 0)
@@ -460,6 +620,9 @@ namespace RoadwaysGame
         {
             if (isInFlight) return;
             if (IsBusAlreadyDispatched(busIndex)) return;
+
+            idleTimer = 0f;
+            HideFTUEPointer();
 
             int targetBay = GetFirstAvailableBay();
             if (targetBay == -1)
@@ -1403,7 +1566,16 @@ namespace RoadwaysGame
             tText.fontStyle = FontStyle.Bold;
             tText.alignment = TextAnchor.MiddleCenter;
             tText.color = new Color32(0x2C, 0x3E, 0x50, 0xFF);
-            tText.text = $"🏆 LEVEL {currentLevel} COMPLETE! 🏆";
+            if (currentLevel == 1)
+            {
+                PlayerPrefs.SetInt("Roadways_FTUE_Completed", 1);
+                PlayerPrefs.Save();
+                tText.text = "🏆 TUTORIAL COMPLETE! 🏆";
+            }
+            else
+            {
+                tText.text = $"🏆 LEVEL {currentLevel} COMPLETE! 🏆";
+            }
 
             // Stars
             GameObject starsObj = new GameObject("Stars", typeof(RectTransform), typeof(Text));
@@ -1674,6 +1846,8 @@ namespace RoadwaysGame
             StopAllCoroutines();
             isBoardingActive = false;
             isInFlight = false;
+            idleTimer = 0f;
+            HideFTUEPointer();
 
             for (int i = 0; i < 9; i++)
             {

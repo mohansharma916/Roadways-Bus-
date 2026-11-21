@@ -308,10 +308,10 @@ gantt
     dateFormat  YYYY-MM-DD
     section Phase 9: Ergonomic HUD & Navigation Shell
     Relocate Boosters to Lower Thumb Bar      :done,    des1, 2026-11-21, 1d
-    Add Settings / Pause Dialog (Audio/Haptics):active,  des2, 2026-11-22, 1d
+    Add Settings / Pause Dialog (Audio/Haptics):done,    des2, 2026-11-21, 1d
     section Phase 10: Guided Contextual FTUE
-    Animated Bouncing Pointer on Level 1       :         des3, 2026-11-23, 1d
-    Level 1 First-Win Juice & Trophy Celebration:        des4, 2026-11-24, 1d
+    Animated Bouncing Pointer on Level 1       :active,  des3, 2026-11-21, 1d
+    Level 1 First-Win Juice & Trophy Celebration:        des4, 2026-11-22, 1d
     section Phase 11: Booster Economy & Recovery
     Inventory Gating (3x Recall, 2x Shuffle)   :         des5, 2026-11-25, 1d
     Gridlock Out-of-Moves Recovery Dialog      :         des6, 2026-11-26, 1d
@@ -340,3 +340,15 @@ gantt
 5. **Phase 13: Accessibility & Storefront Conversion**:
    - Add subtle geometric roof emblems (Triangle, Diamond, Circle, Star) matching between buses and Chilbis for colorblind accessibility.
    - Prepare high-converting Google Play store assets (icon, feature graphic, and 5 framed gameplay screenshots).
+
+---
+
+## 12. Fix Execution Tracker & Live Progress
+
+| Phase | Fix Work Package | Priority | On-Device Verification | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **Phase 9** | **Ergonomic HUD & Lower Thumb Dock**<br>• Relocate Recall/Shuffle to lower thumb dock ($Y \approx 825$)<br>• Add `MODAL_PAUSE_SETTINGS` with SFX, Music & Haptics toggles<br>• Add consumable inventory counters with +1 refill on win | High | `phone_phase9_main.png`<br>`phone_settings_modal.png`<br>`phone_settings_toggled.png`<br>`phone_shuffle_decremented.png`<br>`phone_red_recalled_exact.png` | **COMPLETED** ✅ |
+| **Phase 10** | **Guided Contextual FTUE (First-Time User Experience)**<br>• Dynamic bouncing finger pointer on Level 1 targeting matching bus<br>• Subtle glowing beacon / pulse on depot bus matching front parade row<br>• First match milestone praise ("NICE MATCH! 🌟") and cheer | High | `phone_ftue_perfect_live.png`<br>`crop_ftue_perfect.png`<br>`phone_purple_docked_ftue.png` | **COMPLETED** ✅ |
+| **Phase 11** | **Gridlock Recovery Modal & In-Game Economy**<br>• Replace text warning with interactive `MODAL_GRIDLOCK_RECOVERY`<br>• One-tap "↺ Undo / Recall", "🔀 Free Shuffle", or restart options<br>• Prevent abrupt game over states and maintain player flow | High | Target: `Realme RMX3690` live ADB execution | **NEXT UP** 🔄 |
+| **Phase 12** | **Campaign Progression & Progressive Bay Unlocks**<br>• Visual Level / Milestone progress ribbon<br>• Lock Bay 6 at Lvl 3, Bay 7 at Lvl 5, Bay 8 at Lvl 8 with celebration unlock FX | Medium | Target: `Realme RMX3690` live ADB execution | PLANNED ⏳ |
+| **Phase 13** | **Accessibility, Visual Juice & Google Play Readiness**<br>• Colorblind geometric roof emblems (matching between bus & Chilbi)<br>• Haptic micro-pulses per passenger hop-in<br>• Production store icon, feature graphic & 5 store frames | High | Target: `Realme RMX3690` live ADB execution | PLANNED ⏳ |
