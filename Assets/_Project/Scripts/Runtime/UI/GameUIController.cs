@@ -66,6 +66,8 @@ namespace RoadwaysGame
         [SerializeField] private Button replayButton;
 
         [System.NonSerialized] private GameObject settingsModalObj;
+        [System.NonSerialized] private GameObject campaignMapModalObj;
+        [System.NonSerialized] private GameObject mapButtonObj;
         [System.NonSerialized] private GameObject boosterDockObj;
         [System.NonSerialized] private Text recallBtnText;
         [System.NonSerialized] private Text shuffleBtnText;
@@ -487,6 +489,10 @@ namespace RoadwaysGame
                 int initHi = PlayerPrefs.GetInt("Roadways_HighScore", 0);
                 titleText.text = $"⭐ LEVEL {initLvl}  •  👑 HIGH: {initHi}";
 
+                Button wmBtn = watermarkPill.AddComponent<Button>();
+                wmBtn.transition = Selectable.Transition.None;
+                wmBtn.onClick.AddListener(() => ShowCampaignMapModal(true));
+
                 // Status Pill
                 statusPill = new GameObject("StatusPill", typeof(RectTransform), typeof(Image));
                 statusPill.transform.SetParent(headerContainer.transform, false);
@@ -549,6 +555,39 @@ namespace RoadwaysGame
                 setIconText.color = Color.white;
                 setIconText.raycastTarget = false;
                 setIconText.text = "⚙️";
+
+                // Campaign Saga Map Button (Top-Right, next to Settings)
+                mapButtonObj = new GameObject("MapButton", typeof(RectTransform), typeof(Image), typeof(Button));
+                mapButtonObj.transform.SetParent(headerContainer.transform, false);
+                RectTransform mapRt = mapButtonObj.GetComponent<RectTransform>();
+                mapRt.anchorMin = new Vector2(1f, 1f);
+                mapRt.anchorMax = new Vector2(1f, 1f);
+                mapRt.pivot = new Vector2(1f, 1f);
+                mapRt.anchoredPosition = new Vector2(-82f, 0f);
+                mapRt.sizeDelta = new Vector2(64f, 62f);
+
+                Image mapImg = mapButtonObj.GetComponent<Image>();
+                mapImg.sprite = pillSprite;
+                mapImg.type = Image.Type.Sliced;
+                mapImg.color = new Color32(0x27, 0xAE, 0x60, 0xF5);
+
+                Button mapBtn = mapButtonObj.GetComponent<Button>();
+                mapBtn.onClick.AddListener(() => ShowCampaignMapModal(true));
+
+                GameObject mapIconObj = new GameObject("Icon", typeof(RectTransform), typeof(Text));
+                mapIconObj.transform.SetParent(mapButtonObj.transform, false);
+                RectTransform mapIconRt = mapIconObj.GetComponent<RectTransform>();
+                mapIconRt.anchorMin = Vector2.zero;
+                mapIconRt.anchorMax = Vector2.one;
+                mapIconRt.sizeDelta = Vector2.zero;
+
+                Text mapIconText = mapIconObj.GetComponent<Text>();
+                mapIconText.font = defaultFont;
+                mapIconText.fontSize = 28;
+                mapIconText.alignment = TextAnchor.MiddleCenter;
+                mapIconText.color = Color.white;
+                mapIconText.raycastTarget = false;
+                mapIconText.text = "🗺️";
 
                 replayBtnObj = null;
                 replayButton = null;
@@ -764,6 +803,341 @@ namespace RoadwaysGame
             settingsModalObj.SetActive(true);
             settingsModalObj.transform.SetAsLastSibling();
             AndroidHaptics.LightClick();
+        }
+
+        public void ShowCampaignMapModal(bool show)
+        {
+            if (!show)
+            {
+                if (campaignMapModalObj != null) campaignMapModalObj.SetActive(false);
+                return;
+            }
+
+            if (campaignMapModalObj == null)
+            {
+                CreateCampaignMapModal();
+            }
+            else
+            {
+                RefreshCampaignMap();
+            }
+
+            campaignMapModalObj.SetActive(true);
+            campaignMapModalObj.transform.SetAsLastSibling();
+            AndroidHaptics.LightClick();
+        }
+
+        private void CreateCampaignMapModal()
+        {
+            Transform canvasTrans = mainCanvas != null ? mainCanvas.transform : transform.Find("MainGameCanvas");
+            if (canvasTrans == null) return;
+
+            Sprite pillSprite = CreatePillSprite(128, 64, 24);
+
+            // Fullscreen Backdrop
+            campaignMapModalObj = new GameObject("Modal_CampaignMap", typeof(RectTransform), typeof(Image));
+            campaignMapModalObj.transform.SetParent(canvasTrans, false);
+            RectTransform bgRt = campaignMapModalObj.GetComponent<RectTransform>();
+            bgRt.anchorMin = Vector2.zero;
+            bgRt.anchorMax = Vector2.one;
+            bgRt.sizeDelta = Vector2.zero;
+
+            Image bgImg = campaignMapModalObj.GetComponent<Image>();
+            bgImg.color = new Color(0f, 0f, 0f, 0.75f);
+
+            // Modal Card
+            GameObject cardObj = new GameObject("MapCard", typeof(RectTransform), typeof(Image));
+            cardObj.transform.SetParent(campaignMapModalObj.transform, false);
+            RectTransform cardRt = cardObj.GetComponent<RectTransform>();
+            cardRt.anchorMin = new Vector2(0.5f, 0.5f);
+            cardRt.anchorMax = new Vector2(0.5f, 0.5f);
+            cardRt.pivot = new Vector2(0.5f, 0.5f);
+            cardRt.anchoredPosition = Vector2.zero;
+            cardRt.sizeDelta = new Vector2(740f, 860f);
+
+            Image cardImg = cardObj.GetComponent<Image>();
+            cardImg.sprite = CreateRoundedBoxSprite(740, 860, 36, 4, new Color32(0xF1, 0xC4, 0x0F, 0xFF), new Color32(0x1E, 0x27, 0x2E, 0xFC));
+            cardImg.type = Image.Type.Simple;
+
+            // Close button (Top-Right of card)
+            GameObject closeBtnObj = new GameObject("CloseButton", typeof(RectTransform), typeof(Image), typeof(Button));
+            closeBtnObj.transform.SetParent(cardObj.transform, false);
+            RectTransform cRt = closeBtnObj.GetComponent<RectTransform>();
+            cRt.anchorMin = new Vector2(1f, 1f);
+            cRt.anchorMax = new Vector2(1f, 1f);
+            cRt.pivot = new Vector2(1f, 1f);
+            cRt.anchoredPosition = new Vector2(-16f, -16f);
+            cRt.sizeDelta = new Vector2(52f, 52f);
+
+            Image cImg = closeBtnObj.GetComponent<Image>();
+            cImg.sprite = pillSprite;
+            cImg.type = Image.Type.Sliced;
+            cImg.color = new Color32(0xE7, 0x4C, 0x3C, 0xFF);
+
+            Button cBtn = closeBtnObj.GetComponent<Button>();
+            cBtn.onClick.AddListener(() => {
+                ShowCampaignMapModal(false);
+                AndroidHaptics.LightClick();
+            });
+
+            GameObject cTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            cTextObj.transform.SetParent(closeBtnObj.transform, false);
+            RectTransform ctRt = cTextObj.GetComponent<RectTransform>();
+            ctRt.anchorMin = Vector2.zero;
+            ctRt.anchorMax = Vector2.one;
+            ctRt.sizeDelta = Vector2.zero;
+            Text ct = cTextObj.GetComponent<Text>();
+            ct.font = DefaultFont;
+            ct.fontSize = 24;
+            ct.fontStyle = FontStyle.Bold;
+            ct.alignment = TextAnchor.MiddleCenter;
+            ct.color = Color.white;
+            ct.text = "✕";
+
+            // Header Title
+            GameObject titleObj = new GameObject("ModalTitle", typeof(RectTransform), typeof(Text));
+            titleObj.transform.SetParent(cardObj.transform, false);
+            RectTransform titleRt = titleObj.GetComponent<RectTransform>();
+            titleRt.anchorMin = new Vector2(0.5f, 1f);
+            titleRt.anchorMax = new Vector2(0.5f, 1f);
+            titleRt.pivot = new Vector2(0.5f, 1f);
+            titleRt.anchoredPosition = new Vector2(0f, -28f);
+            titleRt.sizeDelta = new Vector2(600f, 50f);
+
+            Text t = titleObj.GetComponent<Text>();
+            t.font = DefaultFont;
+            t.fontSize = 30;
+            t.fontStyle = FontStyle.Bold;
+            t.alignment = TextAnchor.MiddleCenter;
+            t.color = new Color32(0xFF, 0xD7, 0x00, 0xFF);
+            t.text = "🗺️ SAKURA PARK SAGA";
+
+            // Subtitle
+            GameObject subObj = new GameObject("Subtitle", typeof(RectTransform), typeof(Text));
+            subObj.transform.SetParent(cardObj.transform, false);
+            RectTransform subRt = subObj.GetComponent<RectTransform>();
+            subRt.anchorMin = new Vector2(0.5f, 1f);
+            subRt.anchorMax = new Vector2(0.5f, 1f);
+            subRt.pivot = new Vector2(0.5f, 1f);
+            subRt.anchoredPosition = new Vector2(0f, -76f);
+            subRt.sizeDelta = new Vector2(680f, 32f);
+
+            Text subT = subObj.GetComponent<Text>();
+            subT.font = DefaultFont;
+            subT.fontSize = 18;
+            subT.alignment = TextAnchor.MiddleCenter;
+            subT.color = new Color32(0xD2, 0xDA, 0xE2, 0xFF);
+            subT.text = "🌸 20 Levels  •  3 Scenic Zones  •  Bay Milestones";
+
+            // Grid Container (for 20 level nodes: 4 cols x 5 rows)
+            GameObject gridObj = new GameObject("LevelGrid", typeof(RectTransform));
+            gridObj.transform.SetParent(cardObj.transform, false);
+            RectTransform gridRt = gridObj.GetComponent<RectTransform>();
+            gridRt.anchorMin = new Vector2(0.5f, 1f);
+            gridRt.anchorMax = new Vector2(0.5f, 1f);
+            gridRt.pivot = new Vector2(0.5f, 1f);
+            gridRt.anchoredPosition = new Vector2(0f, -118f);
+            gridRt.sizeDelta = new Vector2(680f, 520f);
+
+            BuildLevelGridNodes(gridObj.transform, pillSprite);
+
+            // Milestone Banner Strip (Below grid)
+            GameObject msObj = new GameObject("MilestoneStrip", typeof(RectTransform), typeof(Image));
+            msObj.transform.SetParent(cardObj.transform, false);
+            RectTransform msRt = msObj.GetComponent<RectTransform>();
+            msRt.anchorMin = new Vector2(0.5f, 1f);
+            msRt.anchorMax = new Vector2(0.5f, 1f);
+            msRt.pivot = new Vector2(0.5f, 1f);
+            msRt.anchoredPosition = new Vector2(0f, -652f);
+            msRt.sizeDelta = new Vector2(660f, 44f);
+
+            Image msImg = msObj.GetComponent<Image>();
+            msImg.sprite = pillSprite;
+            msImg.type = Image.Type.Sliced;
+            msImg.color = new Color32(0x2C, 0x3E, 0x50, 0xF0);
+
+            GameObject msTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            msTextObj.transform.SetParent(msObj.transform, false);
+            RectTransform mstRt = msTextObj.GetComponent<RectTransform>();
+            mstRt.anchorMin = Vector2.zero;
+            mstRt.anchorMax = Vector2.one;
+            mstRt.sizeDelta = Vector2.zero;
+            Text mst = msTextObj.GetComponent<Text>();
+            mst.font = DefaultFont;
+            mst.fontSize = 17;
+            mst.fontStyle = FontStyle.Bold;
+            mst.alignment = TextAnchor.MiddleCenter;
+            mst.color = new Color32(0xF1, 0xC4, 0x0F, 0xFF);
+            mst.text = "🎁 Unlocks: Bay 6 (Lvl 3)  •  Bay 7 (Lvl 5)  •  Bay 8 (Lvl 8)";
+
+            // Bottom Continue / Play Button
+            GameObject playBtnObj = new GameObject("PlayButton", typeof(RectTransform), typeof(Image), typeof(Button));
+            playBtnObj.transform.SetParent(cardObj.transform, false);
+            RectTransform playRt = playBtnObj.GetComponent<RectTransform>();
+            playRt.anchorMin = new Vector2(0.5f, 0f);
+            playRt.anchorMax = new Vector2(0.5f, 0f);
+            playRt.pivot = new Vector2(0.5f, 0f);
+            playRt.anchoredPosition = new Vector2(0f, 32f);
+            playRt.sizeDelta = new Vector2(560f, 62f);
+
+            Image playImg = playBtnObj.GetComponent<Image>();
+            playImg.sprite = pillSprite;
+            playImg.type = Image.Type.Sliced;
+            playImg.color = new Color32(0x27, 0xAE, 0x60, 0xFF);
+
+            Button playBtn = playBtnObj.GetComponent<Button>();
+            playBtn.onClick.AddListener(() => {
+                ShowCampaignMapModal(false);
+                AndroidHaptics.MediumClick();
+            });
+
+            GameObject playTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            playTextObj.transform.SetParent(playBtnObj.transform, false);
+            RectTransform playtRt = playTextObj.GetComponent<RectTransform>();
+            playtRt.anchorMin = Vector2.zero;
+            playtRt.anchorMax = Vector2.one;
+            playtRt.sizeDelta = Vector2.zero;
+            Text playT = playTextObj.GetComponent<Text>();
+            playT.font = DefaultFont;
+            playT.fontSize = 24;
+            playT.fontStyle = FontStyle.Bold;
+            playT.alignment = TextAnchor.MiddleCenter;
+            playT.color = Color.white;
+            int curLvl = PlayerPrefs.GetInt("Roadways_Level", 1);
+            playT.text = $"▶ CONTINUE LEVEL {curLvl}";
+        }
+
+        private void BuildLevelGridNodes(Transform parent, Sprite pillSprite)
+        {
+            int currentLvl = PlayerPrefs.GetInt("Roadways_Level", 1);
+            float colWidth = 155f;
+            float rowHeight = 96f;
+            float startX = -232.5f;
+
+            for (int i = 0; i < 20; i++)
+            {
+                int lvl = i + 1;
+                int col = i % 4;
+                int row = i / 4;
+
+                float x = startX + col * colWidth;
+                float y = -(row * rowHeight + 48f);
+
+                GameObject nodeObj = new GameObject($"Level_{lvl}", typeof(RectTransform), typeof(Image), typeof(Button));
+                nodeObj.transform.SetParent(parent, false);
+                RectTransform nRt = nodeObj.GetComponent<RectTransform>();
+                nRt.anchoredPosition = new Vector2(x, y);
+                nRt.sizeDelta = new Vector2(138f, 78f);
+
+                Image nImg = nodeObj.GetComponent<Image>();
+                nImg.sprite = pillSprite;
+                nImg.type = Image.Type.Sliced;
+
+                bool isCompleted = lvl < currentLvl;
+                bool isActive = lvl == currentLvl;
+                bool isLocked = lvl > currentLvl;
+
+                if (isActive)
+                {
+                    nImg.color = new Color32(0xF1, 0xC4, 0x0F, 0xFF); // Gold
+                }
+                else if (isCompleted)
+                {
+                    nImg.color = new Color32(0x27, 0xAE, 0x60, 0xFF); // Green
+                }
+                else
+                {
+                    nImg.color = new Color32(0x34, 0x49, 0x5E, 0xDD); // Slate grey locked
+                }
+
+                GameObject textObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+                textObj.transform.SetParent(nodeObj.transform, false);
+                RectTransform tRt = textObj.GetComponent<RectTransform>();
+                tRt.anchorMin = Vector2.zero;
+                tRt.anchorMax = Vector2.one;
+                tRt.sizeDelta = Vector2.zero;
+
+                Text t = textObj.GetComponent<Text>();
+                t.font = DefaultFont;
+                t.alignment = TextAnchor.MiddleCenter;
+                t.lineSpacing = 1.1f;
+
+                string badgeTag = "";
+                if (lvl == 3) badgeTag = "\n🅿️ Bay 6";
+                else if (lvl == 5) badgeTag = "\n🅿️ Bay 7";
+                else if (lvl == 8) badgeTag = "\n🅿️ Bay 8";
+
+                if (isActive)
+                {
+                    t.fontSize = 20;
+                    t.fontStyle = FontStyle.Bold;
+                    t.color = new Color32(0x1E, 0x27, 0x2E, 0xFF);
+                    t.text = $"★ L{lvl} ★{badgeTag}";
+                }
+                else if (isCompleted)
+                {
+                    t.fontSize = 18;
+                    t.fontStyle = FontStyle.Bold;
+                    t.color = Color.white;
+                    t.text = $"L{lvl} ⭐⭐⭐{badgeTag}";
+                }
+                else
+                {
+                    t.fontSize = 17;
+                    t.fontStyle = FontStyle.Normal;
+                    t.color = new Color32(0xBD, 0xC3, 0xC7, 0xFF);
+                    t.text = $"🔒 L{lvl}{badgeTag}";
+                }
+
+                int selectedLvl = lvl;
+                Button btn = nodeObj.GetComponent<Button>();
+                btn.onClick.AddListener(() =>
+                {
+                    if (selectedLvl <= currentLvl)
+                    {
+                        PlayerPrefs.SetInt("Roadways_Level", selectedLvl);
+                        PlayerPrefs.Save();
+                        ShowCampaignMapModal(false);
+                        if (BusFleetUIController.Instance != null)
+                        {
+                            BusFleetUIController.Instance.SetLevel(selectedLvl);
+                        }
+                        AndroidHaptics.MediumClick();
+                    }
+                    else
+                    {
+                        AndroidHaptics.DoubleBuzz();
+                        if (BusFleetUIController.Instance != null)
+                        {
+                            BusFleetUIController.Instance.ShowFloatingTip($"Complete Level {selectedLvl - 1} first!");
+                        }
+                    }
+                });
+            }
+        }
+
+        private void RefreshCampaignMap()
+        {
+            if (campaignMapModalObj == null) return;
+            Transform grid = campaignMapModalObj.transform.Find("MapCard/LevelGrid");
+            if (grid != null)
+            {
+                foreach (Transform child in grid)
+                {
+                    Destroy(child.gameObject);
+                }
+                BuildLevelGridNodes(grid, CreatePillSprite(128, 64, 24));
+            }
+            Transform playBtnText = campaignMapModalObj.transform.Find("MapCard/PlayButton/Text");
+            if (playBtnText != null)
+            {
+                Text pt = playBtnText.GetComponent<Text>();
+                if (pt != null)
+                {
+                    int curLvl = PlayerPrefs.GetInt("Roadways_Level", 1);
+                    pt.text = $"▶ CONTINUE LEVEL {curLvl}";
+                }
+            }
         }
 
         private void CreateSettingsModal()
@@ -1248,7 +1622,7 @@ namespace RoadwaysGame
             return Sprite.Create(tex, new Rect(0, 0, width, height), new Vector2(0.5f, 0f), 100f);
         }
 
-        private static Sprite CreateRoundedBoxSprite(int width, int height, int cornerRadius, int borderWidth, Color32 borderColor, Color32 fillColor)
+        public static Sprite CreateRoundedBoxSprite(int width, int height, int cornerRadius, int borderWidth, Color32 borderColor, Color32 fillColor)
         {
             Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
             tex.name = $"Gen_Box_{borderColor.r}_{borderColor.g}_{borderColor.b}";

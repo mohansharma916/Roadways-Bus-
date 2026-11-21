@@ -187,6 +187,12 @@ namespace RoadwaysGame
             Instance = this;
         }
 
+        private void Start()
+        {
+            RefreshBayUnlocks();
+            UpdateStatusHUD();
+        }
+
         private void Update()
         {
             if (isBoardingActive || isInFlight)
@@ -1452,6 +1458,16 @@ namespace RoadwaysGame
             if (bayIndex < 0 || bayIndex >= 9) return;
             if (bayUnlocked[bayIndex]) return;
 
+            int reqLevel = (bayIndex == 6) ? 3 : (bayIndex == 7 ? 5 : 8);
+            if (currentLevel < reqLevel)
+            {
+                AndroidHaptics.DoubleBuzz();
+                if (warningClip != null && audioSource != null && SfxEnabled) audioSource.PlayOneShot(warningClip, 0.7f);
+                Vector3 centerPos = new Vector3(Screen.width * 0.5f, Screen.height * 0.45f, 0f);
+                StartCoroutine(FloatingScoreRoutine(centerPos, $"🔒 Bay {bayIndex} Unlocks at Level {reqLevel}!", new Color(1f, 0.4f, 0.4f)));
+                return;
+            }
+
             bayUnlocked[bayIndex] = true;
 
             Image img = bayObj.GetComponent<Image>();
@@ -1460,7 +1476,7 @@ namespace RoadwaysGame
             Transform plus = bayObj.transform.Find("PlusText");
             if (plus != null) plus.gameObject.SetActive(false);
 
-            if (audioSource != null && hornClips != null && hornClips.Length > 7 && hornClips[7] != null)
+            if (audioSource != null && hornClips != null && hornClips.Length > 7 && hornClips[7] != null && SfxEnabled)
             {
                 audioSource.PlayOneShot(hornClips[7], 0.75f);
             }
@@ -1468,6 +1484,78 @@ namespace RoadwaysGame
 
             SetGridlockWarning(false);
             UpdateStatusHUD();
+        }
+
+        public void RefreshBayUnlocks()
+        {
+            bayUnlocked[0] = true;
+            bayUnlocked[1] = true;
+            bayUnlocked[2] = true;
+            bayUnlocked[3] = true;
+            bayUnlocked[4] = true;
+            bayUnlocked[5] = true; // VIP
+            bayUnlocked[6] = currentLevel >= 3;
+            bayUnlocked[7] = currentLevel >= 5;
+            bayUnlocked[8] = currentLevel >= 8;
+
+            FindBayTransforms();
+            for (int i = 6; i < 9; i++)
+            {
+                if (bayRts[i] == null) continue;
+                GameObject bayObj = bayRts[i].gameObject;
+                Transform plus = bayObj.transform.Find("PlusText");
+                Text pt = plus != null ? plus.GetComponent<Text>() : null;
+                Image img = bayObj.GetComponent<Image>();
+
+                if (bayUnlocked[i])
+                {
+                    if (plus != null) plus.gameObject.SetActive(false);
+                    if (img != null) img.sprite = GameUIController.CreateRoundedBoxSprite(68, 136, 16, 5, Color.white, new Color32(0x62, 0x64, 0x79, 0xFF));
+                }
+                else
+                {
+                    if (plus != null)
+                    {
+                        plus.gameObject.SetActive(true);
+                        int req = (i == 6) ? 3 : (i == 7 ? 5 : 8);
+                        if (pt != null)
+                        {
+                            pt.fontSize = 22;
+                            pt.text = $"🔒\nL{req}";
+                            pt.color = new Color32(0xE7, 0x4C, 0x3C, 0xFF);
+                        }
+                    }
+                    if (img != null)
+                    {
+                        img.sprite = GameUIController.CreateRoundedBoxSprite(68, 136, 16, 5, new Color32(0xE7, 0x4C, 0x3C, 0x88), new Color32(0x3B, 0x42, 0x52, 0xCC));
+                    }
+                }
+            }
+        }
+
+        public void SetLevel(int level)
+        {
+            currentLevel = level;
+            PlayerPrefs.SetInt("Roadways_Level", currentLevel);
+            PlayerPrefs.Save();
+            ResetGame();
+            if (ChilbiFlowController.Instance != null)
+            {
+                ChilbiFlowController.Instance.SetLevel(currentLevel);
+                ChilbiFlowController.Instance.ResetParade();
+            }
+            RefreshBayUnlocks();
+            UpdateStatusHUD();
+            if (GameUIController.Instance != null)
+            {
+                GameUIController.Instance.UpdateTitle($"⭐ LEVEL {currentLevel}  •  👑 HIGH: {highScore}");
+            }
+        }
+
+        public void ShowFloatingTip(string message)
+        {
+            Vector3 centerPos = new Vector3(Screen.width * 0.5f, Screen.height * 0.45f, 0f);
+            StartCoroutine(FloatingScoreRoutine(centerPos, message, new Color(1f, 0.85f, 0.3f)));
         }
 
         public void SetGridlockWarning(bool show)
@@ -1857,6 +1945,9 @@ namespace RoadwaysGame
                     GameUIController.Instance.PlayCheerSound();
                     GameUIController.Instance.TriggerConfettiBurst(80);
                 }
+                if (currentLevel == 3) ShowFloatingTip("🎉 MILESTONE: Bay 6 Unlocked!");
+                else if (currentLevel == 5) ShowFloatingTip("🎉 MILESTONE: Bay 7 Unlocked!");
+                else if (currentLevel == 8) ShowFloatingTip("🎉 MILESTONE: Bay 8 Unlocked!");
                 UpdateStatusHUD();
             });
 
@@ -2056,6 +2147,7 @@ namespace RoadwaysGame
             comboStreak = 0;
             if (victoryModalObj != null) victoryModalObj.SetActive(false);
             SetGridlockWarning(false);
+            RefreshBayUnlocks();
 
             AndroidHaptics.DoubleBuzz();
             UpdateStatusHUD();
