@@ -76,7 +76,18 @@ namespace Roadways.Editor
             }
             else
             {
-                Debug.LogError($"<color=#e74c3c>[HotReload] Fast Patch failed with result {summary.result}. Reverting to standard build.</color>");
+                Debug.LogWarning($"<color=#f39c12>[HotReload] Fast Patch result: {summary.result}. Rebuilding package with updated script layout...</color>");
+                buildPlayerOptions.options = BuildOptions.Development | BuildOptions.AutoRunPlayer;
+                report = BuildPipeline.BuildPlayer(buildPlayerOptions);
+                summary = report.summary;
+                if (summary.result == BuildResult.Succeeded)
+                {
+                    Debug.Log($"<color=#2ecc71>[HotReload] Package Rebuild Success! Deployed in {summary.totalTime.TotalSeconds:F1}s.</color>");
+                }
+                else
+                {
+                    Debug.LogError($"<color=#e74c3c>[HotReload] Rebuild failed with result {summary.result}.</color>");
+                }
             }
         }
 

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 namespace RoadwaysGame
 {
@@ -11,16 +10,17 @@ namespace RoadwaysGame
     /// Master UI Controller for the 8 Top-Down Buses in the bottom panel:
     /// - 100% Parity with 3D_Showcase_Preview.html:
     ///   * 8 Matte top-down vehicles (Red, Yellow, Blue, Green, Purple, Orange, Pink, Cyan)
-    ///   * Sized matching trapezium bay proportions (aspect 1:2)
-    ///   * Tinted windshield, 8 side windows, rear window, yellow hood line, and forward white roof arrow
-    ///   * Harmonic bus horn synthesis (392 Hz to 740 Hz)
-    ///   * Touch / click dispatch into Trapezium bay with Cubic Hermite velocity-tangent steering
+    ///   * Multi-Bay Parking: Dispatches to any of the 9 Trapezium bays (Box_0 to Box_8)
+    ///   * Real-time bay occupancy tracking and simultaneous multi-bus docking
+    ///   * Cubic Hermite velocity-tangent steering with dynamic angle interpolation to 30 deg
     ///   * Head-first bay entry, suspension settle, and roof arrow fade-out on dock
-    ///   * Reverse return maneuver when tapped in bay
+    ///   * Tap parked bus to return to depot, or board matching Chilbis and depart screen
     /// </summary>
     [ExecuteAlways]
     public class BusFleetUIController : MonoBehaviour
     {
+        public static BusFleetUIController Instance { get; private set; }
+
         public struct BusDefinition
         {
             public string id;
@@ -53,26 +53,176 @@ namespace RoadwaysGame
         [Header("Bus Dimensions")]
         [SerializeField] private Vector2 busSize = new Vector2(64f, 128f);
         [SerializeField] private float busSpacing = 114f;
-        [SerializeField] private float topPadding = 90f; // offset below bottom panel white border
+        [SerializeField] private float topPadding = 90f;
 
         private static Sprite[] busSprites;
         private static Sprite arrowSprite;
         private static AudioClip[] hornClips;
         private static AudioClip warningClip;
+        private static AudioClip popClip;
 
         private AudioSource audioSource;
         private RectTransform canvasRt;
-        private RectTransform targetBayRt;
-        private GameObject dispatchedBus;
-        private int activeOccupantIndex = -1;
-        private bool isInFlight = false;
 
+        // 9 Trapezium Bay Slots
+        private RectTransform[] bayRts = new RectTransform[9];
+        private int[] bayOccupants = new int[9]; // -1 if empty, bus index if occupied
+        private GameObject[] parkedBusObjects = new GameObject[9];
+        private bool[] bayUnlocked = new bool[9] { true, true, true, true, true, true, false, false, false }; // 5 standard + 1 VIP unlocked
+
+        private bool isInFlight = false;
+        private bool isBoardingActive = false;
         private List<RectTransform> depotBusRts = new List<RectTransform>();
+
+        public int[] BayOccupants => bayOccupants;
+        public GameObject[] ParkedBusObjects => parkedBusObjects;
+        public bool[] BayUnlocked => bayUnlocked;
+        public bool IsBoardingActive => isBoardingActive;
+
+        public event Action<int, int> OnBusDockedInBay; // (bayIndex, busIndex)
+        public event Action<int, int> OnBusLeftBay;     // (bayIndex, busIndex)
 
         private void Awake()
         {
+            Instance = this;
             EnsureAudioSource();
             EnsureAssets();
+            for (int i = 0; i < 9; i++) bayOccupants[i] = -1;
+        }
+
+        private void OnEnable()
+        {
+            Instance = this;
+        }
+
+        private void Update()
+        {
+            if (isBoardingActive || isInFlight) return;
+            if (ChilbiFlowController.Instance == null) return;
+
+            CheckBoarding();
+        }
+
+        public void CheckBoarding()
+        {
+            if (isBoardingActive || isInFlight) return;
+            if (ChilbiFlowController.Instance == null) return;
+
+            int frontRow = ChilbiFlowController.Instance.GetFrontRowIndex();
+            if (frontRow == -1) return;
+
+            int rowColor = ChilbiFlowController.Instance.GetRowColorTheme(frontRow);
+
+            for (int b = 0; b < 9; b++)
+            {
+                if (bayOccupants[b] == rowColor && parkedBusObjects[b] != null)
+                {
+                    StartCoroutine(ExecuteBoardingSequence(frontRow, b, rowColor));
+                    return;
+                }
+            }
+        }
+
+        private IEnumerator ExecuteBoardingSequence(int row, int bayIndex, int colorIndex)
+        {
+            isBoardingActive = true;
+
+            List<ChilbiFlowController.ChilbiInstance> rowChilbis = ChilbiFlowController.Instance.GetRowInstances(row);
+            if (rowChilbis == null || rowChilbis.Count == 0)
+            {
+                isBoardingActive = false;
+                yield break;
+            }
+
+            for (int i = 0; i < rowChilbis.Count; i++) rowChilbis[i].isBoarding = true;
+
+            GameObject busObj = parkedBusObjects[bayIndex];
+            if (busObj == null)
+            {
+                isBoardingActive = false;
+                yield break;
+            }
+
+            Vector3 targetBusPos = busObj.transform.position;
+            Transform roadPanelTransform = ChilbiFlowController.Instance.transform;
+            Vector3 neckEntryWorld = roadPanelTransform.TransformPoint(new Vector3(0f, 160f, 0f));
+            Vector3 neckExitWorld = roadPanelTransform.TransformPoint(new Vector3(0f, 0f, 0f));
+
+            int totalPassengers = rowChilbis.Count;
+
+            for (int p = 0; p < totalPassengers; p++)
+            {
+                int passengerNum = p + 1;
+                ChilbiFlowController.ChilbiInstance kid = rowChilbis[p];
+                StartCoroutine(AnimateSinglePassenger(kid, neckEntryWorld, neckExitWorld, targetBusPos, bayIndex, passengerNum, totalPassengers));
+                yield return new WaitForSeconds(0.08f);
+            }
+
+            yield return new WaitForSeconds(1.3f);
+
+            yield return StartCoroutine(DepartFullBusRoutine(bayIndex));
+
+            ChilbiFlowController.Instance.RecycleRow(row);
+            isBoardingActive = false;
+
+            yield return new WaitForSeconds(0.2f);
+            CheckBoarding();
+        }
+
+        private IEnumerator AnimateSinglePassenger(ChilbiFlowController.ChilbiInstance kid, Vector3 neckEntry, Vector3 neckExit, Vector3 busPos, int bayIndex, int passengerNum, int maxPassengers)
+        {
+            RectTransform kRt = kid.root;
+            if (kRt == null) yield break;
+
+            Vector3 startPos = kRt.position;
+
+            float runSpeed = 280f;
+            float hopHeight = 35f;
+            float hopDuration = 0.32f;
+
+            float dist1 = Vector3.Distance(startPos, neckEntry);
+            float dur1 = Mathf.Max(0.12f, dist1 / runSpeed);
+            float t1 = 0f;
+            while (t1 < 1f)
+            {
+                t1 += Time.unscaledDeltaTime / dur1;
+                kRt.position = Vector3.Lerp(startPos, neckEntry, Mathf.Clamp01(t1));
+                yield return null;
+            }
+
+            float dist2 = Vector3.Distance(neckEntry, neckExit);
+            float dur2 = Mathf.Max(0.12f, dist2 / runSpeed);
+            float t2 = 0f;
+            while (t2 < 1f)
+            {
+                t2 += Time.unscaledDeltaTime / dur2;
+                kRt.position = Vector3.Lerp(neckEntry, neckExit, Mathf.Clamp01(t2));
+                yield return null;
+            }
+
+            float t3 = 0f;
+            Vector3 hopStart = neckExit;
+            while (t3 < 1f)
+            {
+                t3 += Time.unscaledDeltaTime / hopDuration;
+                float p = Mathf.Clamp01(t3);
+                Vector3 groundPos = Vector3.Lerp(hopStart, busPos, p);
+                float arc = 4f * hopHeight * p * (1f - p);
+                kRt.position = groundPos + new Vector3(0f, arc, 0f);
+
+                if (p > 0.7f)
+                {
+                    float scale = Mathf.Lerp(1f, 0.4f, (p - 0.7f) / 0.3f);
+                    kRt.localScale = new Vector3(scale, scale, 1f);
+                }
+
+                yield return null;
+            }
+
+            PlayBoardingPop();
+            UpdatePassengerCount(bayIndex, passengerNum, maxPassengers);
+
+            kRt.gameObject.SetActive(false);
         }
 
         private void EnsureAudioSource()
@@ -91,6 +241,11 @@ namespace RoadwaysGame
             this.canvasRt = canvas;
             EnsureAudioSource();
             EnsureAssets();
+
+            for (int i = 0; i < 9; i++) bayOccupants[i] = -1;
+
+            // Find all 9 bay transforms
+            FindBayTransforms();
 
             // Clear previous fleet container if exists
             Transform existing = transform.Find("BusFleetRowContainer");
@@ -153,20 +308,61 @@ namespace RoadwaysGame
             }
         }
 
-        private void OnBusClicked(int index)
+        private void FindBayTransforms()
+        {
+            for (int i = 0; i < 9; i++)
+            {
+                GameObject bayObj = GameObject.Find($"TrapeziumBox_{i}");
+                if (bayObj != null) bayRts[i] = bayObj.GetComponent<RectTransform>();
+            }
+        }
+
+        public int GetFirstAvailableBay()
+        {
+            FindBayTransforms();
+            for (int i = 0; i < 9; i++)
+            {
+                if (bayUnlocked[i] && bayOccupants[i] == -1 && bayRts[i] != null)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        public bool IsBusAlreadyDispatched(int busIndex)
+        {
+            for (int i = 0; i < 9; i++)
+            {
+                if (bayOccupants[i] == busIndex) return true;
+            }
+            return false;
+        }
+
+        public int FindBayWithBus(int busIndex)
+        {
+            for (int i = 0; i < 9; i++)
+            {
+                if (bayOccupants[i] == busIndex) return i;
+            }
+            return -1;
+        }
+
+        private void OnBusClicked(int busIndex)
         {
             if (isInFlight) return;
+            if (IsBusAlreadyDispatched(busIndex)) return;
 
-            // If another bus is already docked in bay, reject with warning shake and horn
-            if (activeOccupantIndex != -1)
+            int targetBay = GetFirstAvailableBay();
+            if (targetBay == -1)
             {
-                StartCoroutine(RejectShake(depotBusRts[index]));
+                // All unlocked bays are full -> trigger rejection shake and warning horn
+                StartCoroutine(RejectShake(depotBusRts[busIndex]));
                 if (warningClip != null && audioSource != null) audioSource.PlayOneShot(warningClip, 0.7f);
                 return;
             }
 
-            // Dispatch bus to target bay
-            StartCoroutine(DispatchRoutine(index));
+            StartCoroutine(DispatchRoutine(busIndex, targetBay));
         }
 
         private IEnumerator RejectShake(RectTransform rt)
@@ -184,38 +380,36 @@ namespace RoadwaysGame
             rt.anchoredPosition = origPos;
         }
 
-        private IEnumerator DispatchRoutine(int index)
+        private IEnumerator DispatchRoutine(int busIndex, int bayIndex)
         {
             isInFlight = true;
-            BusDefinition def = Fleet[index];
+            BusDefinition def = Fleet[busIndex];
 
             // Play Harmonic Horn
-            if (hornClips != null && hornClips.Length > index && hornClips[index] != null && audioSource != null)
+            if (hornClips != null && hornClips.Length > busIndex && hornClips[busIndex] != null && audioSource != null)
             {
-                audioSource.PlayOneShot(hornClips[index], 0.85f);
+                audioSource.PlayOneShot(hornClips[busIndex], 0.85f);
             }
 
-            // Find target bay (Box_0 in TrapeziumBoxesContainer)
-            if (targetBayRt == null)
-            {
-                GameObject bay0 = GameObject.Find("Box_0");
-                if (bay0 != null) targetBayRt = bay0.GetComponent<RectTransform>();
-            }
-
+            FindBayTransforms();
+            RectTransform targetBayRt = bayRts[bayIndex];
             if (targetBayRt == null || canvasRt == null)
             {
                 isInFlight = false;
                 yield break;
             }
 
-            RectTransform origDepotRt = depotBusRts[index];
+            // Reserve bay slot
+            bayOccupants[bayIndex] = busIndex;
+
+            RectTransform origDepotRt = depotBusRts[busIndex];
             Vector3 startWorldPos = origDepotRt.position;
 
             // Hide original depot bus
             origDepotRt.gameObject.SetActive(false);
 
             // Create traveler bus directly under Canvas for free flight
-            GameObject travelerObj = new GameObject($"Traveler_{def.id}", typeof(RectTransform), typeof(Image), typeof(Button));
+            GameObject travelerObj = new GameObject($"Traveler_{def.id}_Bay{bayIndex}", typeof(RectTransform), typeof(Image), typeof(Button));
             travelerObj.transform.SetParent(canvasRt.transform, false);
             RectTransform trRt = travelerObj.GetComponent<RectTransform>();
             trRt.sizeDelta = busSize;
@@ -223,7 +417,7 @@ namespace RoadwaysGame
             trRt.localEulerAngles = Vector3.zero;
 
             Image trImg = travelerObj.GetComponent<Image>();
-            trImg.sprite = busSprites[index];
+            trImg.sprite = busSprites[busIndex];
 
             // Roof Arrow child
             GameObject arrowObj = new GameObject("RoofArrow", typeof(RectTransform), typeof(Image));
@@ -238,6 +432,24 @@ namespace RoadwaysGame
             aImg.sprite = arrowSprite;
             aImg.raycastTarget = false;
 
+            // Passenger Counter Container (badge shown when passengers board)
+            GameObject badgeObj = new GameObject("PassengerBadge", typeof(RectTransform), typeof(Text));
+            badgeObj.transform.SetParent(travelerObj.transform, false);
+            RectTransform bRt = badgeObj.GetComponent<RectTransform>();
+            bRt.anchorMin = new Vector2(0.5f, 0.5f);
+            bRt.anchorMax = new Vector2(0.5f, 0.5f);
+            bRt.pivot = new Vector2(0.5f, 0.5f);
+            bRt.anchoredPosition = Vector2.zero;
+            bRt.sizeDelta = new Vector2(60f, 30f);
+            Text badgeText = badgeObj.GetComponent<Text>();
+            badgeText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            badgeText.fontSize = 20;
+            badgeText.fontStyle = FontStyle.Bold;
+            badgeText.alignment = TextAnchor.MiddleCenter;
+            badgeText.color = Color.white;
+            badgeText.text = "";
+            badgeObj.SetActive(false);
+
             Vector3 targetWorldPos = targetBayRt.position;
             float targetAngle = targetBayRt.localEulerAngles.z; // 30 degrees
 
@@ -246,14 +458,12 @@ namespace RoadwaysGame
             Vector3 p3 = targetWorldPos;
             float dist = Vector3.Distance(p0, p3);
 
-            // Start tangent: straight UP (arrow direction)
             Vector3 m0 = Vector3.up * (dist * 0.9f);
-            // End tangent: aligned with bay forward direction (+30 deg: (-sin 30, cos 30))
             float rad = targetAngle * Mathf.Deg2Rad;
             Vector3 bayDir = new Vector3(-Mathf.Sin(rad), Mathf.Cos(rad), 0f);
             Vector3 m1 = bayDir * (dist * 0.85f);
 
-            float duration = 1.35f;
+            float duration = 1.25f;
             float t = 0f;
 
             while (t < 1f)
@@ -261,7 +471,6 @@ namespace RoadwaysGame
                 t += Time.unscaledDeltaTime / duration;
                 float progress = Mathf.Clamp01(t);
 
-                // Hermite interpolation
                 float h00 = (1 + 2 * progress) * (1 - progress) * (1 - progress);
                 float h10 = progress * (1 - progress) * (1 - progress);
                 float h01 = progress * progress * (3 - 2 * progress);
@@ -270,11 +479,9 @@ namespace RoadwaysGame
                 Vector3 curPos = h00 * p0 + h10 * m0 + h01 * p3 + h11 * m1;
                 trRt.position = curPos;
 
-                // Dynamic rotation: interpolate from 0 to 30 deg with velocity alignment
                 float curAngle = Mathf.Lerp(0f, targetAngle, Mathf.SmoothStep(0f, 1f, progress));
                 trRt.localEulerAngles = new Vector3(0f, 0f, curAngle);
 
-                // Subtle startup squash & stretch
                 if (progress < 0.25f)
                 {
                     float p = progress / 0.25f;
@@ -294,7 +501,7 @@ namespace RoadwaysGame
             trRt.localScale = Vector3.one;
 
             // Fade out roof arrow on dock
-            float fadeDur = 0.28f;
+            float fadeDur = 0.25f;
             float fadeElapsed = 0f;
             Color arrowCol = aImg.color;
             while (fadeElapsed < fadeDur)
@@ -306,24 +513,35 @@ namespace RoadwaysGame
             }
             arrowObj.SetActive(false);
 
-            dispatchedBus = travelerObj;
-            activeOccupantIndex = index;
+            parkedBusObjects[bayIndex] = travelerObj;
             isInFlight = false;
 
             // Enable tapping parked bus to return to depot
+            int capturedBusIdx = busIndex;
+            int capturedBayIdx = bayIndex;
             Button trBtn = travelerObj.GetComponent<Button>();
             trBtn.transition = Selectable.Transition.None;
-            trBtn.onClick.AddListener(() => StartCoroutine(ReturnToDepotRoutine(index)));
+            trBtn.onClick.AddListener(() => OnParkedBusClicked(capturedBusIdx, capturedBayIdx));
+
+            OnBusDockedInBay?.Invoke(bayIndex, busIndex);
         }
 
-        private IEnumerator ReturnToDepotRoutine(int index)
+        private void OnParkedBusClicked(int busIndex, int bayIndex)
         {
-            if (isInFlight || dispatchedBus == null) yield break;
+            if (isInFlight) return;
+            StartCoroutine(ReturnToDepotRoutine(busIndex, bayIndex));
+        }
+
+        public IEnumerator ReturnToDepotRoutine(int busIndex, int bayIndex)
+        {
+            if (isInFlight) yield break;
+            GameObject travelerObj = parkedBusObjects[bayIndex];
+            if (travelerObj == null) yield break;
+
             isInFlight = true;
 
-            GameObject travelerObj = dispatchedBus;
             RectTransform trRt = travelerObj.GetComponent<RectTransform>();
-            RectTransform origDepotRt = depotBusRts[index];
+            RectTransform origDepotRt = depotBusRts[busIndex];
 
             // Re-show arrow
             Transform arrowTransform = travelerObj.transform.Find("RoofArrow");
@@ -340,7 +558,7 @@ namespace RoadwaysGame
             Vector3 endPos = origDepotRt.position;
             float startAngle = trRt.localEulerAngles.z;
 
-            float duration = 0.9f;
+            float duration = 0.85f;
             float t = 0f;
 
             while (t < 1f)
@@ -356,9 +574,79 @@ namespace RoadwaysGame
             // Restore depot bus and destroy traveler
             origDepotRt.gameObject.SetActive(true);
             Destroy(travelerObj);
-            dispatchedBus = null;
-            activeOccupantIndex = -1;
+            parkedBusObjects[bayIndex] = null;
+            bayOccupants[bayIndex] = -1;
             isInFlight = false;
+
+            OnBusLeftBay?.Invoke(bayIndex, busIndex);
+        }
+
+        public IEnumerator DepartFullBusRoutine(int bayIndex)
+        {
+            GameObject busObj = parkedBusObjects[bayIndex];
+            if (busObj == null) yield break;
+
+            int busIdx = bayOccupants[bayIndex];
+            RectTransform bRt = busObj.GetComponent<RectTransform>();
+
+            // 1. Honk celebration
+            if (hornClips != null && busIdx >= 0 && busIdx < hornClips.Length && hornClips[busIdx] != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(hornClips[busIdx], 1.0f);
+            }
+
+            // 2. Accelerate forward out of the bay along its tilted longitudinal axis
+            float targetAngle = bRt.localEulerAngles.z;
+            float rad = targetAngle * Mathf.Deg2Rad;
+            Vector3 exitDir = new Vector3(-Mathf.Sin(rad), Mathf.Cos(rad), 0f);
+
+            Vector3 startPos = bRt.position;
+            Vector3 exitPos = startPos + exitDir * 900f; // off screen
+
+            float dur = 0.95f;
+            float t = 0f;
+            while (t < 1f)
+            {
+                t += Time.unscaledDeltaTime / dur;
+                float p = Mathf.Pow(Mathf.Clamp01(t), 2.2f); // accelerate forward
+                bRt.position = Vector3.Lerp(startPos, exitPos, p);
+                yield return null;
+            }
+
+            // Clean up
+            Destroy(busObj);
+            parkedBusObjects[bayIndex] = null;
+            bayOccupants[bayIndex] = -1;
+
+            // Re-enable depot bus after departure
+            if (busIdx >= 0 && busIdx < depotBusRts.Count && depotBusRts[busIdx] != null)
+            {
+                depotBusRts[busIdx].gameObject.SetActive(true);
+            }
+
+            OnBusLeftBay?.Invoke(bayIndex, busIdx);
+        }
+
+        public void PlayBoardingPop()
+        {
+            if (popClip != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(popClip, 0.6f);
+            }
+        }
+
+        public void UpdatePassengerCount(int bayIndex, int count, int max = 7)
+        {
+            GameObject busObj = parkedBusObjects[bayIndex];
+            if (busObj == null) return;
+
+            Transform badgeTransform = busObj.transform.Find("PassengerBadge");
+            if (badgeTransform != null)
+            {
+                badgeTransform.gameObject.SetActive(true);
+                Text t = badgeTransform.GetComponent<Text>();
+                if (t != null) t.text = $"{count}/{max}";
+            }
         }
 
         #region Procedural Asset Generation
@@ -373,10 +661,7 @@ namespace RoadwaysGame
                 }
             }
 
-            if (arrowSprite == null)
-            {
-                arrowSprite = CreateArrowSprite(128, 256);
-            }
+            if (arrowSprite == null) arrowSprite = CreateArrowSprite(128, 256);
 
             if (hornClips == null || hornClips.Length != Fleet.Length)
             {
@@ -386,6 +671,7 @@ namespace RoadwaysGame
                     hornClips[i] = GenerateHarmonicHorn(Fleet[i].hornFreq, 0.32f);
                 }
                 warningClip = GenerateWarningHorn();
+                popClip = GeneratePopSound();
             }
         }
 
@@ -407,7 +693,6 @@ namespace RoadwaysGame
             {
                 for (int x = 0; x < w; x++)
                 {
-                    // 1. Rounded rectangle SDF for main body
                     float cx = Mathf.Clamp(x, xMin + rx, xMax - rx);
                     float cy = Mathf.Clamp(y, yMin + rx, yMax - rx);
                     float d = Vector2.Distance(new Vector2(x, y), new Vector2(cx, cy));
@@ -421,18 +706,15 @@ namespace RoadwaysGame
 
                     Color32 cur = bodyColor;
 
-                    // Front windshield (top of vehicle: Y in [206, 240], X in [16, w - 17])
+                    // Front windshield
                     if (y >= 206 && y <= 240 && x >= 16 && x <= w - 17)
                     {
                         float wy = Mathf.Clamp(y, 214f, 232f);
                         float wx = Mathf.Clamp(x, 24f, w - 25f);
-                        if (Vector2.Distance(new Vector2(x, y), new Vector2(wx, wy)) <= 8.5f)
-                        {
-                            cur = tintWindow;
-                        }
+                        if (Vector2.Distance(new Vector2(x, y), new Vector2(wx, wy)) <= 8.5f) cur = tintWindow;
                     }
 
-                    // Side windows (4 pairs on left and right)
+                    // Side windows
                     int[] sideYs = new int[] { 54, 94, 134, 174 };
                     foreach (int sy in sideYs)
                     {
@@ -442,25 +724,16 @@ namespace RoadwaysGame
                             {
                                 float wy = Mathf.Clamp(y, sy + 3, sy + 25);
                                 float wx = (x <= 18) ? Mathf.Clamp(x, 11f, 15f) : Mathf.Clamp(x, w - 16f, w - 12f);
-                                if (Vector2.Distance(new Vector2(x, y), new Vector2(wx, wy)) <= 3.5f)
-                                {
-                                    cur = tintWindow;
-                                }
+                                if (Vector2.Distance(new Vector2(x, y), new Vector2(wx, wy)) <= 3.5f) cur = tintWindow;
                             }
                         }
                     }
 
-                    // Rear window (bottom: Y in [14, 24], X in [20, w - 21])
-                    if (y >= 14 && y <= 24 && x >= 20 && x <= w - 21)
-                    {
-                        cur = tintWindow;
-                    }
+                    // Rear window
+                    if (y >= 14 && y <= 24 && x >= 20 && x <= w - 21) cur = tintWindow;
 
                     // Yellow hood line
-                    if (hasHoodLine && y >= 194 && y <= 196 && x >= 16 && x <= w - 17)
-                    {
-                        cur = hoodCol;
-                    }
+                    if (hasHoodLine && y >= 194 && y <= 196 && x >= 16 && x <= w - 17) cur = hoodCol;
 
                     cur.a = (byte)(alpha * 255f);
                     px[y * w + x] = cur;
@@ -479,36 +752,19 @@ namespace RoadwaysGame
             tex.wrapMode = TextureWrapMode.Clamp;
 
             Color32[] px = new Color32[w * h];
-            // Arrow pointing UP towards Y=256
-            // Tip at (64, 175)
-            // Left barb at (34, 135), Right barb at (94, 135)
-            // Left inner at (52, 135), Right inner at (76, 135)
-            // Stem bottom at Y = 82
             for (int y = 0; y < h; y++)
             {
                 for (int x = 0; x < w; x++)
                 {
                     bool inside = false;
-
-                    // Triangle head
                     if (y >= 135 && y <= 175)
                     {
-                        float frac = (175f - y) / 40f; // 0 at tip, 1 at base
+                        float frac = (175f - y) / 40f;
                         float halfW = frac * 30f;
                         if (Mathf.Abs(x - 64f) <= halfW) inside = true;
                     }
-
-                    // Stem shaft
-                    if (y >= 82 && y <= 135)
-                    {
-                        if (x >= 52 && x <= 76) inside = true;
-                    }
-
-                    // Rounded base
-                    if (y >= 74 && y <= 86)
-                    {
-                        if (Vector2.Distance(new Vector2(x, y), new Vector2(64f, 82f)) <= 12f) inside = true;
-                    }
+                    if (y >= 82 && y <= 135 && x >= 52 && x <= 76) inside = true;
+                    if (y >= 74 && y <= 86 && Vector2.Distance(new Vector2(x, y), new Vector2(64f, 82f)) <= 12f) inside = true;
 
                     px[y * w + x] = inside ? new Color32(255, 255, 255, 255) : new Color32(0, 0, 0, 0);
                 }
@@ -529,11 +785,9 @@ namespace RoadwaysGame
             {
                 float t = (float)i / sampleRate;
                 float env = 1f;
-                // Attack & Release envelope
                 if (t < 0.02f) env = t / 0.02f;
                 else if (t > duration - 0.06f) env = (duration - t) / 0.06f;
 
-                // Fundamental + Second Harmonic (sweet chord)
                 float wave = Mathf.Sin(2f * Mathf.PI * baseFreq * t) * 0.7f +
                              Mathf.Sin(2f * Mathf.PI * (baseFreq * 1.5f) * t) * 0.3f;
                 data[i] = wave * env * 0.45f;
@@ -555,11 +809,31 @@ namespace RoadwaysGame
             {
                 float t = (float)i / sampleRate;
                 float env = (t > duration - 0.04f) ? (duration - t) / 0.04f : 1f;
-                float wave = Mathf.Sin(2f * Mathf.PI * 196f * t); // Low double-buzz G3
+                float wave = Mathf.Sin(2f * Mathf.PI * 196f * t);
                 data[i] = wave * env * 0.5f;
             }
 
             AudioClip clip = AudioClip.Create("WarningHorn", totalSamples, 1, sampleRate, false);
+            clip.SetData(data, 0);
+            return clip;
+        }
+
+        private static AudioClip GeneratePopSound()
+        {
+            int sampleRate = 22050;
+            float duration = 0.08f;
+            int totalSamples = (int)(sampleRate * duration);
+            float[] data = new float[totalSamples];
+
+            for (int i = 0; i < totalSamples; i++)
+            {
+                float t = (float)i / sampleRate;
+                float env = 1f - (t / duration);
+                float freq = Mathf.Lerp(300f, 750f, t / duration);
+                data[i] = Mathf.Sin(2f * Mathf.PI * freq * t) * env * 0.5f;
+            }
+
+            AudioClip clip = AudioClip.Create("BoardingPop", totalSamples, 1, sampleRate, false);
             clip.SetData(data, 0);
             return clip;
         }

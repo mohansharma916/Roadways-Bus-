@@ -78,7 +78,9 @@ namespace RoadwaysGame
         private Sample[] lut;
         private float totalLength;
 
-        private class ChilbiInstance
+        public static ChilbiFlowController Instance { get; private set; }
+
+        public class ChilbiInstance
         {
             public RectTransform root;
             public RectTransform bodyGroup;
@@ -91,6 +93,7 @@ namespace RoadwaysGame
             public int col;
             public float laneD;
             public float phase;
+            [System.NonSerialized] public bool isBoarding = false;
         }
 
         private List<ChilbiInstance> instances = new List<ChilbiInstance>();
@@ -105,6 +108,7 @@ namespace RoadwaysGame
 
         private void Awake()
         {
+            Instance = this;
             BuildSplineLut();
             EnsureSprites();
             CreateFormation();
@@ -112,6 +116,7 @@ namespace RoadwaysGame
 
         private void OnEnable()
         {
+            Instance = this;
             if (lut == null || lut.Length == 0) BuildSplineLut();
             if (instances.Count == 0) CreateFormation();
         }
@@ -341,6 +346,8 @@ namespace RoadwaysGame
             for (int i = 0; i < instances.Count; i++)
             {
                 ChilbiInstance w = instances[i];
+                if (w.isBoarding) continue;
+
                 float s = currentDistance - (w.row * rowSpacing);
                 SampleTrack(s, out float x, out float y, out float dx, out float dy);
 
@@ -378,6 +385,89 @@ namespace RoadwaysGame
                 w.armFar.localEulerAngles = new Vector3(0f, 0f, armAngle);
             }
         }
+
+        #region Gameplay Loop Interface
+        public int GetFrontRowIndex()
+        {
+            int bestRow = -1;
+            float bestDist = float.MaxValue;
+            for (int r = 0; r < rowCount; r++)
+            {
+                bool hasActive = false;
+                for (int i = 0; i < instances.Count; i++)
+                {
+                    if (instances[i].row == r && !instances[i].isBoarding && instances[i].root.gameObject.activeSelf)
+                    {
+                        hasActive = true;
+                        break;
+                    }
+                }
+                if (!hasActive) continue;
+
+                float s = ((currentDistance - (r * rowSpacing)) % totalLength + totalLength) % totalLength;
+                float d = Mathf.Min(s, totalLength - s);
+                if (d < bestDist)
+                {
+                    bestDist = d;
+                    bestRow = r;
+                }
+            }
+            return bestRow;
+        }
+
+        public int GetRowColorTheme(int row)
+        {
+            return row % Themes.Length;
+        }
+
+        public List<ChilbiInstance> GetRowInstances(int row)
+        {
+            List<ChilbiInstance> list = new List<ChilbiInstance>();
+            for (int i = 0; i < instances.Count; i++)
+            {
+                if (instances[i].row == row) list.Add(instances[i]);
+            }
+            return list;
+        }
+
+        public void RecycleRow(int row)
+        {
+            int maxRow = 0;
+            for (int i = 0; i < instances.Count; i++)
+            {
+                if (instances[i].row > maxRow) maxRow = instances[i].row;
+            }
+            int newRow = maxRow + 1;
+            int newTheme = newRow % Themes.Length;
+
+            for (int i = 0; i < instances.Count; i++)
+            {
+                if (instances[i].row == row)
+                {
+                    instances[i].row = newRow;
+                    instances[i].isBoarding = false;
+                    instances[i].root.localScale = Vector3.one * baseScale;
+                    instances[i].root.gameObject.SetActive(true);
+
+                    // Update theme sprites to new theme
+                    Transform bg = instances[i].bodyGroup;
+                    if (bg != null)
+                    {
+                        Transform body = bg.Find("BeanBody");
+                        if (body != null) body.GetComponent<Image>().sprite = bodySprites[newTheme];
+                        Transform nl = bg.Find("NearLeg");
+                        if (nl != null) nl.GetComponent<Image>().sprite = footSprites[newTheme];
+                        Transform fl = bg.Find("FarLeg");
+                        if (fl != null) fl.GetComponent<Image>().sprite = footSprites[newTheme];
+                        Transform na = bg.Find("NearArm");
+                        if (na != null) na.GetComponent<Image>().sprite = limbSprites[newTheme];
+                        Transform fa = bg.Find("FarArm");
+                        if (fa != null) fa.GetComponent<Image>().sprite = limbSprites[newTheme];
+                    }
+                }
+            }
+        }
+        #endregion
 
         #region Procedural Sprite Generation
         private static Sprite CreateShadowSprite(int width, int height)
