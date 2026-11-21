@@ -27,7 +27,7 @@ namespace RoadwaysGame
 
         [Header("Bottom Panel Specifications")]
         [Tooltip("Covers 50% of height from bottom, full width, filled with soft blue-grey (#d3daed), 2px white top border only.")]
-        [SerializeField] private bool showBottomPanel = true;
+        [SerializeField] private bool showBottomPanel = false;
         [SerializeField] private float bottomPanelHeightRatio = 0.50f; // 50% height
         [SerializeField] private Color bottomPanelColor = new Color32(0xD3, 0xDA, 0xED, 0xFF); // Soft blue-grey (#d3daed)
         [SerializeField] private float topBorderThickness = 2.0f; // 2px
@@ -35,7 +35,7 @@ namespace RoadwaysGame
 
         [Header("Trapezium Specifications")]
         [Tooltip("Trapezium positioned directly above bottom panel, with wide upper width, rounded top corners, and submerged bottom corners.")]
-        [SerializeField] private bool showTrapezium = true;
+        [SerializeField] private bool showTrapezium = false;
         [SerializeField] private float trapeziumHeight = 240f;
         [SerializeField] private float trapeziumTopWidthRatio = 0.82f;
         [SerializeField] private float trapeziumBottomWidthRatio = 1.16f;
@@ -44,7 +44,7 @@ namespace RoadwaysGame
 
         [Header("Circuit Road Specifications")]
         [Tooltip("Procedural racing road circuit positioned directly above the trapezium.")]
-        [SerializeField] private bool showRoadCircuit = true;
+        [SerializeField] private bool showRoadCircuit = false;
         [SerializeField] private float roadCircuitHeight = 660f;
         [SerializeField] private Sprite roadCircuitSprite;
 
@@ -112,7 +112,9 @@ namespace RoadwaysGame
             Instance = this;
             bottomPanelColor = new Color32(0xD3, 0xDA, 0xED, 0xFF);
             trapeziumColor = new Color32(0x52, 0x57, 0x69, 0xFF);
-            showRoadCircuit = true;
+            showRoadCircuit = false;
+            showBottomPanel = false;
+            showTrapezium = false;
             ApplyDisplayMode();
             BuildUI();
         }
@@ -153,9 +155,17 @@ namespace RoadwaysGame
         /// </summary>
         public void ApplyDisplayMode()
         {
-            GameObject roadNetwork = GameObject.Find("--- [ROAD_NETWORK] ---");
-            GameObject busSystem = GameObject.Find("--- [BUS_SYSTEM] ---");
-            GameObject characters = GameObject.Find("--- [CHARACTERS] ---");
+            GameObject roadNetwork = null;
+            GameObject busSystem = null;
+            GameObject characters = null;
+
+            var roots = gameObject.scene.GetRootGameObjects();
+            for (int i = 0; i < roots.Length; i++)
+            {
+                if (roots[i].name == "--- [ROAD_NETWORK] ---") roadNetwork = roots[i];
+                else if (roots[i].name == "--- [BUS_SYSTEM] ---") busSystem = roots[i];
+                else if (roots[i].name == "--- [CHARACTERS] ---") characters = roots[i];
+            }
 
             bool showOtherSystems = !parkOnlyMode;
 
@@ -204,7 +214,9 @@ namespace RoadwaysGame
         {
             bottomPanelColor = new Color32(0xD3, 0xDA, 0xED, 0xFF);
             trapeziumColor = new Color32(0x52, 0x57, 0x69, 0xFF);
-            showRoadCircuit = true;
+            showRoadCircuit = false;
+            showBottomPanel = false;
+            showTrapezium = false;
             EnsureFont();
             EnsureEventSystem();
 
@@ -386,6 +398,14 @@ namespace RoadwaysGame
                 busFleet.BuildFleet(canvasObj.GetComponent<RectTransform>());
 
                 CreateBoosterDock(bottomPanelObj.transform, pillSprite);
+            }
+            else
+            {
+                if (canvasObj.GetComponent<BusFleetUIController>() == null)
+                {
+                    canvasObj.AddComponent<BusFleetUIController>();
+                }
+                CreateBoosterDock(canvasObj.transform, pillSprite);
             }
 
             // 3. Road Network Circuit (positioned directly above the trapezium)
@@ -706,10 +726,20 @@ namespace RoadwaysGame
             boosterDockObj = new GameObject("BoosterDock", typeof(RectTransform));
             boosterDockObj.transform.SetParent(parent, false);
             RectTransform dockRt = boosterDockObj.GetComponent<RectTransform>();
-            dockRt.anchorMin = new Vector2(0.5f, 1f);
-            dockRt.anchorMax = new Vector2(0.5f, 1f);
-            dockRt.pivot = new Vector2(0.5f, 1f);
-            dockRt.anchoredPosition = new Vector2(0f, -16f);
+            if (parent == transform.Find("MainGameCanvas") || parent.name.Contains("Canvas"))
+            {
+                dockRt.anchorMin = new Vector2(0.5f, 0f);
+                dockRt.anchorMax = new Vector2(0.5f, 0f);
+                dockRt.pivot = new Vector2(0.5f, 0f);
+                dockRt.anchoredPosition = new Vector2(0f, 36f);
+            }
+            else
+            {
+                dockRt.anchorMin = new Vector2(0.5f, 1f);
+                dockRt.anchorMax = new Vector2(0.5f, 1f);
+                dockRt.pivot = new Vector2(0.5f, 1f);
+                dockRt.anchoredPosition = new Vector2(0f, -16f);
+            }
             dockRt.sizeDelta = new Vector2(620f, 58f);
 
             // 1. Recall Button (Left side of dock)
