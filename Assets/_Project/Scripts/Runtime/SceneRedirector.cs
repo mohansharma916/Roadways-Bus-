@@ -8,7 +8,8 @@ namespace RoadwaysGame
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void OnSceneLoaded()
         {
-            if (SceneManager.GetActiveScene().name != "MainGame")
+            string active = SceneManager.GetActiveScene().name;
+            if (active != "MainGame" && active != "Slice") // the vertical slice is played directly from its own scene
             {
                 Debug.Log("<color=#3498db>[SceneRedirector] Redirecting to MainGame scene...</color>");
                 SceneManager.LoadScene(0);

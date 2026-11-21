@@ -65,6 +65,10 @@ namespace RoadwaysGame.Editor
 
             // 2. Open / Load MainGame scene if not active
             Scene scene = SceneManager.GetActiveScene();
+            // Only set up MainGame when it is what's open (or nothing is). Respect any other saved scene, and never
+            // switch scenes in play mode: it used to hijack every Play and every reload, including the slice scene.
+            if (EditorApplication.isPlayingOrWillChangePlaymode) return;
+            if (!string.IsNullOrEmpty(scene.path) && !scene.path.EndsWith("MainGame.unity")) return;
             string targetScenePath = "Assets/_Project/Scenes/MainGame.unity";
 
             // 2b. Ensure CircuitRoad texture is imported as Sprite
@@ -99,17 +103,8 @@ namespace RoadwaysGame.Editor
 
             if (!scene.isLoaded || !scene.name.Contains("MainGame"))
             {
-                if (EditorApplication.isPlaying)
-                {
-                    Debug.Log("<color=#3498db>[UIAutoSetup] Loading MainGame in Play Mode...</color>");
-                    SceneManager.LoadScene("MainGame");
-                    return;
-                }
-                else
-                {
-                    Debug.Log("<color=#3498db>[UIAutoSetup] Opening MainGame scene: " + targetScenePath + "</color>");
-                    scene = EditorSceneManager.OpenScene(targetScenePath, OpenSceneMode.Single);
-                }
+                Debug.Log("<color=#3498db>[UIAutoSetup] Opening MainGame scene: " + targetScenePath + "</color>");
+                scene = EditorSceneManager.OpenScene(targetScenePath, OpenSceneMode.Single);
             }
 
             // 3. Find or create UI root

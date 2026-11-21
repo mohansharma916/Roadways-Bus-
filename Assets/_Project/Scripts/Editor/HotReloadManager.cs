@@ -30,6 +30,9 @@ namespace Roadways.Editor
             // 2. Launch Unity Remote 5 on the connected phone via ADB
             RunAdbCommand($"shell am start -n {RemotePackageName}/com.unity3d.player.UnityPlayerActivity");
 
+            // 3. Forward the Remote's port. Without this the editor logs "[remote] error: Init socket failed" and never connects.
+            RunAdbCommand("forward tcp:7201 tcp:7201");
+
             Debug.Log("<color=#2ecc71>[HotReload] Unity Remote 5 launched on device! Now whenever you press 'Play' in Unity, the game will live-stream to your phone with full touch input instantly without building an APK!</color>");
         }
 
@@ -130,9 +133,11 @@ namespace Roadways.Editor
         {
             try
             {
+                // The editor's PATH usually lacks platform-tools; prefer the adb bundled with this Unity install.
+                string bundled = Path.Combine(Path.GetDirectoryName(EditorApplication.applicationPath), "PlaybackEngines/AndroidPlayer/SDK/platform-tools/adb");
                 ProcessStartInfo psi = new ProcessStartInfo
                 {
-                    FileName = "adb",
+                    FileName = File.Exists(bundled) ? bundled : "adb",
                     Arguments = args,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,

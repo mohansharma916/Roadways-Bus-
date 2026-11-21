@@ -92,7 +92,7 @@ Shader "Roadways/OceanWater"
                 float3 viewDir = normalize(_WorldSpaceCameraPos - input.positionWS);
                 float3 lightDir = normalize(float3(-0.35f, 0.85f, -0.4f));
                 float3 halfDir = normalize(viewDir + lightDir);
-                float spec = pow(max(0.0f, dot(float3(0f, 1f, 0f), halfDir)), 28.0f) * 0.38f;
+                float spec = pow(max(0.0f, dot(float3(0.0, 1.0, 0.0), halfDir)), 28.0f) * 0.38f;
                 waterColor += spec;
 
                 return float4(waterColor, 1.0f);

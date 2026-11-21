@@ -223,6 +223,7 @@ namespace RoadwaysGame
             mesh.vertices = verts;
             mesh.normals = normals;
             mesh.uv = uvs;
+            AlignWindingToNormals(tris, verts, normals);
             mesh.triangles = tris;
             mesh.RecalculateBounds();
             return mesh;
@@ -301,6 +302,7 @@ namespace RoadwaysGame
 
             mesh.vertices = verts;
             mesh.normals = normals;
+            AlignWindingToNormals(tris, verts, normals);
             mesh.triangles = tris;
             mesh.RecalculateBounds();
             return mesh;
@@ -383,6 +385,7 @@ namespace RoadwaysGame
 
             mesh.vertices = verts;
             mesh.normals = normals;
+            AlignWindingToNormals(tris, verts, normals);
             mesh.triangles = tris;
             mesh.RecalculateBounds();
             return mesh;
@@ -460,6 +463,7 @@ namespace RoadwaysGame
             mesh.vertices = verts;
             mesh.colors = colors;
             mesh.normals = normals;
+            AlignWindingToNormals(tris, verts, normals);
             mesh.triangles = tris;
             mesh.RecalculateBounds();
             return mesh;
@@ -558,6 +562,21 @@ namespace RoadwaysGame
             };
             mesh.RecalculateBounds();
             return mesh;
+        }
+
+        /// <summary>
+        /// Flips any triangle whose winding disagrees with its analytic normals. Unity treats clockwise as front-facing;
+        /// these generators mixed windings, so ~half the hull and every wheel face were culled from outside.
+        /// </summary>
+        private static void AlignWindingToNormals(int[] tris, Vector3[] verts, Vector3[] normals)
+        {
+            for (int i = 0; i < tris.Length; i += 3)
+            {
+                Vector3 a = verts[tris[i]], b = verts[tris[i + 1]], c = verts[tris[i + 2]];
+                Vector3 n = normals[tris[i]] + normals[tris[i + 1]] + normals[tris[i + 2]];
+                if (Vector3.Dot(Vector3.Cross(b - a, c - a), n) < 0f)
+                    (tris[i + 1], tris[i + 2]) = (tris[i + 2], tris[i + 1]);
+            }
         }
     }
 }
