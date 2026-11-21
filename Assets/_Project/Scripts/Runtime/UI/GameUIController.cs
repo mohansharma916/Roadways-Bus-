@@ -22,12 +22,21 @@ namespace RoadwaysGame
         [SerializeField] private bool parkOnlyMode = true;
 
         [Header("Bottom Panel Specifications")]
-        [Tooltip("Covers 50% of height from bottom, full width, filled with grey, 2px white top border only.")]
+        [Tooltip("Covers 50% of height from bottom, full width, filled with soft blue-grey (#d3daed), 2px white top border only.")]
         [SerializeField] private bool showBottomPanel = true;
         [SerializeField] private float bottomPanelHeightRatio = 0.50f; // 50% height
-        [SerializeField] private Color bottomPanelColor = new Color32(0x52, 0x57, 0x69, 0xFF); // Solid grey (#525769)
+        [SerializeField] private Color bottomPanelColor = new Color32(0xD3, 0xDA, 0xED, 0xFF); // Soft blue-grey (#d3daed)
         [SerializeField] private float topBorderThickness = 2.0f; // 2px
         [SerializeField] private Color topBorderColor = Color.white;
+
+        [Header("Trapezium Specifications")]
+        [Tooltip("Trapezium positioned directly above bottom panel, with wide upper width, rounded top corners, and submerged bottom corners.")]
+        [SerializeField] private bool showTrapezium = true;
+        [SerializeField] private float trapeziumHeight = 240f;
+        [SerializeField] private float trapeziumTopWidthRatio = 0.82f;
+        [SerializeField] private float trapeziumBottomWidthRatio = 1.16f;
+        [SerializeField] private float trapeziumCornerRadius = 32f;
+        [SerializeField] private Color trapeziumColor = new Color32(0x52, 0x57, 0x69, 0xFF); // Asphalt/Apron grey (#525769)
 
         [Header("UI State (Dynamic)")]
         [SerializeField] private int clearedChilbis = 0;
@@ -65,6 +74,8 @@ namespace RoadwaysGame
 
         private void Awake()
         {
+            bottomPanelColor = new Color32(0xD3, 0xDA, 0xED, 0xFF);
+            trapeziumColor = new Color32(0x52, 0x57, 0x69, 0xFF);
             ApplyDisplayMode();
             BuildUI();
         }
@@ -153,6 +164,8 @@ namespace RoadwaysGame
         [ContextMenu("Build Full UI")]
         public void BuildUI()
         {
+            bottomPanelColor = new Color32(0xD3, 0xDA, 0xED, 0xFF);
+            trapeziumColor = new Color32(0x52, 0x57, 0x69, 0xFF);
             EnsureFont();
             EnsureEventSystem();
 
@@ -192,7 +205,25 @@ namespace RoadwaysGame
             // Generate rounded pill sprite with 24px smooth corner radii
             Sprite pillSprite = CreatePillSprite(128, 64, 24);
 
-            // 1. Bottom 50% Grey Rectangular Panel (Full width, 2px white top border only)
+            // 1. Trapezium Panel (directly above bottom panel, wide upper width, rounded top corners, submerged bottom corners)
+            if (showTrapezium)
+            {
+                GameObject trapObj = new GameObject("TrapeziumPanel", typeof(RectTransform), typeof(Image));
+                trapObj.transform.SetParent(canvasObj.transform, false);
+                RectTransform trapRt = trapObj.GetComponent<RectTransform>();
+                trapRt.anchorMin = new Vector2(0.5f, bottomPanelHeightRatio);
+                trapRt.anchorMax = new Vector2(0.5f, bottomPanelHeightRatio);
+                trapRt.pivot = new Vector2(0.5f, 0f); // Pivot at bottom center so it sits directly on top of 50% line
+                trapRt.anchoredPosition = Vector2.zero;
+                trapRt.sizeDelta = new Vector2(1080f, trapeziumHeight);
+
+                Image trapImg = trapObj.GetComponent<Image>();
+                trapImg.sprite = CreateTrapeziumSprite(1080, Mathf.RoundToInt(trapeziumHeight), trapeziumTopWidthRatio, trapeziumBottomWidthRatio, trapeziumCornerRadius);
+                trapImg.type = Image.Type.Simple;
+                trapImg.color = trapeziumColor;
+            }
+
+            // 2. Bottom 50% Soft Blue-Grey Rectangular Panel (#d3daed, full width, 2px white top border only)
             if (showBottomPanel)
             {
                 GameObject bottomPanelObj = new GameObject("BottomGreyPanel", typeof(RectTransform), typeof(Image));
@@ -488,6 +519,75 @@ namespace RoadwaysGame
 
             Vector4 border = new Vector4(radius, radius, radius, radius);
             return Sprite.Create(tex, new Rect(0, 0, width, height), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, border);
+        }
+
+        private static Sprite CreateTrapeziumSprite(int width, int height, float topRatio, float bottomRatio, float radius)
+        {
+            Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
+            tex.name = "Gen_TrapeziumSpriteTex";
+            tex.filterMode = FilterMode.Bilinear;
+            tex.wrapMode = TextureWrapMode.Clamp;
+
+            Color[] colors = new Color[width * height];
+
+            float W_t = width * topRatio;
+            float W_b = width * bottomRatio;
+            float X_bl = (width - W_b) * 0.5f;
+            float X_tl = (width - W_t) * 0.5f;
+            float X_tr = (width + W_t) * 0.5f;
+            float X_br = (width + W_b) * 0.5f;
+
+            float dx = X_bl - X_tl;
+            float dy = -height;
+            float L = Mathf.Sqrt(dx * dx + dy * dy);
+            float ux = dx / L;
+            float uy = dy / L;
+            float nx = -uy;
+            float ny = ux;
+
+            float R = radius;
+            float C_yl = height - R;
+            float C_xl = X_tl + R * (1.0f + ny) / nx;
+            float C_yr = C_yl;
+            float C_xr = width - C_xl;
+
+            float T_yl = height - R * (1.0f + ny);
+
+            for (int y = 0; y < height; y++)
+            {
+                float d_t = (float)(height - y);
+                for (int x = 0; x < width; x++)
+                {
+                    float d_sl = (x - X_tl) * nx + (y - height) * ny;
+                    float d_sr = (X_tr - x) * nx + (y - height) * ny;
+
+                    float D;
+                    if (x <= C_xl && y >= T_yl)
+                    {
+                        float p_xl = x - C_xl;
+                        float p_yl = y - C_yl;
+                        D = R - Mathf.Sqrt(p_xl * p_xl + p_yl * p_yl);
+                    }
+                    else if (x >= C_xr && y >= T_yl)
+                    {
+                        float p_xr = x - C_xr;
+                        float p_yr = y - C_yr;
+                        D = R - Mathf.Sqrt(p_xr * p_xr + p_yr * p_yr);
+                    }
+                    else
+                    {
+                        D = Mathf.Min(d_t, Mathf.Min(d_sl, d_sr));
+                    }
+
+                    float alpha = Mathf.Clamp01(D + 0.5f);
+                    colors[y * width + x] = new Color(1f, 1f, 1f, alpha);
+                }
+            }
+
+            tex.SetPixels(colors);
+            tex.Apply();
+
+            return Sprite.Create(tex, new Rect(0, 0, width, height), new Vector2(0.5f, 0f), 100f);
         }
     }
 }

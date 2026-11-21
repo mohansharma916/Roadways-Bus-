@@ -23,6 +23,7 @@ namespace Roadways.Editor
             EditorSettings.unityRemoteDevice = "Any Android Device";
             EditorSettings.unityRemoteCompression = "JPEG";
             EditorSettings.unityRemoteResolution = "Normal";
+            EditorSettings.enterPlayModeOptionsEnabled = false;
 
             Debug.Log("<color=#2ecc71>[HotReload] EditorSettings configured for 'Any Android Device' (Normal resolution, JPEG compression).</color>");
 
