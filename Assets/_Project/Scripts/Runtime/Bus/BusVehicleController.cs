@@ -38,6 +38,9 @@ namespace RoadwaysGame
         [Header("Depot Origin")]
         [SerializeField] private Vector3 depotSlotPosition;
 
+        [System.NonSerialized] private VehicleArchetype archetype = VehicleArchetype.Minivan;
+        public VehicleArchetype Archetype => archetype;
+
         // Kinematic Animation Variables
         private Vector3 startPos;
         private Vector3 startTan;
@@ -66,9 +69,10 @@ namespace RoadwaysGame
             if (vehicleBody == null) BuildBusVisuals();
         }
 
-        public void Initialize(ChilbiColorType type, Vector3 depotPos)
+        public void Initialize(ChilbiColorType type, Vector3 depotPos, VehicleArchetype vehArchetype = VehicleArchetype.Minivan)
         {
             colorType = type;
+            archetype = vehArchetype;
             depotSlotPosition = depotPos;
             transform.localPosition = depotPos;
             transform.localRotation = Quaternion.identity;
@@ -77,6 +81,12 @@ namespace RoadwaysGame
 
             BuildBusVisuals();
             SetArrowVisibility(true);
+        }
+
+        public void SetArchetype(VehicleArchetype arch)
+        {
+            archetype = arch;
+            BuildBusVisuals();
         }
 
         public void PlayBlockedWiggle()
@@ -284,45 +294,86 @@ namespace RoadwaysGame
                 else DestroyImmediate(transform.GetChild(i).gameObject);
             }
 
+            Shader litShader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
             Shader unlitShader = Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Color");
             Color primary = ColorPaletteDatabase.GetPrimaryColor(colorType);
+
+            BusMeshGenerator.GetDimensions(archetype, out float width, out float length, out float height, out _, out int cap);
+            maxCapacity = cap;
 
             // Vehicle Body Root
             GameObject bodyObj = new GameObject("VehicleBody");
             bodyObj.transform.SetParent(transform, false);
             vehicleBody = bodyObj.transform;
 
-            // 1. Bus Hull Mesh (2.5x5.0 units, rx=0.55)
-            GameObject hullObj = new GameObject("BusHull");
+            // 0. Soft Contact Blob Drop Shadow (underneath chassis on ground)
+            GameObject shadowObj = new GameObject("ChassisDropShadow");
+            shadowObj.transform.SetParent(vehicleBody, false);
+            shadowObj.transform.localPosition = new Vector3(0f, 0.006f, 0f);
+            MeshFilter mfShadow = shadowObj.AddComponent<MeshFilter>();
+            mfShadow.sharedMesh = BusMeshGenerator.CreateContactShadowMesh(archetype);
+            MeshRenderer mrShadow = shadowObj.AddComponent<MeshRenderer>();
+            Material shadowMat = new Material(unlitShader) { name = "M_VehicleDropShadow" };
+            shadowMat.SetFloat("_Surface", 1); // Transparent
+            shadowMat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            shadowMat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            shadowMat.SetInt("_ZWrite", 0);
+            shadowMat.renderQueue = 2999;
+            mrShadow.sharedMaterial = shadowMat;
+
+            // 1. 4 Black Wheels under Chassis
+            GameObject wheelsObj = new GameObject("VehicleWheels");
+            wheelsObj.transform.SetParent(vehicleBody, false);
+            MeshFilter mfWheels = wheelsObj.AddComponent<MeshFilter>();
+            mfWheels.sharedMesh = BusMeshGenerator.CreateWheelMeshes(archetype);
+            MeshRenderer mrWheels = wheelsObj.AddComponent<MeshRenderer>();
+            Material wheelMat = new Material(litShader) { name = "M_VehicleRubber" };
+            wheelMat.color = new Color32(0x1C, 0x22, 0x2A, 0xFF);
+            if (wheelMat.HasProperty("_Smoothness")) wheelMat.SetFloat("_Smoothness", 0.35f);
+            if (wheelMat.HasProperty("_Metallic")) wheelMat.SetFloat("_Metallic", 0.1f);
+            mrWheels.sharedMaterial = wheelMat;
+
+            // 2. Chamfered Vehicle Hull (URP Lit, glossy enamel clearcoat)
+            GameObject hullObj = new GameObject("VehicleHull");
             hullObj.transform.SetParent(vehicleBody, false);
             MeshFilter mfHull = hullObj.AddComponent<MeshFilter>();
-            mfHull.sharedMesh = BusMeshGenerator.CreateBusBodyMesh(BusMeshGenerator.BusWidth, BusMeshGenerator.BusLength, BusMeshGenerator.CornerRadius, BusMeshGenerator.BusHeight);
+            mfHull.sharedMesh = BusMeshGenerator.CreateChamferedBodyMesh(archetype);
             MeshRenderer mrHull = hullObj.AddComponent<MeshRenderer>();
-            mrHull.sharedMaterial = new Material(unlitShader) { name = "M_BusMatteBody", color = primary };
+            Material bodyMat = new Material(litShader) { name = $"M_VehicleBody_{colorType}" };
+            bodyMat.color = primary;
+            if (bodyMat.HasProperty("_Smoothness")) bodyMat.SetFloat("_Smoothness", 0.72f);
+            if (bodyMat.HasProperty("_Metallic")) bodyMat.SetFloat("_Metallic", 0.08f);
+            mrHull.sharedMaterial = bodyMat;
 
-            // 2. Front Windshield Visor (#1e2430)
-            GameObject visorObj = new GameObject("FrontVisor");
-            visorObj.transform.SetParent(vehicleBody, false);
-            visorObj.transform.localPosition = new Vector3(0f, BusMeshGenerator.BusHeight + 0.01f, 0.60f); // Near front
-            MeshFilter mfVisor = visorObj.AddComponent<MeshFilter>();
-            mfVisor.sharedMesh = BusMeshGenerator.CreateTintedVisorMesh(0.80f, 0.35f);
-            MeshRenderer mrVisor = visorObj.AddComponent<MeshRenderer>();
-            mrVisor.sharedMaterial = new Material(unlitShader) { name = "M_BusVisor", color = new Color32(0x1E, 0x24, 0x30, 0xFF) };
+            // 3. Tinted Glossy Glass Windows (URP Lit, dark reflective tint)
+            GameObject windowsObj = new GameObject("VehicleWindows");
+            windowsObj.transform.SetParent(vehicleBody, false);
+            MeshFilter mfWindows = windowsObj.AddComponent<MeshFilter>();
+            mfWindows.sharedMesh = BusMeshGenerator.CreateWindowMesh(archetype);
+            MeshRenderer mrWindows = windowsObj.AddComponent<MeshRenderer>();
+            Material glassMat = new Material(litShader) { name = "M_VehicleGlass" };
+            glassMat.color = new Color32(0x14, 0x1C, 0x28, 0xFF);
+            if (glassMat.HasProperty("_Smoothness")) glassMat.SetFloat("_Smoothness", 0.95f);
+            if (glassMat.HasProperty("_Metallic")) glassMat.SetFloat("_Metallic", 0.25f);
+            mrWindows.sharedMaterial = glassMat;
 
-            // 3. Crisp White Roof Arrow (centered on roof)
+            // 4. Crisp White Roof Arrow (centered on roof)
             GameObject arrowObj = new GameObject("RoofArrow");
             arrowObj.transform.SetParent(vehicleBody, false);
-            arrowObj.transform.localPosition = new Vector3(0f, BusMeshGenerator.BusHeight + 0.02f, -0.05f);
+            arrowObj.transform.localPosition = new Vector3(0f, height + 0.005f, 0f);
             MeshFilter mfArrow = arrowObj.AddComponent<MeshFilter>();
-            mfArrow.sharedMesh = BusMeshGenerator.CreateRoofArrowMesh(0.035f);
+            mfArrow.sharedMesh = BusMeshGenerator.CreateRoofArrowMesh(0.038f);
             arrowRenderer = arrowObj.AddComponent<MeshRenderer>();
-            arrowRenderer.sharedMaterial = new Material(unlitShader) { name = "M_BusRoofArrow", color = Color.white };
+            Material arrowMat = new Material(litShader) { name = "M_VehicleRoofArrow" };
+            arrowMat.color = Color.white;
+            if (arrowMat.HasProperty("_Smoothness")) arrowMat.SetFloat("_Smoothness", 0.85f);
+            arrowRenderer.sharedMaterial = arrowMat;
 
-            // 4. Touch Box Collider
+            // 5. Touch Box Collider sized to archetype
             touchCollider = GetComponent<BoxCollider>();
             if (touchCollider == null) touchCollider = gameObject.AddComponent<BoxCollider>();
-            touchCollider.size = new Vector3(BusMeshGenerator.BusWidth, 0.8f, BusMeshGenerator.BusLength);
-            touchCollider.center = new Vector3(0f, 0.4f, 0f);
+            touchCollider.size = new Vector3(width, 0.9f, length);
+            touchCollider.center = new Vector3(0f, 0.45f, 0f);
         }
     }
 }

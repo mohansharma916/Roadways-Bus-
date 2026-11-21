@@ -44,10 +44,16 @@ namespace RoadwaysGame
             }
             else
             {
-                foreach (var bus in buses)
+                for (int i = 0; i < buses.Count; i++)
                 {
+                    var bus = buses[i];
                     if (bus != null)
                     {
+                        VehicleArchetype arch = VehicleArchetype.Minivan;
+                        if (i == 0 || i == 1) arch = VehicleArchetype.CoupeCar;
+                        else if (i == 6 || i == 7) arch = VehicleArchetype.TransitBus;
+                        bus.SetArchetype(arch);
+
                         bus.OnBusDocked -= HandleBusDocked;
                         bus.OnBusDocked += HandleBusDocked;
                         bus.OnBusReturnedToDepot -= HandleBusReturned;
@@ -79,7 +85,11 @@ namespace RoadwaysGame
                 busObj.transform.SetParent(transform, false);
 
                 BusVehicleController controller = busObj.AddComponent<BusVehicleController>();
-                controller.Initialize(type, depotPos);
+                VehicleArchetype archetype = VehicleArchetype.Minivan;
+                if (i == 0 || i == 1) archetype = VehicleArchetype.CoupeCar;
+                else if (i == 6 || i == 7) archetype = VehicleArchetype.TransitBus;
+
+                controller.Initialize(type, depotPos, archetype);
 
                 controller.OnBusDocked += HandleBusDocked;
                 controller.OnBusReturnedToDepot += HandleBusReturned;
@@ -87,7 +97,7 @@ namespace RoadwaysGame
                 buses.Add(controller);
             }
 
-            Debug.Log($"<color=#2ecc71>[BusFleetController] Created depot fleet with 8 buses.</color>");
+            Debug.Log($"<color=#2ecc71>[BusFleetController] Created depot fleet with 8 HD vehicles (Coupes, Minivans, Transit Buses).</color>");
         }
 
         [ContextMenu("Clear Fleet")]
