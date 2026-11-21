@@ -73,7 +73,7 @@ namespace RoadwaysGame.Editor
             if (System.IO.File.Exists(texturePath))
             {
                 TextureImporter importer = AssetImporter.GetAtPath(texturePath) as TextureImporter;
-                if (importer != null && importer.textureType != TextureImporterType.Sprite)
+                if (importer != null)
                 {
                     importer.textureType = TextureImporterType.Sprite;
                     importer.spriteImportMode = SpriteImportMode.Single;
@@ -87,7 +87,7 @@ namespace RoadwaysGame.Editor
             if (System.IO.File.Exists(resPath))
             {
                 TextureImporter resImp = AssetImporter.GetAtPath(resPath) as TextureImporter;
-                if (resImp != null && resImp.textureType != TextureImporterType.Sprite)
+                if (resImp != null)
                 {
                     resImp.textureType = TextureImporterType.Sprite;
                     resImp.spriteImportMode = SpriteImportMode.Single;
