@@ -38,6 +38,12 @@ namespace RoadwaysGame
         [SerializeField] private float trapeziumCornerRadius = 32f;
         [SerializeField] private Color trapeziumColor = new Color32(0x52, 0x57, 0x69, 0xFF); // Asphalt/Apron grey (#525769)
 
+        [Header("Circuit Road Specifications")]
+        [Tooltip("Procedural racing road circuit positioned directly above the trapezium.")]
+        [SerializeField] private bool showRoadCircuit = true;
+        [SerializeField] private float roadCircuitHeight = 660f;
+        [SerializeField] private Sprite roadCircuitSprite;
+
         [Header("UI State (Dynamic)")]
         [SerializeField] private int clearedChilbis = 0;
         [SerializeField] private int totalChilbis = GameConstants.TotalChilbis; // 430
@@ -76,6 +82,7 @@ namespace RoadwaysGame
         {
             bottomPanelColor = new Color32(0xD3, 0xDA, 0xED, 0xFF);
             trapeziumColor = new Color32(0x52, 0x57, 0x69, 0xFF);
+            showRoadCircuit = true;
             ApplyDisplayMode();
             BuildUI();
         }
@@ -166,6 +173,7 @@ namespace RoadwaysGame
         {
             bottomPanelColor = new Color32(0xD3, 0xDA, 0xED, 0xFF);
             trapeziumColor = new Color32(0x52, 0x57, 0x69, 0xFF);
+            showRoadCircuit = true;
             EnsureFont();
             EnsureEventSystem();
 
@@ -250,6 +258,29 @@ namespace RoadwaysGame
 
                 Image tbImg = topBorderObj.GetComponent<Image>();
                 tbImg.color = topBorderColor;
+            }
+
+            // 3. Road Network Circuit (positioned directly above the trapezium)
+            if (showRoadCircuit)
+            {
+                Sprite circuitSprite = GetRoadCircuitSprite();
+                Debug.Log($"<color=#3498db>[GameUIController] RoadCircuitPanel: showRoadCircuit={showRoadCircuit}, sprite={(circuitSprite != null ? circuitSprite.name : "null")}</color>");
+                if (circuitSprite != null)
+                {
+                    GameObject roadObj = new GameObject("RoadCircuitPanel", typeof(RectTransform), typeof(Image));
+                    roadObj.transform.SetParent(canvasObj.transform, false);
+                    RectTransform roadRt = roadObj.GetComponent<RectTransform>();
+                    roadRt.anchorMin = new Vector2(0.5f, bottomPanelHeightRatio);
+                    roadRt.anchorMax = new Vector2(0.5f, bottomPanelHeightRatio);
+                    roadRt.pivot = new Vector2(0.5f, 0f); // Pivot at bottom center so it sits directly on top of trapezium
+                    roadRt.anchoredPosition = new Vector2(0f, trapeziumHeight);
+                    roadRt.sizeDelta = new Vector2(1080f, roadCircuitHeight);
+
+                    Image roadImg = roadObj.GetComponent<Image>();
+                    roadImg.sprite = circuitSprite;
+                    roadImg.type = Image.Type.Simple;
+                    roadImg.color = Color.white;
+                }
             }
 
             // 2. Top Header Container (Safe area top padding: 48px down from screen top)
@@ -588,6 +619,41 @@ namespace RoadwaysGame
             tex.Apply();
 
             return Sprite.Create(tex, new Rect(0, 0, width, height), new Vector2(0.5f, 0f), 100f);
+        }
+
+        public Sprite GetRoadCircuitSprite()
+        {
+            if (roadCircuitSprite != null) return roadCircuitSprite;
+
+            // 1. Try loading from Resources
+            roadCircuitSprite = Resources.Load<Sprite>("CircuitRoad");
+            if (roadCircuitSprite != null) return roadCircuitSprite;
+
+            // 2. Try loading PNG bytes directly
+            string[] possiblePaths = new string[]
+            {
+                System.IO.Path.Combine(Application.dataPath, "_Project/Textures/UI/CircuitRoad.png"),
+                System.IO.Path.Combine(Application.dataPath, "_Project/Resources/CircuitRoad.png")
+            };
+
+            foreach (var path in possiblePaths)
+            {
+                if (System.IO.File.Exists(path))
+                {
+                    byte[] bytes = System.IO.File.ReadAllBytes(path);
+                    Texture2D tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+                    if (tex.LoadImage(bytes))
+                    {
+                        tex.name = "Loaded_CircuitRoadTex";
+                        tex.filterMode = FilterMode.Bilinear;
+                        tex.wrapMode = TextureWrapMode.Clamp;
+                        roadCircuitSprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0f), 100f);
+                        return roadCircuitSprite;
+                    }
+                }
+            }
+
+            return null;
         }
     }
 }

@@ -55,7 +55,7 @@ namespace RoadwaysGame.Editor
             }
         }
 
-        [MenuItem("Tools/Roadways/Ensure Game UI")]
+        [MenuItem("Roadways/Setup/Ensure Game UI")]
         public static void EnsureUIInScene()
         {
             // 1. Ensure Unity Remote Device is set to Any Android Device for Hot Reloading
@@ -66,6 +66,36 @@ namespace RoadwaysGame.Editor
             // 2. Open / Load MainGame scene if not active
             Scene scene = SceneManager.GetActiveScene();
             string targetScenePath = "Assets/_Project/Scenes/MainGame.unity";
+
+            // 2b. Ensure CircuitRoad texture is imported as Sprite
+            AssetDatabase.Refresh();
+            string texturePath = "Assets/_Project/Textures/UI/CircuitRoad.png";
+            if (System.IO.File.Exists(texturePath))
+            {
+                TextureImporter importer = AssetImporter.GetAtPath(texturePath) as TextureImporter;
+                if (importer != null && importer.textureType != TextureImporterType.Sprite)
+                {
+                    importer.textureType = TextureImporterType.Sprite;
+                    importer.spriteImportMode = SpriteImportMode.Single;
+                    importer.alphaIsTransparency = true;
+                    importer.mipmapEnabled = false;
+                    AssetDatabase.ImportAsset(texturePath, ImportAssetOptions.ForceUpdate);
+                }
+            }
+
+            string resPath = "Assets/_Project/Resources/CircuitRoad.png";
+            if (System.IO.File.Exists(resPath))
+            {
+                TextureImporter resImp = AssetImporter.GetAtPath(resPath) as TextureImporter;
+                if (resImp != null && resImp.textureType != TextureImporterType.Sprite)
+                {
+                    resImp.textureType = TextureImporterType.Sprite;
+                    resImp.spriteImportMode = SpriteImportMode.Single;
+                    resImp.alphaIsTransparency = true;
+                    resImp.mipmapEnabled = false;
+                    AssetDatabase.ImportAsset(resPath, ImportAssetOptions.ForceUpdate);
+                }
+            }
 
             if (!scene.isLoaded || !scene.name.Contains("MainGame"))
             {
@@ -97,6 +127,17 @@ namespace RoadwaysGame.Editor
 
             if (uiController != null)
             {
+                Sprite roadSp = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Textures/UI/CircuitRoad.png");
+                if (roadSp != null)
+                {
+                    SerializedObject so = new SerializedObject(uiController);
+                    SerializedProperty prop = so.FindProperty("roadCircuitSprite");
+                    if (prop != null)
+                    {
+                        prop.objectReferenceValue = roadSp;
+                        so.ApplyModifiedProperties();
+                    }
+                }
                 uiController.ParkOnlyMode = true;
                 uiController.ApplyDisplayMode();
                 uiController.BuildUI();
