@@ -92,6 +92,8 @@ namespace RoadwaysGame
         [System.NonSerialized] private RectTransform ftuePointerRt;
         [System.NonSerialized] private Text ftuePointerText;
         [System.NonSerialized] private float idleTimer = 0f;
+        [System.NonSerialized] private List<GameObject> blockedBadgeObjs = new List<GameObject>();
+        [System.NonSerialized] private List<Image> depotBusImgs = new List<Image>();
 
         public int RecallCount => recallCount;
         public int ShuffleCount => shuffleCount;
@@ -190,6 +192,8 @@ namespace RoadwaysGame
         private void Start()
         {
             RefreshBayUnlocks();
+            ApplyDepotLayout();
+            UpdateBlockingIndicators();
             UpdateStatusHUD();
         }
 
@@ -295,8 +299,19 @@ namespace RoadwaysGame
                 return;
             }
 
-            RectTransform targetBusRt = depotBusRts[matchColor];
-            if (targetBusRt == null || !targetBusRt.gameObject.activeSelf || IsBusAlreadyDispatched(matchColor))
+            int targetBusIdx = matchColor;
+            bool targetIsBlocked = IsBusBlocked(matchColor);
+            if (targetIsBlocked)
+            {
+                int blocker = GetBlockingBusIndex(matchColor);
+                if (blocker >= 0 && blocker < depotBusRts.Count && depotBusRts[blocker] != null && depotBusRts[blocker].gameObject.activeSelf)
+                {
+                    targetBusIdx = blocker;
+                }
+            }
+
+            RectTransform targetBusRt = depotBusRts[targetBusIdx];
+            if (targetBusRt == null || !targetBusRt.gameObject.activeSelf || IsBusAlreadyDispatched(targetBusIdx))
             {
                 HideFTUEPointer();
                 return;
@@ -313,7 +328,7 @@ namespace RoadwaysGame
                 ftuePointerObj.transform.SetAsLastSibling();
 
                 float bob = Mathf.Sin(Time.unscaledTime * 5.5f) * 4f;
-                ftuePointerRt.anchoredPosition = new Vector2(targetBusRt.anchoredPosition.x, 66f + bob);
+                ftuePointerRt.anchoredPosition = new Vector2(targetBusRt.anchoredPosition.x, targetBusRt.anchoredPosition.y + 76f + bob);
 
                 // Gentle pulsing beacon on target bus
                 float pulse = 1.0f + Mathf.PingPong(Time.unscaledTime * 1.2f, 0.08f);
@@ -321,7 +336,14 @@ namespace RoadwaysGame
 
                 if (ftuePointerText != null)
                 {
-                    ftuePointerText.text = isFTUELevel ? "TAP TO DOCK" : "MATCHING";
+                    if (targetIsBlocked)
+                    {
+                        ftuePointerText.text = "CLEAR PATH";
+                    }
+                    else
+                    {
+                        ftuePointerText.text = isFTUELevel ? "TAP TO DOCK" : "MATCHING";
+                    }
                 }
             }
         }
@@ -528,6 +550,8 @@ namespace RoadwaysGame
             }
 
             depotBusRts.Clear();
+            blockedBadgeObjs.Clear();
+            depotBusImgs.Clear();
 
             GameObject rowObj = new GameObject("BusFleetRowContainer", typeof(RectTransform));
             rowObj.transform.SetParent(transform, false);
@@ -536,10 +560,9 @@ namespace RoadwaysGame
             rowRt.anchorMax = new Vector2(0.5f, 1f);
             rowRt.pivot = new Vector2(0.5f, 1f);
             rowRt.anchoredPosition = new Vector2(0f, -topPadding);
-            rowRt.sizeDelta = new Vector2(1040f, 160f);
+            rowRt.sizeDelta = new Vector2(1040f, 320f);
 
             int n = Fleet.Length;
-            float startX = -((n - 1) * 0.5f) * busSpacing;
 
             for (int i = 0; i < n; i++)
             {
@@ -549,15 +572,15 @@ namespace RoadwaysGame
                 GameObject busObj = new GameObject($"Bus_{def.id}", typeof(RectTransform), typeof(Image), typeof(Button));
                 busObj.transform.SetParent(rowObj.transform, false);
                 RectTransform bRt = busObj.GetComponent<RectTransform>();
-                bRt.anchorMin = new Vector2(0.5f, 0.5f);
-                bRt.anchorMax = new Vector2(0.5f, 0.5f);
+                bRt.anchorMin = new Vector2(0.5f, 1f);
+                bRt.anchorMax = new Vector2(0.5f, 1f);
                 bRt.pivot = new Vector2(0.5f, 0.5f);
-                bRt.anchoredPosition = new Vector2(startX + i * busSpacing, 0f);
                 bRt.sizeDelta = busSize;
 
                 Image bImg = busObj.GetComponent<Image>();
                 bImg.sprite = busSprites[i];
                 bImg.type = Image.Type.Simple;
+                depotBusImgs.Add(bImg);
 
                 // Child White Roof Arrow
                 GameObject arrowObj = new GameObject("RoofArrow", typeof(RectTransform), typeof(Image));
@@ -572,6 +595,39 @@ namespace RoadwaysGame
                 aImg.sprite = arrowSprite;
                 aImg.raycastTarget = false;
 
+                // Child Blocked Badge (lock indicator for blocked back buses)
+                GameObject badgeObj = new GameObject("BlockedBadge", typeof(RectTransform), typeof(Image));
+                badgeObj.transform.SetParent(busObj.transform, false);
+                RectTransform bdRt = badgeObj.GetComponent<RectTransform>();
+                bdRt.anchorMin = new Vector2(0.5f, 0.5f);
+                bdRt.anchorMax = new Vector2(0.5f, 0.5f);
+                bdRt.pivot = new Vector2(0.5f, 0.5f);
+                bdRt.anchoredPosition = Vector2.zero;
+                bdRt.sizeDelta = new Vector2(36f, 36f);
+
+                Image bdImg = badgeObj.GetComponent<Image>();
+                bdImg.sprite = GameUIController.CreatePillSprite(36, 36, 18);
+                bdImg.type = Image.Type.Sliced;
+                bdImg.color = new Color(0.12f, 0.16f, 0.24f, 0.90f);
+                bdImg.raycastTarget = false;
+
+                GameObject lockTextObj = new GameObject("LockText", typeof(RectTransform), typeof(Text));
+                lockTextObj.transform.SetParent(badgeObj.transform, false);
+                RectTransform ltRt = lockTextObj.GetComponent<RectTransform>();
+                ltRt.anchorMin = Vector2.zero;
+                ltRt.anchorMax = Vector2.one;
+                ltRt.sizeDelta = Vector2.zero;
+                Text ltText = lockTextObj.GetComponent<Text>();
+                ltText.font = GameUIController.DefaultFont;
+                ltText.fontSize = 20;
+                ltText.alignment = TextAnchor.MiddleCenter;
+                ltText.color = new Color(1f, 0.82f, 0.2f, 1f); // Gold lock
+                ltText.text = "🔒";
+                ltText.raycastTarget = false;
+
+                badgeObj.SetActive(false);
+                blockedBadgeObjs.Add(badgeObj);
+
                 Button btn = busObj.GetComponent<Button>();
                 btn.transition = Selectable.Transition.None;
                 btn.onClick.AddListener(() => OnBusClicked(busIdx));
@@ -579,7 +635,98 @@ namespace RoadwaysGame
                 depotBusRts.Add(bRt);
             }
 
+            ApplyDepotLayout();
+            UpdateBlockingIndicators();
             UpdateStatusHUD();
+        }
+
+        public void ApplyDepotLayout()
+        {
+            int n = Fleet.Length;
+            if (currentLevel < 3)
+            {
+                // Level 1-2: Open Straight Row
+                float startX = -((n - 1) * 0.5f) * busSpacing;
+                for (int i = 0; i < n; i++)
+                {
+                    if (i < depotBusRts.Count && depotBusRts[i] != null)
+                    {
+                        depotBusRts[i].anchoredPosition = new Vector2(startX + i * busSpacing, -64f);
+                    }
+                }
+            }
+            else
+            {
+                // Level 3+: Tandem Depth (4 lanes x 2 rows)
+                // 4 Lanes: c in [0..3], X = -315f + c * 210f (-315, -105, +105, +315)
+                // Front Row (0..3): Y = -64f
+                // Back Row (4..7): Y = -204f
+                for (int i = 0; i < n; i++)
+                {
+                    if (i < depotBusRts.Count && depotBusRts[i] != null)
+                    {
+                        int lane = i % 4;
+                        float laneX = -315f + lane * 210f;
+                        float laneY = (i < 4) ? -64f : -204f;
+                        depotBusRts[i].anchoredPosition = new Vector2(laneX, laneY);
+                    }
+                }
+            }
+        }
+
+        public int GetBlockingBusIndex(int busIndex)
+        {
+            if (currentLevel < 3) return -1;
+            if (busIndex >= 4 && busIndex < 8)
+            {
+                int frontIdx = busIndex - 4;
+                if (depotBusRts != null && frontIdx < depotBusRts.Count && depotBusRts[frontIdx] != null)
+                {
+                    if (depotBusRts[frontIdx].gameObject.activeSelf)
+                    {
+                        return frontIdx;
+                    }
+                }
+            }
+            return -1;
+        }
+
+        public bool IsBusBlocked(int busIndex) => GetBlockingBusIndex(busIndex) >= 0;
+
+        public void UpdateBlockingIndicators()
+        {
+            for (int i = 0; i < depotBusRts.Count; i++)
+            {
+                if (depotBusRts[i] == null) continue;
+                bool blocked = IsBusBlocked(i);
+
+                if (blockedBadgeObjs != null && i < blockedBadgeObjs.Count && blockedBadgeObjs[i] != null)
+                {
+                    blockedBadgeObjs[i].SetActive(blocked);
+                }
+
+                if (depotBusImgs != null && i < depotBusImgs.Count && depotBusImgs[i] != null)
+                {
+                    depotBusImgs[i].color = blocked ? new Color(0.65f, 0.65f, 0.70f, 0.82f) : Color.white;
+                }
+            }
+        }
+
+        private IEnumerator UnblockBounce(RectTransform rt)
+        {
+            if (rt == null) yield break;
+            Vector3 origScale = rt.localScale;
+            float dur = 0.28f;
+            float elapsed = 0f;
+            while (elapsed < dur)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float p = elapsed / dur;
+                float scale = 1f + Mathf.Sin(p * Mathf.PI) * 0.16f;
+                rt.localScale = origScale * scale;
+                yield return null;
+            }
+            rt.localScale = origScale;
         }
 
         private void FindBayTransforms()
@@ -626,6 +773,21 @@ namespace RoadwaysGame
         {
             if (isInFlight) return;
             if (IsBusAlreadyDispatched(busIndex)) return;
+
+            int blocker = GetBlockingBusIndex(busIndex);
+            if (blocker >= 0)
+            {
+                StartCoroutine(RejectShake(depotBusRts[busIndex]));
+                if (blocker < depotBusRts.Count && depotBusRts[blocker] != null && depotBusRts[blocker].gameObject.activeSelf)
+                {
+                    StartCoroutine(RejectShake(depotBusRts[blocker]));
+                }
+                if (warningClip != null && audioSource != null && SfxEnabled) audioSource.PlayOneShot(warningClip, 0.7f);
+                AndroidHaptics.DoubleBuzz();
+                string blockerName = Fleet[blocker].name;
+                ShowFloatingTip($"⚠️ BLOCKED! Dispatch {blockerName} first!");
+                return;
+            }
 
             idleTimer = 0f;
             HideFTUEPointer();
@@ -687,6 +849,15 @@ namespace RoadwaysGame
 
             // Hide original depot bus
             origDepotRt.gameObject.SetActive(false);
+            UpdateBlockingIndicators();
+            if (busIndex < 4)
+            {
+                int backBusIdx = busIndex + 4;
+                if (backBusIdx < depotBusRts.Count && depotBusRts[backBusIdx] != null && depotBusRts[backBusIdx].gameObject.activeSelf)
+                {
+                    StartCoroutine(UnblockBounce(depotBusRts[backBusIdx]));
+                }
+            }
 
             // Create traveler bus directly under Canvas for free flight
             GameObject travelerObj = new GameObject($"Traveler_{def.id}_Bay{bayIndex}", typeof(RectTransform), typeof(Image), typeof(Button));
@@ -875,6 +1046,7 @@ namespace RoadwaysGame
 
             // Restore depot bus and destroy traveler
             origDepotRt.gameObject.SetActive(true);
+            UpdateBlockingIndicators();
             Destroy(travelerObj);
             parkedBusObjects[bayIndex] = null;
             bayOccupants[bayIndex] = -1;
@@ -961,6 +1133,7 @@ namespace RoadwaysGame
             if (busIdx >= 0 && busIdx < depotBusRts.Count && depotBusRts[busIdx] != null)
             {
                 depotBusRts[busIdx].gameObject.SetActive(true);
+                UpdateBlockingIndicators();
             }
 
             OnBusLeftBay?.Invoke(bayIndex, busIdx);
@@ -1545,6 +1718,8 @@ namespace RoadwaysGame
                 ChilbiFlowController.Instance.ResetParade();
             }
             RefreshBayUnlocks();
+            ApplyDepotLayout();
+            UpdateBlockingIndicators();
             UpdateStatusHUD();
             if (GameUIController.Instance != null)
             {
@@ -2148,6 +2323,8 @@ namespace RoadwaysGame
             if (victoryModalObj != null) victoryModalObj.SetActive(false);
             SetGridlockWarning(false);
             RefreshBayUnlocks();
+            ApplyDepotLayout();
+            UpdateBlockingIndicators();
 
             AndroidHaptics.DoubleBuzz();
             UpdateStatusHUD();
