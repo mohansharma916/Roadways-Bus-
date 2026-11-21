@@ -538,6 +538,86 @@ namespace RoadwaysGame
                 replayBtnText.alignment = TextAnchor.MiddleCenter;
                 replayBtnText.color = Color.white;
                 replayBtnText.text = "Replay Cheer";
+
+                // Recall Booster Button
+                GameObject recallBtnObj = new GameObject("RecallButton", typeof(RectTransform), typeof(Image), typeof(Button));
+                recallBtnObj.transform.SetParent(headerContainer.transform, false);
+                RectTransform recRt = recallBtnObj.GetComponent<RectTransform>();
+                recRt.anchorMin = new Vector2(1f, 1f);
+                recRt.anchorMax = new Vector2(1f, 1f);
+                recRt.pivot = new Vector2(1f, 1f);
+                recRt.anchoredPosition = new Vector2(-10f, -70f);
+                recRt.sizeDelta = new Vector2(130f, 52f);
+
+                Image recImg = recallBtnObj.GetComponent<Image>();
+                recImg.sprite = pillSprite;
+                recImg.type = Image.Type.Sliced;
+                recImg.color = new Color32(0x34, 0x49, 0x5E, 0xF5);
+
+                Button recBtn = recallBtnObj.GetComponent<Button>();
+                recBtn.onClick.AddListener(() =>
+                {
+                    if (BusFleetUIController.Instance != null) BusFleetUIController.Instance.RecallLastBus();
+                });
+
+                GameObject recTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+                recTextObj.transform.SetParent(recallBtnObj.transform, false);
+                RectTransform recTextRt = recTextObj.GetComponent<RectTransform>();
+                recTextRt.anchorMin = Vector2.zero;
+                recTextRt.anchorMax = Vector2.one;
+                recTextRt.sizeDelta = Vector2.zero;
+                Text recText = recTextObj.GetComponent<Text>();
+                recText.font = defaultFont;
+                recText.fontSize = 18;
+                recText.fontStyle = FontStyle.Bold;
+                recText.alignment = TextAnchor.MiddleCenter;
+                recText.color = Color.white;
+                recText.raycastTarget = false;
+                recText.text = "↺ Recall";
+
+                // Shuffle Booster Button
+                GameObject shufBtnObj = new GameObject("ShuffleButton", typeof(RectTransform), typeof(Image), typeof(Button));
+                shufBtnObj.transform.SetParent(headerContainer.transform, false);
+                RectTransform shufRt = shufBtnObj.GetComponent<RectTransform>();
+                shufRt.anchorMin = new Vector2(1f, 1f);
+                shufRt.anchorMax = new Vector2(1f, 1f);
+                shufRt.pivot = new Vector2(1f, 1f);
+                shufRt.anchoredPosition = new Vector2(-150f, -70f);
+                shufRt.sizeDelta = new Vector2(130f, 52f);
+
+                Image shufImg = shufBtnObj.GetComponent<Image>();
+                shufImg.sprite = pillSprite;
+                shufImg.type = Image.Type.Sliced;
+                shufImg.color = new Color32(0x8E, 0x44, 0xAD, 0xF5);
+
+                Button shufBtn = shufBtnObj.GetComponent<Button>();
+                shufBtn.onClick.AddListener(() =>
+                {
+                    if (BusFleetUIController.Instance != null) BusFleetUIController.Instance.ShuffleParade();
+                });
+
+                GameObject shufTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+                shufTextObj.transform.SetParent(shufBtnObj.transform, false);
+                RectTransform shufTextRt = shufTextObj.GetComponent<RectTransform>();
+                shufTextRt.anchorMin = Vector2.zero;
+                shufTextRt.anchorMax = Vector2.one;
+                shufTextRt.sizeDelta = Vector2.zero;
+                Text shufText = shufTextObj.GetComponent<Text>();
+                shufText.font = defaultFont;
+                shufText.fontSize = 18;
+                shufText.fontStyle = FontStyle.Bold;
+                shufText.alignment = TextAnchor.MiddleCenter;
+                shufText.color = Color.white;
+                shufText.raycastTarget = false;
+                shufText.text = "🔀 Shuffle";
+            }
+        }
+
+        public void UpdateTitle(string newTitle)
+        {
+            if (titleText != null)
+            {
+                titleText.text = newTitle;
             }
         }
 

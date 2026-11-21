@@ -97,6 +97,7 @@ namespace RoadwaysGame
         }
 
         private List<ChilbiInstance> instances = new List<ChilbiInstance>();
+        private Dictionary<int, int> rowThemes = new Dictionary<int, int>();
         private GameObject layerObj;
         private float currentDistance = 0f;
         private float walkCyclePhase = 0f;
@@ -215,6 +216,7 @@ namespace RoadwaysGame
             }
 
             instances.Clear();
+            rowThemes.Clear();
 
             layerObj = new GameObject("ChilbiLayer", typeof(RectTransform));
             layerObj.transform.SetParent(transform, false);
@@ -229,6 +231,7 @@ namespace RoadwaysGame
             for (int r = 0; r < rowCount; r++)
             {
                 int themeIdx = r % Themes.Length;
+                rowThemes[r] = themeIdx;
                 Sprite bodySp = bodySprites[themeIdx];
                 Sprite limbSp = limbSprites[themeIdx];
                 Sprite footSp = footSprites[themeIdx];
@@ -417,6 +420,10 @@ namespace RoadwaysGame
 
         public int GetRowColorTheme(int row)
         {
+            if (rowThemes.TryGetValue(row, out int theme))
+            {
+                return theme;
+            }
             return row % Themes.Length;
         }
 
@@ -439,6 +446,7 @@ namespace RoadwaysGame
             }
             int newRow = maxRow + 1;
             int newTheme = newRow % Themes.Length;
+            rowThemes[newRow] = newTheme;
 
             for (int i = 0; i < instances.Count; i++)
             {
@@ -449,20 +457,19 @@ namespace RoadwaysGame
                     instances[i].root.localScale = Vector3.one * baseScale;
                     instances[i].root.gameObject.SetActive(true);
 
-                    // Update theme sprites to new theme
                     Transform bg = instances[i].bodyGroup;
                     if (bg != null)
                     {
                         Transform body = bg.Find("BeanBody");
-                        if (body != null) body.GetComponent<Image>().sprite = bodySprites[newTheme];
+                        if (body != null && bodySprites != null && newTheme < bodySprites.Length) body.GetComponent<Image>().sprite = bodySprites[newTheme];
                         Transform nl = bg.Find("NearLeg");
-                        if (nl != null) nl.GetComponent<Image>().sprite = footSprites[newTheme];
+                        if (nl != null && footSprites != null && newTheme < footSprites.Length) nl.GetComponent<Image>().sprite = footSprites[newTheme];
                         Transform fl = bg.Find("FarLeg");
-                        if (fl != null) fl.GetComponent<Image>().sprite = footSprites[newTheme];
+                        if (fl != null && footSprites != null && newTheme < footSprites.Length) fl.GetComponent<Image>().sprite = footSprites[newTheme];
                         Transform na = bg.Find("NearArm");
-                        if (na != null) na.GetComponent<Image>().sprite = limbSprites[newTheme];
+                        if (na != null && limbSprites != null && newTheme < limbSprites.Length) na.GetComponent<Image>().sprite = limbSprites[newTheme];
                         Transform fa = bg.Find("FarArm");
-                        if (fa != null) fa.GetComponent<Image>().sprite = limbSprites[newTheme];
+                        if (fa != null && limbSprites != null && newTheme < limbSprites.Length) fa.GetComponent<Image>().sprite = limbSprites[newTheme];
                     }
                 }
             }
@@ -472,6 +479,7 @@ namespace RoadwaysGame
         {
             currentDistance = 0f;
             walkCyclePhase = 0f;
+            rowThemes.Clear();
             int colsPerRow = 7;
             for (int i = 0; i < instances.Count; i++)
             {
@@ -484,19 +492,65 @@ namespace RoadwaysGame
                 instances[i].root.localScale = Vector3.one * baseScale;
 
                 int themeIdx = r % Themes.Length;
+                rowThemes[r] = themeIdx;
                 Transform bg = instances[i].bodyGroup;
                 if (bg != null)
                 {
                     Transform body = bg.Find("BeanBody");
-                    if (body != null) body.GetComponent<Image>().sprite = bodySprites[themeIdx];
+                    if (body != null && bodySprites != null && themeIdx < bodySprites.Length) body.GetComponent<Image>().sprite = bodySprites[themeIdx];
                     Transform nl = bg.Find("NearLeg");
-                    if (nl != null) nl.GetComponent<Image>().sprite = footSprites[themeIdx];
+                    if (nl != null && footSprites != null && themeIdx < footSprites.Length) nl.GetComponent<Image>().sprite = footSprites[themeIdx];
                     Transform fl = bg.Find("FarLeg");
-                    if (fl != null) fl.GetComponent<Image>().sprite = footSprites[themeIdx];
+                    if (fl != null && footSprites != null && themeIdx < footSprites.Length) fl.GetComponent<Image>().sprite = footSprites[themeIdx];
                     Transform na = bg.Find("NearArm");
-                    if (na != null) na.GetComponent<Image>().sprite = limbSprites[themeIdx];
+                    if (na != null && limbSprites != null && themeIdx < limbSprites.Length) na.GetComponent<Image>().sprite = limbSprites[themeIdx];
                     Transform fa = bg.Find("FarArm");
-                    if (fa != null) fa.GetComponent<Image>().sprite = limbSprites[themeIdx];
+                    if (fa != null && limbSprites != null && themeIdx < limbSprites.Length) fa.GetComponent<Image>().sprite = limbSprites[themeIdx];
+                }
+            }
+        }
+
+        public void SetLevel(int level)
+        {
+            switch (level)
+            {
+                case 1: rowCount = 4; break;  // 28 Chilbis
+                case 2: rowCount = 8; break;  // 56 Chilbis
+                case 3: rowCount = 12; break; // 84 Chilbis
+                case 4: rowCount = 16; break; // 112 Chilbis
+                default: rowCount = 20; break; // 140+ Chilbis
+            }
+            CreateFormation();
+        }
+
+        public void ShuffleRows()
+        {
+            if (instances == null || instances.Count == 0) return;
+            int colsPerRow = 7;
+            for (int r = 0; r < rowCount; r++)
+            {
+                int newTheme = UnityEngine.Random.Range(0, Themes.Length);
+                rowThemes[r] = newTheme;
+                for (int c = 0; c < colsPerRow; c++)
+                {
+                    int idx = r * colsPerRow + c;
+                    if (idx < instances.Count)
+                    {
+                        Transform bg = instances[idx].bodyGroup;
+                        if (bg != null)
+                        {
+                            Transform body = bg.Find("BeanBody");
+                            if (body != null && bodySprites != null && newTheme < bodySprites.Length) body.GetComponent<Image>().sprite = bodySprites[newTheme];
+                            Transform nl = bg.Find("NearLeg");
+                            if (nl != null && footSprites != null && newTheme < footSprites.Length) nl.GetComponent<Image>().sprite = footSprites[newTheme];
+                            Transform fl = bg.Find("FarLeg");
+                            if (fl != null && footSprites != null && newTheme < footSprites.Length) fl.GetComponent<Image>().sprite = footSprites[newTheme];
+                            Transform na = bg.Find("NearArm");
+                            if (na != null && limbSprites != null && newTheme < limbSprites.Length) na.GetComponent<Image>().sprite = limbSprites[newTheme];
+                            Transform fa = bg.Find("FarArm");
+                            if (fa != null && limbSprites != null && newTheme < limbSprites.Length) fa.GetComponent<Image>().sprite = limbSprites[newTheme];
+                        }
+                    }
                 }
             }
         }

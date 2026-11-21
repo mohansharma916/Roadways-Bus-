@@ -361,3 +361,28 @@ flowchart TD
   - Measured live memory consumption: Total PSS = 24.8 MB - 26.4 MB (over 4.5x under 120 MB ceiling).
 - [x] **Step 7.12: Production Cryptographic Signature Audit**:
   - Verified v2 and v3 APK signature schemes via `apksigner verify --verbose --print-certs` with production certificate.
+
+---
+
+### Phase 8: Multi-Level Campaign, In-Game Boosters & VIP Bay Mechanics (10 Detailed Steps) - COMPLETED
+
+- [x] **Step 8.1: Multi-Level Campaign Engine (`SetLevel`)**:
+  - Implemented dynamic row count scaling in `ChilbiFlowController.cs`: Level 1 = 4 rows (28 Chilbis), Level 2 = 8 rows (56 Chilbis), Level 3 = 12 rows (84 Chilbis), Level 4 = 16 rows (112 Chilbis), Level 5+ = 20 rows (140+ Chilbis).
+- [x] **Step 8.2: Dynamic Target Chilbis & HUD Display**:
+  - Integrated `LevelTargetChilbis` calculation and dynamic HUD text: `LEVEL {currentLevel} • HIGH : {highScore}` in `BusFleetUIController.cs` and `GameUIController.cs`.
+- [x] **Step 8.3: Persistent Campaign Progress (`PlayerPrefs`)**:
+  - Persisted `Roadways_Level` and `Roadways_HighScore` in Unity `PlayerPrefs` across application sessions.
+- [x] **Step 8.4: In-Game Recall Booster (`↺ Recall`)**:
+  - Added slate grey Recall pill button (`#34495E`) on HUD; reverses the last dispatched bus out of its bay back into the depot along its entry tangent and displays `↺ RECALLED` floating score text.
+- [x] **Step 8.5: In-Game Shuffle Booster (`🔀 Shuffle`)**:
+  - Added amethyst purple Shuffle pill button (`#8E44AD`) on HUD; instantly randomizes color theme assignments across all active parade rows on the circuit.
+- [x] **Step 8.6: VIP Bay 5 Passenger Double Scoring**:
+  - Docking buses into Bay 5 (`TrapeziumBox_5`) awards double passenger points (`+20 VIP` vs `+10`) with golden passenger badges (`VIP {count}/{max}`).
+- [x] **Step 8.7: VIP Bay 5 Departure Bonus (`👑 VIP x2!`)**:
+  - Full bus departure from Bay 5 awards double combo departure score with floating `👑 VIP x2! +{pts}` golden text popup.
+- [x] **Step 8.8: Upgraded Dual-Action Victory Modal Layout**:
+  - Designed responsive two-button victory dialog featuring emerald green `NEXT LEVEL ➔` button (`#27AE60`) and slate `↺ REPLAY` button (`#34495E`).
+- [x] **Step 8.9: Level Progression & Reset Flow**:
+  - Tapping `NEXT LEVEL ➔` advances `currentLevel`, regenerates the Chilbi parade for the next tier, restores all buses to depot, triggers the kids cheer chorus, and launches 80 fluttering confetti chips.
+- [x] **Step 8.10: Live On-Device Deployment & Playtesting Verification**:
+  - Deployed incremental patch to `Realme RMX3690` in 48.3s via `HotReloadManager.FastPatchAndRun()`; verified Recall, Shuffle, VIP Bay 5, and Level 1 -> Level 2 transition live on-screen (`phone_level2_active.png`).

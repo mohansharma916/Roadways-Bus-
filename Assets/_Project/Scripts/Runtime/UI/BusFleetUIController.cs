@@ -86,9 +86,25 @@ namespace RoadwaysGame
         public event Action<int, int> OnBusDockedInBay; // (bayIndex, busIndex)
         public event Action<int, int> OnBusLeftBay;     // (bayIndex, busIndex)
 
+        public Transform GetCanvasTransform()
+        {
+            if (canvasRt != null) return canvasRt;
+            Canvas c = GetComponentInParent<Canvas>();
+            if (c != null) { canvasRt = c.GetComponent<RectTransform>(); return canvasRt; }
+            if (transform.root != null && transform.root.name == "MainGameCanvas") { canvasRt = transform.root.GetComponent<RectTransform>(); return canvasRt; }
+            Transform found = transform.root.Find("MainGameCanvas");
+            if (found != null) { canvasRt = found.GetComponent<RectTransform>(); return canvasRt; }
+            GameObject go = GameObject.Find("MainGameCanvas");
+            if (go != null) { canvasRt = go.GetComponent<RectTransform>(); return canvasRt; }
+            return null;
+        }
+
         private void Awake()
         {
             Instance = this;
+            currentLevel = PlayerPrefs.GetInt("Roadways_Level", 1);
+            highScore = PlayerPrefs.GetInt("Roadways_HighScore", 0);
+            GetCanvasTransform();
             EnsureAudioSource();
             EnsureAssets();
             for (int i = 0; i < 9; i++) bayOccupants[i] = -1;
@@ -568,6 +584,7 @@ namespace RoadwaysGame
             badgeObj.SetActive(true);
 
             parkedBusObjects[bayIndex] = travelerObj;
+            lastDispatchedBayIndex = bayIndex;
             isInFlight = false;
             PlayAirBrake();
             AndroidHaptics.MediumClick();
@@ -668,11 +685,22 @@ namespace RoadwaysGame
             if (comboStreak > maxCombo) maxCombo = comboStreak;
 
             int departurePts = 100 * comboStreak;
+            bool isVipBay = (bayIndex == 5);
+            if (isVipBay)
+            {
+                departurePts *= 2;
+            }
             currentScore += departurePts;
+            if (currentScore > highScore)
+            {
+                highScore = currentScore;
+                PlayerPrefs.SetInt("Roadways_HighScore", highScore);
+                PlayerPrefs.Save();
+            }
             totalClearedChilbis += 7;
 
-            string comboMsg = comboStreak > 1 ? $"COMBO x{comboStreak}! +{departurePts}" : $"+{departurePts}";
-            Color scoreCol = comboStreak > 1 ? new Color(1f, 0.85f, 0.2f) : new Color(0.2f, 0.9f, 0.4f);
+            string comboMsg = isVipBay ? $"👑 VIP x2! +{departurePts}" : (comboStreak > 1 ? $"COMBO x{comboStreak}! +{departurePts}" : $"+{departurePts}");
+            Color scoreCol = isVipBay ? new Color(1f, 0.85f, 0.2f) : (comboStreak > 1 ? new Color(1f, 0.85f, 0.2f) : new Color(0.2f, 0.9f, 0.4f));
             StartCoroutine(FloatingScoreRoutine(bRt.position + new Vector3(0f, 40f, 0f), comboMsg, scoreCol));
 
             // 3. Accelerate forward out of the bay along its tilted longitudinal axis
@@ -710,7 +738,7 @@ namespace RoadwaysGame
             OnBusLeftBay?.Invoke(bayIndex, busIdx);
 
             // Win condition check
-            if (totalClearedChilbis >= 56)
+            if (totalClearedChilbis >= LevelTargetChilbis)
             {
                 ShowVictoryModal();
             }
@@ -732,6 +760,7 @@ namespace RoadwaysGame
             if (busObj == null) return;
 
             Transform badgeTransform = busObj.transform.Find("PassengerBadge");
+            bool isVipBay = (bayIndex == 5);
             if (badgeTransform != null)
             {
                 badgeTransform.gameObject.SetActive(true);
@@ -741,20 +770,28 @@ namespace RoadwaysGame
 
                 if (count >= max)
                 {
-                    if (t != null) t.text = "FULL! ⭐️";
-                    if (bImg != null) bImg.color = new Color(0.95f, 0.65f, 0.12f, 0.95f);
+                    if (t != null) t.text = isVipBay ? "VIP FULL! ⭐️" : "FULL! ⭐️";
+                    if (bImg != null) bImg.color = isVipBay ? new Color(1f, 0.84f, 0.0f, 1f) : new Color(0.95f, 0.65f, 0.12f, 0.95f);
                 }
                 else
                 {
-                    if (t != null) t.text = $"{count}/{max}";
-                    if (bImg != null) bImg.color = new Color(0.12f, 0.16f, 0.24f, 0.90f);
+                    if (t != null) t.text = isVipBay ? $"VIP {count}/{max}" : $"{count}/{max}";
+                    if (bImg != null) bImg.color = isVipBay ? new Color(0.85f, 0.65f, 0.05f, 0.95f) : new Color(0.12f, 0.16f, 0.24f, 0.90f);
                 }
 
                 StartCoroutine(PunchBadge(badgeTransform));
             }
 
-            currentScore += 10;
-            StartCoroutine(FloatingScoreRoutine(busObj.transform.position + new Vector3(0f, 25f, 0f), "+10", new Color(0.2f, 0.9f, 1f)));
+            int passengerPts = isVipBay ? 20 : 10;
+            currentScore += passengerPts;
+            if (currentScore > highScore)
+            {
+                highScore = currentScore;
+                PlayerPrefs.SetInt("Roadways_HighScore", highScore);
+                PlayerPrefs.Save();
+            }
+            string popText = isVipBay ? "+20 VIP" : "+10";
+            StartCoroutine(FloatingScoreRoutine(busObj.transform.position + new Vector3(0f, 25f, 0f), popText, isVipBay ? new Color(1f, 0.85f, 0.2f) : new Color(0.2f, 0.9f, 1f)));
             UpdateStatusHUD();
         }
 
@@ -775,7 +812,7 @@ namespace RoadwaysGame
 
         private IEnumerator FloatingScoreRoutine(Vector3 worldPos, string text, Color color)
         {
-            Transform canvasTrans = transform.root.Find("MainGameCanvas");
+            Transform canvasTrans = GetCanvasTransform();
             if (canvasTrans == null) yield break;
 
             GameObject scoreObj = new GameObject("FloatingScore", typeof(RectTransform), typeof(Text), typeof(Outline));
@@ -1141,10 +1178,30 @@ namespace RoadwaysGame
         [System.NonSerialized] private Text statusText;
         [System.NonSerialized] private GameObject victoryModalObj;
         [System.NonSerialized] private GameObject gridlockBannerObj;
+        [System.NonSerialized] private int currentLevel = 1;
+        [System.NonSerialized] private int highScore = 0;
+        [System.NonSerialized] private int lastDispatchedBayIndex = -1;
 
+        public int CurrentLevel => currentLevel;
+        public int HighScore => highScore;
         public int TotalClearedChilbis => totalClearedChilbis;
         public int TotalScore => currentScore;
         public int ComboStreak => comboStreak;
+
+        public int LevelTargetChilbis
+        {
+            get
+            {
+                switch (currentLevel)
+                {
+                    case 1: return 28;  // 4 rows
+                    case 2: return 56;  // 8 rows
+                    case 3: return 84;  // 12 rows
+                    case 4: return 112; // 16 rows
+                    default: return 140;
+                }
+            }
+        }
         public int OpenBaysCount
         {
             get
@@ -1194,7 +1251,7 @@ namespace RoadwaysGame
             {
                 if (gridlockBannerObj == null)
                 {
-                    Transform canvasTrans = transform.root.Find("MainGameCanvas");
+                    Transform canvasTrans = GetCanvasTransform();
                     if (canvasTrans == null) return;
 
                     gridlockBannerObj = new GameObject("GridlockBanner", typeof(RectTransform), typeof(Image));
@@ -1251,7 +1308,7 @@ namespace RoadwaysGame
                 return;
             }
 
-            Transform canvasTrans = transform.root.Find("MainGameCanvas");
+            Transform canvasTrans = GetCanvasTransform();
             if (canvasTrans == null) return;
 
             victoryModalObj = new GameObject("VictoryModal", typeof(RectTransform), typeof(Image));
@@ -1268,7 +1325,7 @@ namespace RoadwaysGame
             GameObject cardObj = new GameObject("Card", typeof(RectTransform), typeof(Image));
             cardObj.transform.SetParent(victoryModalObj.transform, false);
             RectTransform cardRt = cardObj.GetComponent<RectTransform>();
-            cardRt.sizeDelta = new Vector2(460f, 360f);
+            cardRt.sizeDelta = new Vector2(500f, 380f);
 
             Image cardImg = cardObj.GetComponent<Image>();
             cardImg.sprite = GameUIController.CreatePillSprite(128, 128, 28);
@@ -1279,21 +1336,21 @@ namespace RoadwaysGame
             GameObject titleObj = new GameObject("Title", typeof(RectTransform), typeof(Text));
             titleObj.transform.SetParent(cardObj.transform, false);
             RectTransform tRt = titleObj.GetComponent<RectTransform>();
-            tRt.anchoredPosition = new Vector2(0f, 120f);
-            tRt.sizeDelta = new Vector2(400f, 50f);
+            tRt.anchoredPosition = new Vector2(0f, 130f);
+            tRt.sizeDelta = new Vector2(460f, 50f);
             Text tText = titleObj.GetComponent<Text>();
             tText.font = GameUIController.DefaultFont;
             tText.fontSize = 28;
             tText.fontStyle = FontStyle.Bold;
             tText.alignment = TextAnchor.MiddleCenter;
             tText.color = new Color32(0x2C, 0x3E, 0x50, 0xFF);
-            tText.text = "🏆 LEVEL COMPLETE! 🏆";
+            tText.text = $"🏆 LEVEL {currentLevel} COMPLETE! 🏆";
 
             // Stars
             GameObject starsObj = new GameObject("Stars", typeof(RectTransform), typeof(Text));
             starsObj.transform.SetParent(cardObj.transform, false);
             RectTransform sRt = starsObj.GetComponent<RectTransform>();
-            sRt.anchoredPosition = new Vector2(0f, 65f);
+            sRt.anchoredPosition = new Vector2(0f, 75f);
             sRt.sizeDelta = new Vector2(300f, 50f);
             Text sText = starsObj.GetComponent<Text>();
             sText.font = GameUIController.DefaultFont;
@@ -1306,30 +1363,30 @@ namespace RoadwaysGame
             GameObject statsObj = new GameObject("Stats", typeof(RectTransform), typeof(Text));
             statsObj.transform.SetParent(cardObj.transform, false);
             RectTransform stRt = statsObj.GetComponent<RectTransform>();
-            stRt.anchoredPosition = new Vector2(0f, -5f);
-            stRt.sizeDelta = new Vector2(380f, 70f);
+            stRt.anchoredPosition = new Vector2(0f, 0f);
+            stRt.sizeDelta = new Vector2(440f, 80f);
             Text stText = statsObj.GetComponent<Text>();
             stText.font = GameUIController.DefaultFont;
             stText.fontSize = 20;
             stText.alignment = TextAnchor.MiddleCenter;
             stText.lineSpacing = 1.3f;
             stText.color = new Color32(0x55, 0x5F, 0x72, 0xFF);
-            stText.text = $"56 Chilbis Boarded!\nScore: <b>{currentScore}</b>  •  Max Combo: <b>x{maxCombo}</b>";
+            stText.text = $"{totalClearedChilbis} Chilbis Boarded!\nScore: <b>{currentScore}</b>  •  High: <b>{highScore}</b>\nMax Combo: <b>x{maxCombo}</b>";
 
-            // Play Again Button
-            GameObject btnObj = new GameObject("PlayAgainBtn", typeof(RectTransform), typeof(Image), typeof(Button));
-            btnObj.transform.SetParent(cardObj.transform, false);
-            RectTransform bRt = btnObj.GetComponent<RectTransform>();
-            bRt.anchoredPosition = new Vector2(0f, -110f);
-            bRt.sizeDelta = new Vector2(240f, 56f);
+            // Replay Button (Left)
+            GameObject replayBtnObj = new GameObject("ReplayBtn", typeof(RectTransform), typeof(Image), typeof(Button));
+            replayBtnObj.transform.SetParent(cardObj.transform, false);
+            RectTransform rbRt = replayBtnObj.GetComponent<RectTransform>();
+            rbRt.anchoredPosition = new Vector2(-115f, -115f);
+            rbRt.sizeDelta = new Vector2(190f, 54f);
 
-            Image bImg = btnObj.GetComponent<Image>();
-            bImg.sprite = GameUIController.CreatePillSprite(64, 32, 16);
-            bImg.type = Image.Type.Sliced;
-            bImg.color = new Color32(0x2E, 0xCC, 0x71, 0xFF);
+            Image rbImg = replayBtnObj.GetComponent<Image>();
+            rbImg.sprite = GameUIController.CreatePillSprite(64, 32, 16);
+            rbImg.type = Image.Type.Sliced;
+            rbImg.color = new Color32(0x4A, 0x69, 0xBD, 0xFF);
 
-            Button btn = btnObj.GetComponent<Button>();
-            btn.onClick.AddListener(() =>
+            Button rBtn = replayBtnObj.GetComponent<Button>();
+            rBtn.onClick.AddListener(() =>
             {
                 victoryModalObj.SetActive(false);
                 ResetGame();
@@ -1339,22 +1396,69 @@ namespace RoadwaysGame
                     GameUIController.Instance.PlayCheerSound();
                     GameUIController.Instance.TriggerConfettiBurst(60);
                 }
+                UpdateStatusHUD();
             });
 
-            GameObject btnTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
-            btnTextObj.transform.SetParent(btnObj.transform, false);
-            RectTransform btRt = btnTextObj.GetComponent<RectTransform>();
-            btRt.anchorMin = Vector2.zero;
-            btRt.anchorMax = Vector2.one;
-            btRt.sizeDelta = Vector2.zero;
+            GameObject rTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            rTextObj.transform.SetParent(replayBtnObj.transform, false);
+            RectTransform rbtRt = rTextObj.GetComponent<RectTransform>();
+            rbtRt.anchorMin = Vector2.zero;
+            rbtRt.anchorMax = Vector2.one;
+            rbtRt.sizeDelta = Vector2.zero;
+            Text rText = rTextObj.GetComponent<Text>();
+            rText.font = GameUIController.DefaultFont;
+            rText.fontSize = 20;
+            rText.fontStyle = FontStyle.Bold;
+            rText.alignment = TextAnchor.MiddleCenter;
+            rText.color = Color.white;
+            rText.text = "↺ REPLAY";
 
-            Text btnText = btnTextObj.GetComponent<Text>();
-            btnText.font = GameUIController.DefaultFont;
-            btnText.fontSize = 22;
-            btnText.fontStyle = FontStyle.Bold;
-            btnText.alignment = TextAnchor.MiddleCenter;
-            btnText.color = Color.white;
-            btnText.text = "PLAY AGAIN";
+            // Next Level Button (Right)
+            GameObject nextBtnObj = new GameObject("NextLevelBtn", typeof(RectTransform), typeof(Image), typeof(Button));
+            nextBtnObj.transform.SetParent(cardObj.transform, false);
+            RectTransform nbRt = nextBtnObj.GetComponent<RectTransform>();
+            nbRt.anchoredPosition = new Vector2(115f, -115f);
+            nbRt.sizeDelta = new Vector2(210f, 54f);
+
+            Image nbImg = nextBtnObj.GetComponent<Image>();
+            nbImg.sprite = GameUIController.CreatePillSprite(64, 32, 16);
+            nbImg.type = Image.Type.Sliced;
+            nbImg.color = new Color32(0x27, 0xAE, 0x60, 0xFF);
+
+            Button nBtn = nextBtnObj.GetComponent<Button>();
+            nBtn.onClick.AddListener(() =>
+            {
+                currentLevel++;
+                PlayerPrefs.SetInt("Roadways_Level", currentLevel);
+                PlayerPrefs.Save();
+                victoryModalObj.SetActive(false);
+                ResetGame();
+                if (ChilbiFlowController.Instance != null)
+                {
+                    ChilbiFlowController.Instance.SetLevel(currentLevel);
+                    ChilbiFlowController.Instance.ResetParade();
+                }
+                if (GameUIController.Instance != null)
+                {
+                    GameUIController.Instance.PlayCheerSound();
+                    GameUIController.Instance.TriggerConfettiBurst(80);
+                }
+                UpdateStatusHUD();
+            });
+
+            GameObject nTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            nTextObj.transform.SetParent(nextBtnObj.transform, false);
+            RectTransform nbtRt = nTextObj.GetComponent<RectTransform>();
+            nbtRt.anchorMin = Vector2.zero;
+            nbtRt.anchorMax = Vector2.one;
+            nbtRt.sizeDelta = Vector2.zero;
+            Text nText = nTextObj.GetComponent<Text>();
+            nText.font = GameUIController.DefaultFont;
+            nText.fontSize = 20;
+            nText.fontStyle = FontStyle.Bold;
+            nText.alignment = TextAnchor.MiddleCenter;
+            nText.color = Color.white;
+            nText.text = "NEXT LEVEL ➔";
 
             // Trigger celebration
             if (GameUIController.Instance != null)
@@ -1363,6 +1467,61 @@ namespace RoadwaysGame
                 GameUIController.Instance.PlayCheerSound();
             }
             AndroidHaptics.HeavyThud();
+        }
+
+        public void RecallLastBus()
+        {
+            if (isBoardingActive || isInFlight) return;
+
+            int targetBay = -1;
+            if (lastDispatchedBayIndex >= 0 && bayOccupants[lastDispatchedBayIndex] >= 0)
+            {
+                targetBay = lastDispatchedBayIndex;
+            }
+
+            if (targetBay < 0)
+            {
+                for (int i = 8; i >= 0; i--)
+                {
+                    if (bayOccupants[i] >= 0)
+                    {
+                        targetBay = i;
+                        break;
+                    }
+                }
+            }
+
+            if (targetBay >= 0)
+            {
+                int busIdx = bayOccupants[targetBay];
+                StartCoroutine(ReturnToDepotRoutine(busIdx, targetBay));
+                Vector3 bayPos = parkedBusObjects[targetBay] != null ? parkedBusObjects[targetBay].transform.position : new Vector3(Screen.width * 0.5f, Screen.height * 0.4f, 0f);
+                StartCoroutine(FloatingScoreRoutine(bayPos + new Vector3(0f, 40f, 0f), "↺ RECALLED", new Color(0.3f, 0.7f, 1f)));
+                AndroidHaptics.LightClick();
+            }
+            else
+            {
+                AndroidHaptics.DoubleBuzz();
+                if (warningClip != null && audioSource != null) audioSource.PlayOneShot(warningClip, 0.7f);
+            }
+        }
+
+        public void ShuffleParade()
+        {
+            if (isBoardingActive || isInFlight) return;
+
+            if (ChilbiFlowController.Instance != null)
+            {
+                ChilbiFlowController.Instance.ShuffleRows();
+                AndroidHaptics.MediumClick();
+                if (audioSource != null && hornClips != null && hornClips.Length > 0)
+                {
+                    audioSource.PlayOneShot(hornClips[UnityEngine.Random.Range(0, hornClips.Length)], 0.7f);
+                }
+                Vector3 centerPos = new Vector3(Screen.width * 0.5f, Screen.height * 0.55f, 0f);
+                StartCoroutine(FloatingScoreRoutine(centerPos, "🔀 SHUFFLED!", new Color(0.85f, 0.45f, 1f)));
+                UpdateStatusHUD();
+            }
         }
 
         public void UpdateStatusHUD()
@@ -1376,9 +1535,9 @@ namespace RoadwaysGame
                 if (bayUnlocked[i] && bayOccupants[i] == -1) openBays++;
             }
 
-            if (totalClearedChilbis >= 56)
+            if (totalClearedChilbis >= LevelTargetChilbis)
             {
-                statusText.text = $"🏆 All Chilbis Boarded! Victory!";
+                statusText.text = $"🏆 Level {currentLevel} Complete! Victory!";
                 return;
             }
 
@@ -1408,7 +1567,11 @@ namespace RoadwaysGame
             }
 
             SetGridlockWarning(false);
-            statusText.text = $"⚡ ⭐ {currentScore} • {totalClearedChilbis}/56 Cleared • {openBays} Bays Free";
+            statusText.text = $"⭐ Lvl {currentLevel} • 🌸 {totalClearedChilbis}/{LevelTargetChilbis} • 🅿️ {openBays} Free • {currentScore} pts";
+            if (GameUIController.Instance != null)
+            {
+                GameUIController.Instance.UpdateTitle($"⭐ LEVEL {currentLevel}  •  👑 HIGH: {highScore}");
+            }
         }
 
         public void ResetGame()
