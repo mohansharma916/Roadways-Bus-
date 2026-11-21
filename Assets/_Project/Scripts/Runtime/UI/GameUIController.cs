@@ -229,6 +229,88 @@ namespace RoadwaysGame
                 trapImg.sprite = CreateTrapeziumSprite(1080, Mathf.RoundToInt(trapeziumHeight), trapeziumTopWidthRatio, trapeziumBottomWidthRatio, trapeziumCornerRadius);
                 trapImg.type = Image.Type.Simple;
                 trapImg.color = trapeziumColor;
+
+                // 9 Angled Rectangular Parking Bays inside Trapezium (matching HTML 3D_Showcase_Preview.html)
+                GameObject baysContainer = new GameObject("TrapeziumBoxesContainer", typeof(RectTransform));
+                baysContainer.transform.SetParent(trapObj.transform, false);
+                RectTransform bcRt = baysContainer.GetComponent<RectTransform>();
+                bcRt.anchorMin = new Vector2(0.5f, 0.5f);
+                bcRt.anchorMax = new Vector2(0.5f, 0.5f);
+                bcRt.pivot = new Vector2(0.5f, 0.5f);
+                bcRt.anchoredPosition = Vector2.zero;
+                bcRt.sizeDelta = new Vector2(1080f, trapeziumHeight);
+
+                Color32 bayBg = new Color32(0x62, 0x64, 0x79, 0xFF); // #626479
+                Color32 whiteBorder = new Color32(0xFF, 0xFF, 0xFF, 0xFF); // #ffffff
+                Color32 vipBorder = new Color32(0xFF, 0xD7, 0x00, 0xFF); // #ffd700
+                Color32 greenBorder = new Color32(0x2E, 0xCC, 0x71, 0xFF); // #2ecc71
+
+                Sprite standardBoxSprite = CreateRoundedBoxSprite(68, 136, 16, 5, whiteBorder, bayBg);
+                Sprite vipBoxSprite = CreateRoundedBoxSprite(68, 136, 16, 5, vipBorder, bayBg);
+                Sprite greenBoxSprite = CreateRoundedBoxSprite(68, 136, 16, 5, greenBorder, bayBg);
+
+                float baySpacing = 92f;
+                for (int i = 0; i < 9; i++)
+                {
+                    GameObject bayObj = new GameObject($"TrapeziumBox_{i}", typeof(RectTransform), typeof(Image));
+                    bayObj.transform.SetParent(baysContainer.transform, false);
+                    RectTransform bayRt = bayObj.GetComponent<RectTransform>();
+                    bayRt.anchorMin = new Vector2(0.5f, 0.5f);
+                    bayRt.anchorMax = new Vector2(0.5f, 0.5f);
+                    bayRt.pivot = new Vector2(0.5f, 0.5f);
+                    bayRt.anchoredPosition = new Vector2((i - 4) * baySpacing, 0f);
+                    bayRt.sizeDelta = new Vector2(68f, 136f);
+                    bayRt.localEulerAngles = new Vector3(0f, 0f, 30f); // Tilted 30 degrees counter-clockwise (matches CSS rotate(-30deg))
+
+                    Image bayImg = bayObj.GetComponent<Image>();
+                    bayImg.type = Image.Type.Simple;
+
+                    if (i < 5)
+                    {
+                        // 5 Standard bays (white border)
+                        bayImg.sprite = standardBoxSprite;
+                    }
+                    else if (i == 5)
+                    {
+                        // VIP bay (gold border + "VIP" text)
+                        bayImg.sprite = vipBoxSprite;
+
+                        GameObject vipTextObj = new GameObject("VIPText", typeof(RectTransform), typeof(Text));
+                        vipTextObj.transform.SetParent(bayObj.transform, false);
+                        RectTransform vtRt = vipTextObj.GetComponent<RectTransform>();
+                        vtRt.anchorMin = Vector2.zero;
+                        vtRt.anchorMax = Vector2.one;
+                        vtRt.sizeDelta = Vector2.zero;
+
+                        Text vt = vipTextObj.GetComponent<Text>();
+                        vt.font = defaultFont;
+                        vt.fontSize = 24;
+                        vt.fontStyle = FontStyle.Bold;
+                        vt.alignment = TextAnchor.MiddleCenter;
+                        vt.color = vipBorder;
+                        vt.text = "VIP";
+                    }
+                    else
+                    {
+                        // 3 Unlock bays (green border + "+" text)
+                        bayImg.sprite = greenBoxSprite;
+
+                        GameObject plusTextObj = new GameObject("PlusText", typeof(RectTransform), typeof(Text));
+                        plusTextObj.transform.SetParent(bayObj.transform, false);
+                        RectTransform ptRt = plusTextObj.GetComponent<RectTransform>();
+                        ptRt.anchorMin = Vector2.zero;
+                        ptRt.anchorMax = Vector2.one;
+                        ptRt.sizeDelta = Vector2.zero;
+
+                        Text pt = plusTextObj.GetComponent<Text>();
+                        pt.font = defaultFont;
+                        pt.fontSize = 46;
+                        pt.fontStyle = FontStyle.Bold;
+                        pt.alignment = TextAnchor.MiddleCenter;
+                        pt.color = greenBorder;
+                        pt.text = "+";
+                    }
+                }
             }
 
             // 2. Bottom 50% Soft Blue-Grey Rectangular Panel (#d3daed, full width, 2px white top border only)
@@ -619,6 +701,56 @@ namespace RoadwaysGame
             tex.Apply();
 
             return Sprite.Create(tex, new Rect(0, 0, width, height), new Vector2(0.5f, 0f), 100f);
+        }
+
+        private static Sprite CreateRoundedBoxSprite(int width, int height, int cornerRadius, int borderWidth, Color32 borderColor, Color32 fillColor)
+        {
+            Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
+            tex.name = $"Gen_Box_{borderColor.r}_{borderColor.g}_{borderColor.b}";
+            tex.filterMode = FilterMode.Bilinear;
+            tex.wrapMode = TextureWrapMode.Clamp;
+
+            Color32[] pixels = new Color32[width * height];
+            Color32 clear = new Color32(0, 0, 0, 0);
+
+            float rOut = cornerRadius;
+            float rIn = Mathf.Max(0f, cornerRadius - borderWidth);
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    // Compute distance from outer rounded rect edges
+                    float dxOut = Mathf.Max(0f, Mathf.Abs(x - (width - 1) * 0.5f) - ((width - 1) * 0.5f - rOut));
+                    float dyOut = Mathf.Max(0f, Mathf.Abs(y - (height - 1) * 0.5f) - ((height - 1) * 0.5f - rOut));
+                    float distOut = Mathf.Sqrt(dxOut * dxOut + dyOut * dyOut);
+                    float alphaOut = Mathf.Clamp01(rOut - distOut + 0.5f);
+
+                    if (alphaOut <= 0.001f)
+                    {
+                        pixels[y * width + x] = clear;
+                        continue;
+                    }
+
+                    // Compute distance from inner fill rounded rect edges
+                    float innerW = (width - 1) * 0.5f - borderWidth;
+                    float innerH = (height - 1) * 0.5f - borderWidth;
+                    float dxIn = Mathf.Max(0f, Mathf.Abs(x - (width - 1) * 0.5f) - (innerW - rIn));
+                    float dyIn = Mathf.Max(0f, Mathf.Abs(y - (height - 1) * 0.5f) - (innerH - rIn));
+                    float distIn = Mathf.Sqrt(dxIn * dxIn + dyIn * dyIn);
+                    float alphaIn = Mathf.Clamp01(rIn - distIn + 0.5f);
+
+                    // Blend border and fill
+                    Color c = Color.Lerp((Color)borderColor, (Color)fillColor, alphaIn);
+                    c.a *= alphaOut;
+                    pixels[y * width + x] = c;
+                }
+            }
+
+            tex.SetPixels32(pixels);
+            tex.Apply();
+
+            return Sprite.Create(tex, new Rect(0, 0, width, height), new Vector2(0.5f, 0.5f), 100f);
         }
 
         public Sprite GetRoadCircuitSprite()
