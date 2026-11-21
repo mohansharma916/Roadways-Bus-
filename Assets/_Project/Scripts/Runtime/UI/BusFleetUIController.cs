@@ -60,8 +60,12 @@ namespace RoadwaysGame
         private static AudioClip[] hornClips;
         private static AudioClip warningClip;
         private static AudioClip popClip;
+        private static AudioClip airBrakeClip;
+        private static AudioClip engineRumbleClip;
+        private static AudioClip ambientClip;
 
         private AudioSource audioSource;
+        private AudioSource ambientAudioSource;
         private RectTransform canvasRt;
 
         // 9 Trapezium Bay Slots
@@ -234,6 +238,32 @@ namespace RoadwaysGame
                 if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
                 audioSource.playOnAwake = false;
                 audioSource.spatialBlend = 0f;
+            }
+
+            if (ambientAudioSource == null)
+            {
+                Transform existing = transform.Find("ZenAmbientMusic");
+                if (existing != null)
+                {
+                    ambientAudioSource = existing.GetComponent<AudioSource>();
+                }
+                else
+                {
+                    GameObject ambObj = new GameObject("ZenAmbientMusic");
+                    ambObj.transform.SetParent(transform);
+                    ambientAudioSource = ambObj.AddComponent<AudioSource>();
+                }
+                ambientAudioSource.loop = true;
+                ambientAudioSource.playOnAwake = false;
+                ambientAudioSource.spatialBlend = 0f;
+                ambientAudioSource.volume = 0.16f;
+            }
+
+            if (ambientClip == null) ambientClip = GenerateZenAmbientMelody();
+            if (ambientAudioSource.clip == null && ambientClip != null)
+            {
+                ambientAudioSource.clip = ambientClip;
+                ambientAudioSource.Play();
             }
         }
 
@@ -487,6 +517,7 @@ namespace RoadwaysGame
 
             float duration = 1.25f;
             float t = 0f;
+            PlayEngineRumble();
 
             while (t < 1f)
             {
@@ -538,6 +569,7 @@ namespace RoadwaysGame
 
             parkedBusObjects[bayIndex] = travelerObj;
             isInFlight = false;
+            PlayAirBrake();
             AndroidHaptics.MediumClick();
             UpdateStatusHUD();
 
@@ -805,6 +837,10 @@ namespace RoadwaysGame
                 warningClip = GenerateWarningHorn();
                 popClip = GeneratePopSound();
             }
+
+            if (airBrakeClip == null) airBrakeClip = GenerateAirBrakeSound();
+            if (engineRumbleClip == null) engineRumbleClip = GenerateEngineRumbleSound();
+            if (ambientClip == null) ambientClip = GenerateZenAmbientMelody();
         }
 
         private static Sprite CreateBusSprite(int w, int h, Color32 bodyColor, bool hasHoodLine)
@@ -966,6 +1002,131 @@ namespace RoadwaysGame
             }
 
             AudioClip clip = AudioClip.Create("BoardingPop", totalSamples, 1, sampleRate, false);
+            clip.SetData(data, 0);
+            return clip;
+        }
+
+        private static AudioClip GenerateAirBrakeSound()
+        {
+            int sampleRate = 22050;
+            float duration = 0.32f;
+            int totalSamples = (int)(sampleRate * duration);
+            float[] data = new float[totalSamples];
+            System.Random rand = new System.Random(42);
+
+            for (int i = 0; i < totalSamples; i++)
+            {
+                float t = (float)i / sampleRate;
+                float noise = (float)(rand.NextDouble() * 2.0 - 1.0);
+                float hissEnv = Mathf.Clamp01(1f - (t / 0.28f));
+                hissEnv = hissEnv * hissEnv;
+                float hiss = noise * hissEnv * 0.35f;
+
+                float click = 0f;
+                if (t >= 0.16f && t <= 0.22f)
+                {
+                    float tc = t - 0.16f;
+                    float clickEnv = Mathf.Exp(-tc * 85f);
+                    click = Mathf.Sin(2f * Mathf.PI * 880f * tc) * clickEnv * 0.7f;
+                }
+
+                data[i] = Mathf.Clamp(hiss + click, -1f, 1f);
+            }
+
+            AudioClip clip = AudioClip.Create("AirBrake", totalSamples, 1, sampleRate, false);
+            clip.SetData(data, 0);
+            return clip;
+        }
+
+        private static AudioClip GenerateEngineRumbleSound()
+        {
+            int sampleRate = 22050;
+            float duration = 0.42f;
+            int totalSamples = (int)(sampleRate * duration);
+            float[] data = new float[totalSamples];
+
+            for (int i = 0; i < totalSamples; i++)
+            {
+                float t = (float)i / sampleRate;
+                float p = t / duration;
+                float env = p < 0.15f ? p / 0.15f : (1f - p) * 0.9f;
+
+                float freq = Mathf.Lerp(65f, 175f, p * p);
+                float fundamental = Mathf.Sin(2f * Mathf.PI * freq * t);
+                float harmonic = 0.4f * Mathf.Sin(2f * Mathf.PI * freq * 2f * t);
+                float sub = 0.25f * Mathf.Sin(2f * Mathf.PI * (freq * 0.5f) * t);
+
+                data[i] = (fundamental + harmonic + sub) * env * 0.4f;
+            }
+
+            AudioClip clip = AudioClip.Create("EngineRumble", totalSamples, 1, sampleRate, false);
+            clip.SetData(data, 0);
+            return clip;
+        }
+
+        public void PlayAirBrake()
+        {
+            if (airBrakeClip != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(airBrakeClip, 0.75f);
+            }
+        }
+
+        public void PlayEngineRumble()
+        {
+            if (engineRumbleClip != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(engineRumbleClip, 0.65f);
+            }
+        }
+
+        private static AudioClip GenerateZenAmbientMelody()
+        {
+            int sampleRate = 22050;
+            float duration = 12.0f;
+            int totalSamples = (int)(sampleRate * duration);
+            float[] data = new float[totalSamples];
+
+            // 4 pastel chords: C major, Am, F, G
+            float[][] chords = new float[][]
+            {
+                new float[] { 261.63f, 329.63f, 392.00f, 523.25f }, // C
+                new float[] { 220.00f, 261.63f, 329.63f, 440.00f }, // Am
+                new float[] { 174.61f, 220.00f, 261.63f, 349.23f }, // F
+                new float[] { 196.00f, 246.94f, 293.66f, 392.00f }  // G
+            };
+
+            for (int i = 0; i < totalSamples; i++)
+            {
+                float t = (float)i / sampleRate;
+                int measure = Mathf.Clamp((int)(t / 3.0f), 0, 3);
+                float measureTime = t % 3.0f;
+
+                // Soft bell-like envelope
+                float env = Mathf.Sin((measureTime / 3.0f) * Mathf.PI);
+                env = Mathf.Pow(Mathf.Clamp01(env), 0.75f);
+
+                float sample = 0f;
+                float[] notes = chords[measure];
+                for (int n = 0; n < notes.Length; n++)
+                {
+                    float freq = notes[n];
+                    float phase = 2f * Mathf.PI * freq * t;
+                    float vibrato = Mathf.Sin(2f * Mathf.PI * 4.5f * t) * 0.4f;
+                    float wave = Mathf.Sin(phase + vibrato);
+                    float harmonic = 0.22f * Mathf.Sin(2f * phase);
+                    sample += (wave + harmonic) * (0.10f / notes.Length);
+                }
+
+                // Global loop edge fade
+                float edgeFade = 1f;
+                if (t < 0.25f) edgeFade = t / 0.25f;
+                else if (t > duration - 0.25f) edgeFade = (duration - t) / 0.25f;
+
+                data[i] = sample * env * edgeFade;
+            }
+
+            AudioClip clip = AudioClip.Create("ZenAmbientMelody", totalSamples, 1, sampleRate, false);
             clip.SetData(data, 0);
             return clip;
         }
