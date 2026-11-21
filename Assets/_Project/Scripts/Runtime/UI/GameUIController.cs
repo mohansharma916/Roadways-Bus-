@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 #if ENABLE_INPUT_SYSTEM
@@ -603,14 +604,115 @@ namespace RoadwaysGame
             }
         }
 
+        [System.NonSerialized] private AudioClip cheerClip;
+
+        public void PlayCheerSound()
+        {
+            if (cheerClip == null)
+            {
+                cheerClip = Resources.Load<AudioClip>("Audio/chilbi_cheer");
+            }
+            if (cheerClip != null)
+            {
+                AudioSource src = GetComponent<AudioSource>();
+                if (src == null) src = gameObject.AddComponent<AudioSource>();
+                src.PlayOneShot(cheerClip, 0.9f);
+            }
+        }
+
+        public void TriggerConfettiBurst(int count = 60)
+        {
+            StartCoroutine(ConfettiRoutine(count));
+        }
+
+        private System.Collections.IEnumerator ConfettiRoutine(int count)
+        {
+            Transform cTrans = mainCanvas != null ? mainCanvas.transform : transform.Find("MainGameCanvas");
+            if (cTrans == null) yield break;
+
+            GameObject container = new GameObject("ConfettiContainer", typeof(RectTransform));
+            container.transform.SetParent(cTrans, false);
+            RectTransform crt = container.GetComponent<RectTransform>();
+            crt.anchorMin = Vector2.zero;
+            crt.anchorMax = Vector2.one;
+            crt.sizeDelta = Vector2.zero;
+
+            Color[] confettiColors = new Color[] {
+                new Color32(0xE8, 0x43, 0x93, 0xFF), // Pink
+                new Color32(0xF1, 0xC4, 0x0F, 0xFF), // Gold
+                new Color32(0x2E, 0xCC, 0x71, 0xFF), // Green
+                new Color32(0x34, 0x98, 0xDB, 0xFF), // Blue
+                new Color32(0x9B, 0x59, 0xB6, 0xFF), // Purple
+                new Color32(0xE6, 0x7E, 0x22, 0xFF), // Orange
+                new Color32(0x00, 0xCE, 0xC9, 0xFF)  // Cyan
+            };
+
+            List<RectTransform> pieces = new List<RectTransform>();
+            List<Vector2> velocities = new List<Vector2>();
+            List<float> rotSpeeds = new List<float>();
+
+            for (int i = 0; i < count; i++)
+            {
+                GameObject chip = new GameObject($"Confetti_{i}", typeof(RectTransform), typeof(Image));
+                chip.transform.SetParent(container.transform, false);
+                RectTransform rt = chip.GetComponent<RectTransform>();
+                rt.anchorMin = new Vector2(0.5f, 1f);
+                rt.anchorMax = new Vector2(0.5f, 1f);
+                rt.pivot = new Vector2(0.5f, 0.5f);
+                rt.sizeDelta = new Vector2(UnityEngine.Random.Range(10f, 18f), UnityEngine.Random.Range(14f, 26f));
+                rt.anchoredPosition = new Vector2(UnityEngine.Random.Range(-340f, 340f), UnityEngine.Random.Range(10f, 60f));
+
+                Image img = chip.GetComponent<Image>();
+                img.color = confettiColors[i % confettiColors.Length];
+                img.raycastTarget = false;
+
+                pieces.Add(rt);
+                velocities.Add(new Vector2(UnityEngine.Random.Range(-70f, 70f), -UnityEngine.Random.Range(220f, 480f)));
+                rotSpeeds.Add(UnityEngine.Random.Range(-240f, 240f));
+            }
+
+            float elapsed = 0f;
+            float duration = 3.5f;
+            while (elapsed < duration)
+            {
+                float dt = Time.deltaTime;
+                elapsed += dt;
+
+                for (int i = 0; i < pieces.Count; i++)
+                {
+                    if (pieces[i] == null) continue;
+                    Vector2 pos = pieces[i].anchoredPosition;
+                    Vector2 v = velocities[i];
+                    v.x += Mathf.Sin(elapsed * 4f + i) * 60f * dt;
+                    pos += v * dt;
+                    pieces[i].anchoredPosition = pos;
+                    pieces[i].Rotate(0f, 0f, rotSpeeds[i] * dt);
+
+                    if (elapsed > duration - 1f)
+                    {
+                        Image img = pieces[i].GetComponent<Image>();
+                        if (img != null)
+                        {
+                            Color c = img.color;
+                            c.a = Mathf.Clamp01(duration - elapsed);
+                            img.color = c;
+                        }
+                    }
+                }
+                yield return null;
+            }
+
+            Destroy(container);
+        }
+
         private void OnReplayClicked()
         {
-            Debug.Log("<color=#2ecc71>[GameUI] Replay Cheer clicked! Triggering parade cheer & sprint...</color>");
-            if (formationManager == null) formationManager = FindAnyObjectByType<ChilbiFormationManager>();
-            if (formationManager != null)
-            {
-                formationManager.InitializeFormation();
-            }
+            Debug.Log("<color=#2ecc71>[GameUI] Replay clicked! Resetting game & triggering cheer...</color>");
+            if (BusFleetUIController.Instance != null) BusFleetUIController.Instance.ResetGame();
+            if (ChilbiFlowController.Instance != null) ChilbiFlowController.Instance.ResetParade();
+            PlayCheerSound();
+            TriggerConfettiBurst(60);
+            AndroidHaptics.DoubleBuzz();
         }
 
         private static Sprite CreatePillSprite(int width, int height, int radius)

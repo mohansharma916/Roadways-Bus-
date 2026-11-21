@@ -467,6 +467,39 @@ namespace RoadwaysGame
                 }
             }
         }
+
+        public void ResetParade()
+        {
+            currentDistance = 0f;
+            walkCyclePhase = 0f;
+            int colsPerRow = 7;
+            for (int i = 0; i < instances.Count; i++)
+            {
+                int r = i / colsPerRow;
+                int c = i % colsPerRow;
+                instances[i].row = r;
+                instances[i].col = c;
+                instances[i].isBoarding = false;
+                instances[i].root.gameObject.SetActive(true);
+                instances[i].root.localScale = Vector3.one * baseScale;
+
+                int themeIdx = r % Themes.Length;
+                Transform bg = instances[i].bodyGroup;
+                if (bg != null)
+                {
+                    Transform body = bg.Find("BeanBody");
+                    if (body != null) body.GetComponent<Image>().sprite = bodySprites[themeIdx];
+                    Transform nl = bg.Find("NearLeg");
+                    if (nl != null) nl.GetComponent<Image>().sprite = footSprites[themeIdx];
+                    Transform fl = bg.Find("FarLeg");
+                    if (fl != null) fl.GetComponent<Image>().sprite = footSprites[themeIdx];
+                    Transform na = bg.Find("NearArm");
+                    if (na != null) na.GetComponent<Image>().sprite = limbSprites[themeIdx];
+                    Transform fa = bg.Find("FarArm");
+                    if (fa != null) fa.GetComponent<Image>().sprite = limbSprites[themeIdx];
+                }
+            }
+        }
         #endregion
 
         #region Procedural Sprite Generation

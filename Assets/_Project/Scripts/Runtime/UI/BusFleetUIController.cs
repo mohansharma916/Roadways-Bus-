@@ -900,6 +900,13 @@ namespace RoadwaysGame
             if (totalClearedChilbis >= 56)
             {
                 statusText.text = $"🏆 All Chilbis Boarded! Victory!";
+                GameUIController gui = FindAnyObjectByType<GameUIController>();
+                if (gui != null)
+                {
+                    gui.TriggerConfettiBurst(80);
+                    gui.PlayCheerSound();
+                }
+                AndroidHaptics.HeavyThud();
                 return;
             }
 
@@ -927,6 +934,36 @@ namespace RoadwaysGame
             }
 
             statusText.text = $"🌸 {totalClearedChilbis} Cleared • {openBays} Bays Free";
+        }
+
+        public void ResetGame()
+        {
+            StopAllCoroutines();
+            isBoardingActive = false;
+            isInFlight = false;
+
+            for (int i = 0; i < 9; i++)
+            {
+                if (parkedBusObjects[i] != null)
+                {
+                    Destroy(parkedBusObjects[i]);
+                    parkedBusObjects[i] = null;
+                }
+                bayOccupants[i] = -1;
+            }
+
+            for (int i = 0; i < depotBusRts.Count; i++)
+            {
+                if (depotBusRts[i] != null)
+                {
+                    depotBusRts[i].gameObject.SetActive(true);
+                    depotBusRts[i].localScale = Vector3.one;
+                }
+            }
+
+            totalClearedChilbis = 0;
+            AndroidHaptics.DoubleBuzz();
+            UpdateStatusHUD();
         }
         #endregion
     }
