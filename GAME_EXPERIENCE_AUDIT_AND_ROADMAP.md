@@ -310,14 +310,14 @@ gantt
     Relocate Boosters to Lower Thumb Bar      :done,    des1, 2026-11-21, 1d
     Add Settings / Pause Dialog (Audio/Haptics):done,    des2, 2026-11-21, 1d
     section Phase 10: Guided Contextual FTUE
-    Animated Bouncing Pointer on Level 1       :active,  des3, 2026-11-21, 1d
-    Level 1 First-Win Juice & Trophy Celebration:        des4, 2026-11-22, 1d
+    Animated Bouncing Pointer on Level 1       :done,    des3, 2026-11-21, 1d
+    Level 1 First-Win Juice & Trophy Celebration:done,   des4, 2026-11-21, 1d
     section Phase 11: Booster Economy & Recovery
-    Inventory Gating (3x Recall, 2x Shuffle)   :         des5, 2026-11-25, 1d
-    Gridlock Out-of-Moves Recovery Dialog      :         des6, 2026-11-26, 1d
+    Inventory Gating (3x Recall, 2x Shuffle)   :done,    des5, 2026-11-21, 1d
+    Gridlock Out-of-Moves Recovery Dialog      :done,    des6, 2026-11-21, 1d
     section Phase 12: Campaign Saga Map & Meta
-    Saga Map Ribbon (Levels 1-20 Milestone View):        des7, 2026-11-27, 2d
-    Bay Unlock Progression (Bay 6 at L3, 7 at L5):      des8, 2026-11-28, 1d
+    Saga Map Ribbon (Levels 1-20 Milestone View):active,  des7, 2026-11-21, 2d
+    Bay Unlock Progression (Bay 6 at L3, 7 at L5):      des8, 2026-11-21, 1d
     section Phase 13: Accessibility & Storefront
     Colorblind Roof Decals & Emblems           :         des9, 2026-11-29, 1d
     Google Play Icon & 5 Feature Screenshots   :         des10, 2026-11-30, 1d

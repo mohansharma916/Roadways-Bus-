@@ -1400,6 +1400,9 @@ namespace RoadwaysGame
         [System.NonSerialized] private Text statusText;
         [System.NonSerialized] private GameObject victoryModalObj;
         [System.NonSerialized] private GameObject gridlockBannerObj;
+        [System.NonSerialized] private GameObject gridlockModalObj;
+        [System.NonSerialized] private Text gridlockRecallBtnText;
+        [System.NonSerialized] private Text gridlockShuffleBtnText;
         [System.NonSerialized] private int currentLevel = 1;
         [System.NonSerialized] private int highScore = 0;
         [System.NonSerialized] private int lastDispatchedBayIndex = -1;
@@ -1471,54 +1474,234 @@ namespace RoadwaysGame
         {
             if (show)
             {
-                if (gridlockBannerObj == null)
+                if (gridlockModalObj == null)
                 {
-                    Transform canvasTrans = GetCanvasTransform();
-                    if (canvasTrans == null) return;
-
-                    gridlockBannerObj = new GameObject("GridlockBanner", typeof(RectTransform), typeof(Image));
-                    gridlockBannerObj.transform.SetParent(canvasTrans, false);
-                    RectTransform gRt = gridlockBannerObj.GetComponent<RectTransform>();
-                    gRt.anchorMin = new Vector2(0.5f, 0.5f);
-                    gRt.anchorMax = new Vector2(0.5f, 0.5f);
-                    gRt.pivot = new Vector2(0.5f, 0.5f);
-                    gRt.anchoredPosition = new Vector2(0f, 150f);
-                    gRt.sizeDelta = new Vector2(560f, 48f);
-
-                    Image gImg = gridlockBannerObj.GetComponent<Image>();
-                    gImg.sprite = GameUIController.CreatePillSprite(64, 32, 16);
-                    gImg.type = Image.Type.Sliced;
-                    gImg.color = new Color(0.92f, 0.22f, 0.22f, 0.95f);
-
-                    GameObject textObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
-                    textObj.transform.SetParent(gridlockBannerObj.transform, false);
-                    RectTransform tRt = textObj.GetComponent<RectTransform>();
-                    tRt.anchorMin = Vector2.zero;
-                    tRt.anchorMax = Vector2.one;
-                    tRt.sizeDelta = Vector2.zero;
-
-                    Text t = textObj.GetComponent<Text>();
-                    t.font = GameUIController.DefaultFont;
-                    t.fontSize = 20;
-                    t.fontStyle = FontStyle.Bold;
-                    t.alignment = TextAnchor.MiddleCenter;
-                    t.color = Color.white;
-                    t.text = "⚠️ GRIDLOCK! No matching bay • Tap bus to return";
+                    CreateGridlockRecoveryModal();
                 }
 
-                if (!gridlockBannerObj.activeSelf)
+                if (gridlockModalObj != null)
                 {
-                    gridlockBannerObj.SetActive(true);
-                    AndroidHaptics.DoubleBuzz();
-                    if (warningClip != null && audioSource != null) audioSource.PlayOneShot(warningClip, 0.8f);
+                    RefreshGridlockModalButtons();
+                    if (!gridlockModalObj.activeSelf)
+                    {
+                        gridlockModalObj.SetActive(true);
+                        AndroidHaptics.DoubleBuzz();
+                        if (warningClip != null && audioSource != null && SfxEnabled) audioSource.PlayOneShot(warningClip, 0.8f);
+                    }
                 }
             }
             else
             {
+                if (gridlockModalObj != null && gridlockModalObj.activeSelf)
+                {
+                    gridlockModalObj.SetActive(false);
+                }
                 if (gridlockBannerObj != null && gridlockBannerObj.activeSelf)
                 {
                     gridlockBannerObj.SetActive(false);
                 }
+            }
+        }
+
+        private void CreateGridlockRecoveryModal()
+        {
+            Transform canvasTrans = GetCanvasTransform();
+            if (canvasTrans == null) return;
+
+            gridlockModalObj = new GameObject("GridlockRecoveryModal", typeof(RectTransform), typeof(Image));
+            gridlockModalObj.transform.SetParent(canvasTrans, false);
+            RectTransform gmRt = gridlockModalObj.GetComponent<RectTransform>();
+            gmRt.anchorMin = Vector2.zero;
+            gmRt.anchorMax = Vector2.one;
+            gmRt.sizeDelta = Vector2.zero;
+
+            Image bgImg = gridlockModalObj.GetComponent<Image>();
+            bgImg.color = new Color(0f, 0f, 0f, 0.75f);
+
+            // Dialog Card
+            GameObject cardObj = new GameObject("Card", typeof(RectTransform), typeof(Image));
+            cardObj.transform.SetParent(gridlockModalObj.transform, false);
+            RectTransform cardRt = cardObj.GetComponent<RectTransform>();
+            cardRt.sizeDelta = new Vector2(580f, 480f);
+
+            Image cardImg = cardObj.GetComponent<Image>();
+            cardImg.sprite = GameUIController.CreatePillSprite(128, 128, 28);
+            cardImg.type = Image.Type.Sliced;
+            cardImg.color = new Color32(0xFF, 0xFA, 0xFA, 0xFF);
+
+            // Warning Badge
+            GameObject badgeObj = new GameObject("Badge", typeof(RectTransform), typeof(Image));
+            badgeObj.transform.SetParent(cardObj.transform, false);
+            RectTransform bRt = badgeObj.GetComponent<RectTransform>();
+            bRt.anchoredPosition = new Vector2(0f, 185f);
+            bRt.sizeDelta = new Vector2(460f, 48f);
+            Image bImg = badgeObj.GetComponent<Image>();
+            bImg.sprite = GameUIController.CreatePillSprite(64, 32, 16);
+            bImg.type = Image.Type.Sliced;
+            bImg.color = new Color32(0xE7, 0x4C, 0x3C, 0xFF);
+
+            GameObject bTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            bTextObj.transform.SetParent(badgeObj.transform, false);
+            RectTransform btRt = bTextObj.GetComponent<RectTransform>();
+            btRt.anchorMin = Vector2.zero;
+            btRt.anchorMax = Vector2.one;
+            btRt.sizeDelta = Vector2.zero;
+            Text bt = bTextObj.GetComponent<Text>();
+            bt.font = GameUIController.DefaultFont;
+            bt.fontSize = 22;
+            bt.fontStyle = FontStyle.Bold;
+            bt.alignment = TextAnchor.MiddleCenter;
+            bt.color = Color.white;
+            bt.text = "⚠️ GRIDLOCK DETECTED!";
+
+            // Subtitle Description
+            GameObject descObj = new GameObject("Desc", typeof(RectTransform), typeof(Text));
+            descObj.transform.SetParent(cardObj.transform, false);
+            RectTransform dRt = descObj.GetComponent<RectTransform>();
+            dRt.anchoredPosition = new Vector2(0f, 115f);
+            dRt.sizeDelta = new Vector2(520f, 65f);
+            Text dText = descObj.GetComponent<Text>();
+            dText.font = GameUIController.DefaultFont;
+            dText.fontSize = 17;
+            dText.alignment = TextAnchor.MiddleCenter;
+            dText.lineSpacing = 1.25f;
+            dText.color = new Color32(0x55, 0x5F, 0x72, 0xFF);
+            dText.text = "All parking bays are full and none match the parade!\nChoose an emergency rescue option to continue:";
+
+            // Option 1: Emergency Recall
+            GameObject recallBtnObj = new GameObject("RecallRescueBtn", typeof(RectTransform), typeof(Image), typeof(Button));
+            recallBtnObj.transform.SetParent(cardObj.transform, false);
+            RectTransform rcRt = recallBtnObj.GetComponent<RectTransform>();
+            rcRt.anchoredPosition = new Vector2(0f, 42f);
+            rcRt.sizeDelta = new Vector2(480f, 54f);
+            Image rcImg = recallBtnObj.GetComponent<Image>();
+            rcImg.sprite = GameUIController.CreatePillSprite(64, 32, 16);
+            rcImg.type = Image.Type.Sliced;
+            rcImg.color = new Color32(0x34, 0x49, 0x5E, 0xFF);
+
+            Button rcBtn = recallBtnObj.GetComponent<Button>();
+            rcBtn.onClick.AddListener(() =>
+            {
+                gridlockModalObj.SetActive(false);
+                if (recallCount <= 0)
+                {
+                    recallCount = 1; // grant free emergency rescue
+                    PlayerPrefs.SetInt("Roadways_RecallCount", recallCount);
+                    PlayerPrefs.Save();
+                    if (GameUIController.Instance != null) GameUIController.Instance.UpdateBoosterLabels();
+                }
+                RecallLastBus();
+            });
+
+            GameObject rcTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            rcTextObj.transform.SetParent(recallBtnObj.transform, false);
+            RectTransform rctRt = rcTextObj.GetComponent<RectTransform>();
+            rctRt.anchorMin = Vector2.zero;
+            rctRt.anchorMax = Vector2.one;
+            rctRt.sizeDelta = Vector2.zero;
+            gridlockRecallBtnText = rcTextObj.GetComponent<Text>();
+            gridlockRecallBtnText.font = GameUIController.DefaultFont;
+            gridlockRecallBtnText.fontSize = 18;
+            gridlockRecallBtnText.fontStyle = FontStyle.Bold;
+            gridlockRecallBtnText.alignment = TextAnchor.MiddleCenter;
+            gridlockRecallBtnText.color = Color.white;
+
+            // Option 2: Emergency Shuffle
+            GameObject shuffleBtnObj = new GameObject("ShuffleRescueBtn", typeof(RectTransform), typeof(Image), typeof(Button));
+            shuffleBtnObj.transform.SetParent(cardObj.transform, false);
+            RectTransform shRt = shuffleBtnObj.GetComponent<RectTransform>();
+            shRt.anchoredPosition = new Vector2(0f, -28f);
+            shRt.sizeDelta = new Vector2(480f, 54f);
+            Image shImg = shuffleBtnObj.GetComponent<Image>();
+            shImg.sprite = GameUIController.CreatePillSprite(64, 32, 16);
+            shImg.type = Image.Type.Sliced;
+            shImg.color = new Color32(0x8E, 0x44, 0xAD, 0xFF);
+
+            Button shBtn = shuffleBtnObj.GetComponent<Button>();
+            shBtn.onClick.AddListener(() =>
+            {
+                gridlockModalObj.SetActive(false);
+                if (shuffleCount <= 0)
+                {
+                    shuffleCount = 1; // grant free emergency rescue
+                    PlayerPrefs.SetInt("Roadways_ShuffleCount", shuffleCount);
+                    PlayerPrefs.Save();
+                    if (GameUIController.Instance != null) GameUIController.Instance.UpdateBoosterLabels();
+                }
+                ShuffleParade();
+            });
+
+            GameObject shTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            shTextObj.transform.SetParent(shuffleBtnObj.transform, false);
+            RectTransform shtRt = shTextObj.GetComponent<RectTransform>();
+            shtRt.anchorMin = Vector2.zero;
+            shtRt.anchorMax = Vector2.one;
+            shtRt.sizeDelta = Vector2.zero;
+            gridlockShuffleBtnText = shTextObj.GetComponent<Text>();
+            gridlockShuffleBtnText.font = GameUIController.DefaultFont;
+            gridlockShuffleBtnText.fontSize = 18;
+            gridlockShuffleBtnText.fontStyle = FontStyle.Bold;
+            gridlockShuffleBtnText.alignment = TextAnchor.MiddleCenter;
+            gridlockShuffleBtnText.color = Color.white;
+
+            // Option 3: Restart Level
+            GameObject restartBtnObj = new GameObject("RestartBtn", typeof(RectTransform), typeof(Image), typeof(Button));
+            restartBtnObj.transform.SetParent(cardObj.transform, false);
+            RectTransform rstRt = restartBtnObj.GetComponent<RectTransform>();
+            rstRt.anchoredPosition = new Vector2(0f, -98f);
+            rstRt.sizeDelta = new Vector2(340f, 46f);
+            Image rstImg = restartBtnObj.GetComponent<Image>();
+            rstImg.sprite = GameUIController.CreatePillSprite(64, 32, 16);
+            rstImg.type = Image.Type.Sliced;
+            rstImg.color = new Color32(0x7F, 0x8C, 0x8D, 0xFF);
+
+            Button rstBtn = restartBtnObj.GetComponent<Button>();
+            rstBtn.onClick.AddListener(() =>
+            {
+                gridlockModalObj.SetActive(false);
+                ResetGame();
+                if (ChilbiFlowController.Instance != null) ChilbiFlowController.Instance.ResetParade();
+                UpdateStatusHUD();
+            });
+
+            GameObject rstTextObj = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            rstTextObj.transform.SetParent(restartBtnObj.transform, false);
+            RectTransform rsttRt = rstTextObj.GetComponent<RectTransform>();
+            rsttRt.anchorMin = Vector2.zero;
+            rsttRt.anchorMax = Vector2.one;
+            rsttRt.sizeDelta = Vector2.zero;
+            Text rstText = rstTextObj.GetComponent<Text>();
+            rstText.font = GameUIController.DefaultFont;
+            rstText.fontSize = 17;
+            rstText.fontStyle = FontStyle.Bold;
+            rstText.alignment = TextAnchor.MiddleCenter;
+            rstText.color = Color.white;
+            rstText.text = "↺ Restart Level";
+
+            // Tip Footer
+            GameObject tipObj = new GameObject("Tip", typeof(RectTransform), typeof(Text));
+            tipObj.transform.SetParent(cardObj.transform, false);
+            RectTransform tpRt = tipObj.GetComponent<RectTransform>();
+            tpRt.anchoredPosition = new Vector2(0f, -162f);
+            tpRt.sizeDelta = new Vector2(500f, 38f);
+            Text tpText = tipObj.GetComponent<Text>();
+            tpText.font = GameUIController.DefaultFont;
+            tpText.fontSize = 14;
+            tpText.fontStyle = FontStyle.Italic;
+            tpText.alignment = TextAnchor.MiddleCenter;
+            tpText.color = new Color32(0x95, 0xA5, 0xA6, 0xFF);
+            tpText.text = "💡 Tip: Prioritize front-row colors to keep bays open!";
+        }
+
+        private void RefreshGridlockModalButtons()
+        {
+            if (gridlockRecallBtnText != null)
+            {
+                gridlockRecallBtnText.text = recallCount > 0 ? $"↺ RECALL LAST BUS  ({recallCount} Left)" : "↺ FREE EMERGENCY RECALL  (+1 Free)";
+            }
+            if (gridlockShuffleBtnText != null)
+            {
+                gridlockShuffleBtnText.text = shuffleCount > 0 ? $"🔀 SHUFFLE PARADE  ({shuffleCount} Left)" : "🔀 FREE EMERGENCY SHUFFLE  (+1 Free)";
             }
         }
 
