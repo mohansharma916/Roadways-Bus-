@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Compiles the Unity-free gameplay core outside Unity, so rules can be tested while the editor holds the project lock. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>9.0</LangVersion> <!-- Unity 6's C# version: keeps the core compatible -->
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../Assets/_Project/Scripts/Core/*.cs" />
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+</Project>

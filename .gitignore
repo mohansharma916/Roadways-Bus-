@@ -38,3 +38,7 @@ ehthumbs.db
 *.apk
 *.aab
 *.unitypackage
+
+# Out-of-Unity core test harness build output
+Tools/**/bin/
+!Tools/CoreTests/CoreTests.csproj
