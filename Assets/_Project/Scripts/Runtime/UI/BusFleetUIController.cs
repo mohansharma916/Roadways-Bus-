@@ -220,6 +220,7 @@ namespace RoadwaysGame
             }
 
             PlayBoardingPop();
+            AndroidHaptics.LightClick();
             UpdatePassengerCount(bayIndex, passengerNum, maxPassengers);
 
             kRt.gameObject.SetActive(false);
@@ -306,6 +307,8 @@ namespace RoadwaysGame
 
                 depotBusRts.Add(bRt);
             }
+
+            UpdateStatusHUD();
         }
 
         private void FindBayTransforms()
@@ -359,9 +362,12 @@ namespace RoadwaysGame
                 // All unlocked bays are full -> trigger rejection shake and warning horn
                 StartCoroutine(RejectShake(depotBusRts[busIndex]));
                 if (warningClip != null && audioSource != null) audioSource.PlayOneShot(warningClip, 0.7f);
+                AndroidHaptics.DoubleBuzz();
+                UpdateStatusHUD();
                 return;
             }
 
+            AndroidHaptics.LightClick();
             StartCoroutine(DispatchRoutine(busIndex, targetBay));
         }
 
@@ -515,6 +521,8 @@ namespace RoadwaysGame
 
             parkedBusObjects[bayIndex] = travelerObj;
             isInFlight = false;
+            AndroidHaptics.MediumClick();
+            UpdateStatusHUD();
 
             // Enable tapping parked bus to return to depot
             int capturedBusIdx = busIndex;
@@ -577,6 +585,8 @@ namespace RoadwaysGame
             parkedBusObjects[bayIndex] = null;
             bayOccupants[bayIndex] = -1;
             isInFlight = false;
+            AndroidHaptics.LightClick();
+            UpdateStatusHUD();
 
             OnBusLeftBay?.Invoke(bayIndex, busIndex);
         }
@@ -617,6 +627,10 @@ namespace RoadwaysGame
             Destroy(busObj);
             parkedBusObjects[bayIndex] = null;
             bayOccupants[bayIndex] = -1;
+
+            totalClearedChilbis += 7;
+            AndroidHaptics.HeavyThud();
+            UpdateStatusHUD();
 
             // Re-enable depot bus after departure
             if (busIdx >= 0 && busIdx < depotBusRts.Count && depotBusRts[busIdx] != null)
@@ -838,5 +852,101 @@ namespace RoadwaysGame
             return clip;
         }
         #endregion
+
+        #region Bay Unlocking & Status HUD
+        [System.NonSerialized] private int totalClearedChilbis = 0;
+        [System.NonSerialized] private Text statusText;
+
+        private void FindStatusText()
+        {
+            if (statusText != null) return;
+            GameObject stObj = GameObject.Find("StatusText");
+            if (stObj != null) statusText = stObj.GetComponent<Text>();
+        }
+
+        public void UnlockBay(int bayIndex, GameObject bayObj, Sprite standardSprite)
+        {
+            if (bayIndex < 0 || bayIndex >= 9) return;
+            if (bayUnlocked[bayIndex]) return;
+
+            bayUnlocked[bayIndex] = true;
+
+            Image img = bayObj.GetComponent<Image>();
+            if (img != null) img.sprite = standardSprite;
+
+            Transform plus = bayObj.transform.Find("PlusText");
+            if (plus != null) plus.gameObject.SetActive(false);
+
+            if (audioSource != null && hornClips != null && hornClips.Length > 7 && hornClips[7] != null)
+            {
+                audioSource.PlayOneShot(hornClips[7], 0.75f);
+            }
+            AndroidHaptics.MediumClick();
+
+            UpdateStatusHUD();
+        }
+
+        public void UpdateStatusHUD()
+        {
+            FindStatusText();
+            if (statusText == null) return;
+
+            int openBays = 0;
+            for (int i = 0; i < 9; i++)
+            {
+                if (bayUnlocked[i] && bayOccupants[i] == -1) openBays++;
+            }
+
+            if (totalClearedChilbis >= 56)
+            {
+                statusText.text = $"🏆 All Chilbis Boarded! Victory!";
+                return;
+            }
+
+            if (isBoardingActive)
+            {
+                statusText.text = $"⚡ Boarding... ({totalClearedChilbis} Cleared)";
+                return;
+            }
+
+            if (openBays == 0)
+            {
+                int frontRow = ChilbiFlowController.Instance != null ? ChilbiFlowController.Instance.GetFrontRowIndex() : -1;
+                int frontColor = frontRow >= 0 ? ChilbiFlowController.Instance.GetRowColorTheme(frontRow) : -1;
+                bool hasMatch = false;
+                for (int b = 0; b < 9; b++)
+                {
+                    if (bayOccupants[b] == frontColor) { hasMatch = true; break; }
+                }
+
+                if (!hasMatch)
+                {
+                    statusText.text = $"⚠️ Gridlock! Tap bus to recall";
+                    return;
+                }
+            }
+
+            statusText.text = $"🌸 {totalClearedChilbis} Cleared • {openBays} Bays Free";
+        }
+        #endregion
+    }
+
+    public static class AndroidHaptics
+    {
+        public static void Vibrate(long milliseconds = 20)
+        {
+#if UNITY_ANDROID && !UNITY_EDITOR
+            try
+            {
+                Handheld.Vibrate();
+            }
+            catch (System.Exception) {}
+#endif
+        }
+
+        public static void LightClick() => Vibrate(12);
+        public static void MediumClick() => Vibrate(24);
+        public static void HeavyThud() => Vibrate(48);
+        public static void DoubleBuzz() => Vibrate(75);
     }
 }

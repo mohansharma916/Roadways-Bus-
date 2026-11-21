@@ -38,6 +38,7 @@ namespace Roadways.Editor
         {
             Debug.Log("<color=#3498db>[HotReload] Starting Fast Incremental Patch & Run (skips full APK re-packaging)...</color>");
 
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
             AndroidBuildScript.ConfigureAndroidTools();
 
             string buildDir = Path.Combine(Directory.GetCurrentDirectory(), "Builds");

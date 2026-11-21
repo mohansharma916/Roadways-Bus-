@@ -19,7 +19,7 @@ namespace RoadwaysGame
     {
         [Header("Display Mode")]
         [Tooltip("When enabled, hides Ring Road, Parking Lot, Buses, and Chilbis to show ONLY Cherry Blossom Park.")]
-        [SerializeField] private bool parkOnlyMode = true;
+        [SerializeField] private bool parkOnlyMode = false;
 
         [Header("Bottom Panel Specifications")]
         [Tooltip("Covers 50% of height from bottom, full width, filled with soft blue-grey (#d3daed), 2px white top border only.")]
@@ -309,6 +309,15 @@ namespace RoadwaysGame
                         pt.alignment = TextAnchor.MiddleCenter;
                         pt.color = greenBorder;
                         pt.text = "+";
+
+                        int bayIdx = i;
+                        Button bayBtn = bayObj.AddComponent<Button>();
+                        bayBtn.transition = Selectable.Transition.None;
+                        bayBtn.onClick.AddListener(() => {
+                            if (BusFleetUIController.Instance != null) {
+                                BusFleetUIController.Instance.UnlockBay(bayIdx, bayObj, standardBoxSprite);
+                            }
+                        });
                     }
                 }
             }
