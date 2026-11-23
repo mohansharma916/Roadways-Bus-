@@ -47,14 +47,18 @@ namespace RoadwaysGame.Core
         public const float Clearance = 0.03f;
 
         public readonly VehicleDef[] Vehicles;
-        public readonly int[][] Queues; // colour per passenger, index 0 = front of the queue
+        /// <summary>Colour per passenger. The first RingCapacity start on the walking loop (in order round it from the exit);
+        /// the rest wait on the side roads, in the order they will step on.</summary>
+        public readonly int[] Passengers;
+        public readonly int RingCapacity; // places on the loop
         public readonly int BayCount;
         public readonly float MinX, MinY, MaxX, MaxY; // depot bounds
 
-        public LevelDef(VehicleDef[] vehicles, int[][] queues, int bayCount, float minX, float minY, float maxX, float maxY)
+        public LevelDef(VehicleDef[] vehicles, int[] passengers, int ringCapacity, int bayCount, float minX, float minY, float maxX, float maxY)
         {
             Vehicles = vehicles;
-            Queues = queues;
+            Passengers = passengers;
+            RingCapacity = ringCapacity;
             BayCount = bayCount;
             MinX = minX; MinY = minY; MaxX = maxX; MaxY = maxY;
         }
@@ -67,7 +71,7 @@ namespace RoadwaysGame.Core
         {
             if (Vehicles.Length == 0 || Vehicles.Length > 64) return "vehicle count must be 1..64";
             if (BayCount < 1) return "need at least one bay";
-            if (Queues.Length == 0) return "need at least one queue";
+            if (RingCapacity < 1) return "the loop needs at least one place";
 
             for (int i = 0; i < Vehicles.Length; i++)
             {
@@ -84,7 +88,7 @@ namespace RoadwaysGame.Core
             var seats = new Dictionary<int, int>();
             foreach (VehicleDef v in Vehicles) seats[v.Colour] = (seats.TryGetValue(v.Colour, out int s) ? s : 0) + v.Capacity;
             var riders = new Dictionary<int, int>();
-            foreach (int[] q in Queues) foreach (int c in q) riders[c] = (riders.TryGetValue(c, out int r) ? r : 0) + 1;
+            foreach (int c in Passengers) riders[c] = (riders.TryGetValue(c, out int r) ? r : 0) + 1;
             foreach (var kv in seats)
                 if (!riders.TryGetValue(kv.Key, out int r) || r != kv.Value) return $"colour {kv.Key}: {kv.Value} seats but {(riders.TryGetValue(kv.Key, out int n) ? n : 0)} passengers";
             foreach (var kv in riders)

@@ -29,7 +29,7 @@ namespace RoadwaysGame.Core
             if (dead.Contains(key)) return false;
 
             int n = s.Level.Vehicles.Length;
-            // Try vehicles a queue front is waiting for first; it finds wins far sooner.
+            // Try vehicles whose colour is walking the loop first; it finds wins far sooner.
             for (int pass = 0; pass < 2; pass++)
             {
                 for (int i = 0; i < n; i++)
@@ -48,16 +48,7 @@ namespace RoadwaysGame.Core
             return false;
         }
 
-        private static bool IsWanted(Session s, int vehicle)
-        {
-            int colour = s.Level.Vehicles[vehicle].Colour;
-            for (int q = 0; q < s.Level.Queues.Length; q++)
-            {
-                int h = s.QueueHead(q);
-                if (h < s.QueueLength(q) && s.ColourAt(q, h) == colour) return true;
-            }
-            return false;
-        }
+        private static bool IsWanted(Session s, int vehicle) => s.OnRing(s.Level.Vehicles[vehicle].Colour);
 
         /// <summary>How many of the opening taps lose — a cheap difficulty signal (0 = any order works).</summary>
         public static void AnalyseOpening(LevelDef level, out int winningOpeners, out int losingOpeners)

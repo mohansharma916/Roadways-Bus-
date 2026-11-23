@@ -71,32 +71,41 @@ namespace RoadwaysGame.Slice
         /// <summary>Core bays 0..regular-1 sit in the standard slots 1..4; the VIP bay (index == regular) sits in slot 0.</summary>
         public static Vector3 BayCenter(int coreBay, int regularBays) => SlotCenter(coreBay >= regularBays ? 0 : coreBay + 1);
 
-        /// <summary>Queue centrelines, front first. Each queue is one half of the ring road (CircuitRoad shape: flat bottom,
-        /// rounded sides, a dip in the top middle): from its exit at the bottom centre, round the side, to the top dip.
-        /// Together the two halves close the loop.</summary>
-        public static SlicePath[] QueuePaths()
+        /// <summary>Left half of the ring road's centreline (CircuitRoad shape: flat bottom, rounded sides, a dip in the top
+        /// middle), from beside the exit at the bottom centre, round the left side, to the top dip. The right half mirrors it.</summary>
+        private static List<Vector3> LeftHalf() => new List<Vector3>
         {
-            var left = new List<Vector3>
-            {
-                new Vector3(-0.9f, 0f, 12.4f), new Vector3(-3.5f, 0f, 12.4f), new Vector3(-5.6f, 0f, 12.6f), new Vector3(-6.8f, 0f, 13.7f),
-                new Vector3(-7.0f, 0f, 15.6f), new Vector3(-6.6f, 0f, 17.6f), new Vector3(-5.4f, 0f, 19.4f), new Vector3(-3.6f, 0f, 20.1f),
-                new Vector3(-1.6f, 0f, 18.6f), new Vector3(0f, 0f, 18.6f), // level at the join, so the two halves meet without a crack
-            };
-            var right = new List<Vector3>();
-            foreach (Vector3 p in left) right.Add(new Vector3(-p.x, p.y, p.z));
-            return new[] { new SlicePath(left), new SlicePath(right) };
+            new Vector3(-0.9f, 0f, 12.4f), new Vector3(-3.5f, 0f, 12.4f), new Vector3(-5.6f, 0f, 12.6f), new Vector3(-6.8f, 0f, 13.7f),
+            new Vector3(-7.0f, 0f, 15.6f), new Vector3(-6.6f, 0f, 17.6f), new Vector3(-5.4f, 0f, 19.4f), new Vector3(-3.6f, 0f, 20.1f),
+            new Vector3(-1.6f, 0f, 18.6f), new Vector3(0f, 0f, 18.6f), // level at the join, so the two halves meet without a crack
+        };
+
+        private static List<Vector3> Mirror(List<Vector3> pts) => pts.ConvertAll(p => new Vector3(-p.x, p.y, p.z));
+
+        /// <summary>The ring road as its two halves (left, right), for drawing it.</summary>
+        public static SlicePath[] QueuePaths() => new[] { new SlicePath(LeftHalf()), new SlicePath(Mirror(LeftHalf())) };
+
+        /// <summary>The closed walking loop: starts at the exit (bottom centre, arc 0), runs right along the bottom, up the right
+        /// side, over the top, down the left side and back to the exit.</summary>
+        public static SlicePath LoopPath()
+        {
+            var pts = new List<Vector3> { new Vector3(0f, 0f, 12.4f) };
+            pts.AddRange(Mirror(LeftHalf()));
+            List<Vector3> back = LeftHalf();
+            back.Reverse();
+            pts.AddRange(back.GetRange(1, back.Count - 1)); // skip the shared top point
+            pts.Add(new Vector3(0f, 0f, 12.4f));
+            return new SlicePath(pts);
         }
 
-        /// <summary>Decorative feeder roads running in from the screen edges to the ring's upper sides, as in CircuitRoad.</summary>
-        private static SlicePath[] FeederPaths()
+        /// <summary>Side roads running in from the screen edges to the ring's upper sides, as in CircuitRoad: [0] left,
+        /// [1] right. They start off-screen and end on the ring's centreline.</summary>
+        public static SlicePath[] FeederPaths()
         {
             var left = new List<Vector3> { new Vector3(-13.5f, 0f, 22.6f), new Vector3(-10.6f, 0f, 20.6f), new Vector3(-8.2f, 0f, 18.2f), new Vector3(-6.9f, 0f, 16.8f) };
-            var right = new List<Vector3>();
-            foreach (Vector3 p in left) right.Add(new Vector3(-p.x, p.y, p.z));
-            return new[] { new SlicePath(left), new SlicePath(right) };
+            return new[] { new SlicePath(left), new SlicePath(Mirror(left)) };
         }
 
-        public static Vector3 GateFor(SlicePath path) => new Vector3(path.PointAt(0f).x, 0f, GateZ);
 
         public static void BuildEnvironment(Transform root, SlicePath[] queues)
         {

@@ -151,8 +151,16 @@ namespace RoadwaysGame.Editor
                 {
                     var game = UnityEngine.Object.FindAnyObjectByType<RoadwaysGame.Slice.SliceGame>();
                     if (game == null) return "error: no SliceGame running";
-                    game.StartAutoplay(arg.Length > 0 ? float.Parse(arg) : 0.15f);
+                    string[] ap = arg.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries); // autoplay [PAUSE] [SPEED]
+                    game.StartAutoplay(ap.Length > 0 ? float.Parse(ap[0]) : 0.15f, ap.Length > 1 ? float.Parse(ap[1]) : 1f);
                     return "autoplay started";
+                }
+                case "pause": // pause on|off: opens / closes the pause popup
+                {
+                    var game = UnityEngine.Object.FindAnyObjectByType<RoadwaysGame.Slice.SliceGame>();
+                    if (game == null) return "error: no SliceGame running";
+                    game.SetPausedForTest(arg != "off");
+                    return "paused " + (arg != "off");
                 }
                 case "level":
                 {

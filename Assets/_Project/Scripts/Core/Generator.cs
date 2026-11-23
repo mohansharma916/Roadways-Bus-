@@ -34,7 +34,7 @@ namespace RoadwaysGame.Core
         public int VehicleCount = 18;
         public float CoupeShare = 0.25f, BigCarShare = 0.25f, BusShare = 0.25f; // rest are minivans; bigger vehicles mean bigger crowds
         public int[] Colours = { 0, 1, 2, 3, 4, 6 }; // red, yellow, blue, green, purple, pink
-        public int QueueCount = 2;
+        public int RingCapacity = 90; // places on the walking loop; the rest wait on the side roads. Smaller = harder.
         public int BayCount = 4;
         // Depot sized so a bus is ~1/6.5 of the screen width and the depot fills ~44 % of a 9:20 screen, as in the reference.
         public float MinX = -7.2f, MinY = -13.0f, MaxX = 7.2f, MaxY = 4.6f;
@@ -52,7 +52,7 @@ namespace RoadwaysGame.Core
             {
                 VehicleDef[] vehicles = PlaceVehicles(spec, ref rng);
                 if (vehicles == null) continue;
-                var level = new LevelDef(vehicles, BuildQueues(vehicles, spec.QueueCount, ref rng), spec.BayCount,
+                var level = new LevelDef(vehicles, BuildPassengers(vehicles, ref rng), spec.RingCapacity, spec.BayCount,
                     spec.MinX, spec.MinY, spec.MaxX, spec.MaxY);
                 if (level.Validate() != null || !Jam.IsGeometricallyClearable(level)) continue;
                 if (Solver.Solve(level, out _) == null) continue;
@@ -105,8 +105,8 @@ namespace RoadwaysGame.Core
             return r < 1f - spec.BusShare ? VehicleKind.Minivan : VehicleKind.Bus;
         }
 
-        /// <summary>One contiguous colour block per vehicle, shuffled, dealt alternately into the queues.</summary>
-        private static int[][] BuildQueues(VehicleDef[] vehicles, int queueCount, ref Rng rng)
+        /// <summary>One contiguous colour block per vehicle, in shuffled order: the line that fills the loop, then the side roads.</summary>
+        private static int[] BuildPassengers(VehicleDef[] vehicles, ref Rng rng)
         {
             var order = new int[vehicles.Length];
             for (int i = 0; i < order.Length; i++) order[i] = i;
@@ -115,16 +115,10 @@ namespace RoadwaysGame.Core
                 int j = rng.Range(0, i + 1);
                 (order[i], order[j]) = (order[j], order[i]);
             }
-            var queues = new List<int>[queueCount];
-            for (int q = 0; q < queueCount; q++) queues[q] = new List<int>();
-            for (int k = 0; k < order.Length; k++)
-            {
-                VehicleDef v = vehicles[order[k]];
-                for (int p = 0; p < v.Capacity; p++) queues[k % queueCount].Add(v.Colour);
-            }
-            var result = new int[queueCount][];
-            for (int q = 0; q < queueCount; q++) result[q] = queues[q].ToArray();
-            return result;
+            var line = new List<int>();
+            foreach (int k in order)
+                for (int p = 0; p < vehicles[k].Capacity; p++) line.Add(vehicles[k].Colour);
+            return line.ToArray();
         }
     }
 }

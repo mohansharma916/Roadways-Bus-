@@ -19,13 +19,11 @@ namespace RoadwaysGame.Slice
     {
         private const float CameraPitch = 60f, CameraFov = 30f; // tilted enough that vehicle sides and windows show
         private const float TapMargin = 0.32f;        // world units around each footprint: ~7dp, on top of the body itself
-        private const float BoardInterval = 0.07f;    // seconds between passengers leaving a queue
         private const float DriveSpeed = 10f, DepartSpeed = 9f;
         private const float CanvasWidth = 1080f;      // HUD reference width; the canvas scales with screen width
         private const float BoosterBarUnits = 264f;   // booster buttons' 30 offset + 220 height + a small gap, in canvas units
         private const float TopBarUnits = 200f;       // restart/pause buttons' 40 offset + 150 height + a small gap
 
-        private static readonly Color ButtonBlue = new Color32(0x3D, 0x8B, 0xFF, 0xFF), ButtonBlueDark = new Color32(0x26, 0x5F, 0xC8, 0xFF);
 
         private Camera cam;
         private Transform level;
@@ -34,11 +32,9 @@ namespace RoadwaysGame.Slice
         private SliceCrowd crowd;
         private SlicePath[] queuePaths;
         private int levelIndex, walking;
-        private float boardTimer;
         private bool ended, paused;
         private Vector2Int framedFor;
 
-        private Sprite rounded;
         private RectTransform safeRoot;
         private TextMeshProUGUI levelLabel, bannerTitle, bannerButtonLabel;
         private GameObject banner, pausePanel;
@@ -72,7 +68,6 @@ namespace RoadwaysGame.Slice
             levelIndex = index;
             ended = false;
             walking = 0;
-            boardTimer = 0f;
 
             session = new Session(SliceLevels.Get(index));
             docked = new SliceVehicle[session.Level.BayCount + 1]; // + the VIP bay
@@ -82,7 +77,7 @@ namespace RoadwaysGame.Slice
             for (int i = 0; i < vehicles.Length; i++) vehicles[i] = SliceVehicle.Create(session.Level.Vehicles[i], i, level);
             crowd = new GameObject("Crowd").AddComponent<SliceCrowd>();
             crowd.transform.SetParent(level, false);
-            crowd.Build(session, queuePaths);
+            crowd.Build(session, OnBoard);
 
             for (int b = 0; b < 3; b++) boosterCount[b] = 1;
             RefreshBoosters();
@@ -98,7 +93,6 @@ namespace RoadwaysGame.Slice
             if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame && !ended) SetPaused(!paused);
             if (paused) return;
             if (!ended) HandleTap();
-            PaceBoarding();
             CheckEnd();
         }
 
@@ -220,11 +214,9 @@ namespace RoadwaysGame.Slice
 
         // ---------------------------------------------------------------- boarding & end
 
-        private void PaceBoarding()
+        /// <summary>Someone left the loop at the exit for a parked vehicle of their colour: walk them over and count them in.</summary>
+        private void OnBoard(BoardEvent e)
         {
-            boardTimer -= Time.deltaTime;
-            if (boardTimer > 0f || !session.StepBoarding(out BoardEvent e)) return;
-            boardTimer = BoardInterval;
             SliceVehicle bus = docked[e.Bay];
             walking++;
             crowd.Board(e, bus.DoorPosition, () =>
@@ -268,10 +260,10 @@ namespace RoadwaysGame.Slice
                     if (!session.UnlockVipBay()) return;
                     break;
                 case 1: // Arrange: whoever a parked vehicle can take steps to the front
-                    crowd.ApplyPermutation(session.Arrange());
+                    session.Arrange(); // the crowd walks everyone to their new place
                     break;
                 case 2: // Jumble: shuffle the waiting crowd
-                    crowd.ApplyPermutation(session.Jumble(UnityEngine.Random.Range(1, int.MaxValue)));
+                    session.Jumble(UnityEngine.Random.Range(1, int.MaxValue));
                     break;
             }
             boosterCount[which]--;
@@ -283,11 +275,14 @@ namespace RoadwaysGame.Slice
             for (int b = 0; b < 3; b++)
             {
                 bool available = boosterCount[b] > 0;
-                boosterFace[b].color = available ? ButtonBlue : new Color32(0x9A, 0xA3, 0xB5, 0xFF);
+                boosterFace[b].color = available ? Hud.Blue : new Color32(0x9A, 0xA3, 0xB5, 0xFF);
                 boosterBadge[b].text = boosterCount[b].ToString();
                 boosterBadge[b].transform.parent.gameObject.SetActive(available);
             }
         }
+
+        // shortcut: Home only logs until the Home screen exists (the user is specifying it next); then it opens that screen.
+        private void GoHome() => Debug.Log("[Slice] Home tapped: the Home screen comes next");
 
         private void SetPaused(bool value)
         {
@@ -302,11 +297,13 @@ namespace RoadwaysGame.Slice
         public void UseBoosterForTest(int which) => UseBooster(which);
         public void SetPausedForTest(bool value) => SetPaused(value);
 
-        /// <summary>Plays the current level with the solver's winning order, through the real screen-tap path.</summary>
-        public void StartAutoplay(float pause = 0.15f) => StartCoroutine(Autoplay(pause));
+        /// <summary>Plays the current level with the solver's winning order, through the real screen-tap path.
+        /// speed > 1 runs the whole game faster (the loop takes ~10 s a lap), for verification only.</summary>
+        public void StartAutoplay(float pause = 0.15f, float speed = 1f) => StartCoroutine(Autoplay(pause, speed));
 
-        private IEnumerator Autoplay(float pause)
+        private IEnumerator Autoplay(float pause, float speed)
         {
+            Time.timeScale = speed;
             int[] order = Solver.Solve(session, out bool exhausted);
             Debug.Log(order == null ? $"[Slice] Autoplay: no solution (exhausted={exhausted})" : "[Slice] Autoplay order: " + string.Join(",", order));
             if (order == null) yield break;
@@ -318,9 +315,11 @@ namespace RoadwaysGame.Slice
                 TapAt(screen);
                 if (session.IsPresent(i)) Debug.LogWarning($"[Slice] Autoplay tap on vehicle {i} did not dispatch it");
             }
+            yield return new WaitUntil(() => ended);
+            Time.timeScale = 1f;
         }
 
-        /// <summary>Nothing moving and nobody able to board: the state the solver reasons about.</summary>
+        /// <summary>Nothing moving, and nothing more can board or step on: the state the solver reasons about.</summary>
         private bool Quiescent()
         {
             if (walking > 0) return false;
@@ -330,7 +329,7 @@ namespace RoadwaysGame.Slice
                 BayState st = session.GetBayState(b);
                 if (st == BayState.Incoming || st == BayState.Departing) return false;
             }
-            return !session.Clone().StepBoarding(out _);
+            return !session.CanProgress;
         }
 
         /// <summary>Re-frames for an explicit output size (editor captures render off-screen at the phone's resolution).
@@ -403,16 +402,15 @@ namespace RoadwaysGame.Slice
             safeRoot = new GameObject("SafeArea", typeof(RectTransform)).GetComponent<RectTransform>();
             safeRoot.SetParent(canvasGo.transform, false);
             ApplySafeArea();
-            rounded = RoundedSprite();
 
             // Top row, as in the reference: restart · level · pause. 150 units = 50 dp touch targets.
-            Button restart = ChunkyButton(safeRoot, new Vector2(0f, 1f), new Vector2(40f, -40f), new Vector2(150f, 150f), out _);
-            Icon(restart.transform, Icons.Restart(), 96f);
+            Button restart = Hud.ChunkyButton(safeRoot, new Vector2(0f, 1f), new Vector2(40f, -40f), new Vector2(150f, 150f), out _);
+            Hud.Icon(restart.transform, Icons.Restart(), 96f);
             restart.onClick.AddListener(() => LoadLevel(levelIndex));
-            Button pause = ChunkyButton(safeRoot, new Vector2(1f, 1f), new Vector2(-40f, -40f), new Vector2(150f, 150f), out _);
-            Icon(pause.transform, Icons.Pause(), 84f);
+            Button pause = Hud.ChunkyButton(safeRoot, new Vector2(1f, 1f), new Vector2(-40f, -40f), new Vector2(150f, 150f), out _);
+            Hud.Icon(pause.transform, Icons.Pause(), 84f);
             pause.onClick.AddListener(() => { if (!ended) SetPaused(true); });
-            levelLabel = MakeText(safeRoot, "Level 1", 96, new Vector2(0.5f, 1f), new Vector2(0f, -115f), new Vector2(620f, 140f));
+            levelLabel = Hud.Text(safeRoot, "Level 1", 96, new Vector2(0.5f, 1f), new Vector2(0f, -115f), new Vector2(620f, 140f));
 
             // Booster bar, bottom centre.
             string[] names = { "VIP", "Sort", "Shuffle" }; // own names, not the reference's
@@ -420,30 +418,26 @@ namespace RoadwaysGame.Slice
             for (int i = 0; i < 3; i++)
             {
                 int which = i;
-                Button btn = ChunkyButton(safeRoot, new Vector2(0.5f, 0f), new Vector2((i - 1) * 330f, 30f), new Vector2(270f, 220f), out boosterFace[i]);
-                Image ic = Icon(btn.transform, icons[i], 130f);
+                Button btn = Hud.ChunkyButton(safeRoot, new Vector2(0.5f, 0f), new Vector2((i - 1) * 330f, 30f), new Vector2(270f, 220f), out boosterFace[i]);
+                Image ic = Hud.Icon(btn.transform, icons[i], 130f);
                 ic.rectTransform.anchoredPosition = new Vector2(0f, 30f);
-                TextMeshProUGUI label = MakeText(btn.transform, names[i], 54, new Vector2(0.5f, 0f), new Vector2(0f, 38f), new Vector2(260f, 70f));
+                TextMeshProUGUI label = Hud.Text(btn.transform, names[i], 54, new Vector2(0.5f, 0f), new Vector2(0f, 38f), new Vector2(260f, 70f));
                 label.rectTransform.pivot = new Vector2(0.5f, 0f);
                 // Count badge, top-right corner (the reference's red/green bubbles).
                 var badge = new GameObject("Badge", typeof(Image)).GetComponent<Image>();
                 badge.transform.SetParent(btn.transform, false);
-                badge.sprite = rounded;
+                badge.sprite = Hud.Rounded;
                 badge.type = Image.Type.Sliced;
                 badge.color = new Color32(0xF0, 0x3E, 0x3E, 0xFF);
                 badge.raycastTarget = false;
                 badge.rectTransform.anchorMin = badge.rectTransform.anchorMax = new Vector2(1f, 1f);
                 badge.rectTransform.sizeDelta = new Vector2(84f, 84f);
                 badge.rectTransform.anchoredPosition = new Vector2(-8f, -8f);
-                boosterBadge[i] = MakeText(badge.transform, "1", 52, new Vector2(0.5f, 0.5f), new Vector2(0f, 2f), new Vector2(84f, 84f));
+                boosterBadge[i] = Hud.Text(badge.transform, "1", 52, new Vector2(0.5f, 0.5f), new Vector2(0f, 2f), new Vector2(84f, 84f));
                 btn.onClick.AddListener(() => UseBooster(which));
             }
 
-            pausePanel = Overlay(canvasGo.transform, "Paused", "Resume", () => SetPaused(false), out _, out _);
-            Transform pauseCard = pausePanel.transform.GetChild(0);
-            var restartFromPause = ChunkyButton(pauseCard, new Vector2(0.5f, 0.5f), new Vector2(0f, -250f), new Vector2(520f, 150f), out _, new Color32(0xF0, 0x8C, 0x3E, 0xFF));
-            MakeText(restartFromPause.transform, "Restart level", 58, new Vector2(0.5f, 0.5f), new Vector2(0f, 6f), new Vector2(500f, 140f));
-            restartFromPause.onClick.AddListener(() => LoadLevel(levelIndex));
+            pausePanel = SettingsPopup.Build(canvasGo.transform, close: () => SetPaused(false), home: GoHome, restart: () => LoadLevel(levelIndex));
             pausePanel.SetActive(false);
 
             banner = Overlay(canvasGo.transform, "", "", () => LoadLevel(session.IsWon ? (levelIndex + 1) % SliceLevels.Count : levelIndex), out bannerTitle, out bannerButtonLabel);
@@ -455,18 +449,18 @@ namespace RoadwaysGame.Slice
             var dim = new GameObject("Overlay", typeof(Image)).GetComponent<Image>();
             dim.transform.SetParent(canvas, false);
             dim.color = new Color(0.05f, 0.08f, 0.15f, 0.5f);
-            Stretch(dim.rectTransform);
+            Hud.Stretch(dim.rectTransform);
             var card = new GameObject("Card", typeof(Image)).GetComponent<Image>();
             card.transform.SetParent(dim.transform, false);
-            card.sprite = rounded;
+            card.sprite = Hud.Rounded;
             card.type = Image.Type.Sliced;
             card.color = new Color32(0xFF, 0xF8, 0xEF, 0xFF);
             card.rectTransform.sizeDelta = new Vector2(820f, 760f);
-            titleText = MakeText(card.rectTransform, title, 110, new Vector2(0.5f, 0.5f), new Vector2(0f, 200f), new Vector2(780f, 160f));
+            titleText = Hud.Text(card.rectTransform, title, 110, new Vector2(0.5f, 0.5f), new Vector2(0f, 200f), new Vector2(780f, 160f));
             titleText.color = new Color32(0x3A, 0x2A, 0x3E, 0xFF);
             titleText.outlineWidth = 0f;
-            Button go = ChunkyButton(card.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0f, -40f), new Vector2(560f, 180f), out _, new Color32(0x2E, 0xCC, 0x71, 0xFF));
-            actionText = MakeText(go.transform, action, 70, new Vector2(0.5f, 0.5f), new Vector2(0f, 6f), new Vector2(540f, 160f));
+            Button go = Hud.ChunkyButton(card.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0f, -40f), new Vector2(560f, 180f), out _, new Color32(0x2E, 0xCC, 0x71, 0xFF));
+            actionText = Hud.Text(go.transform, action, 70, new Vector2(0.5f, 0.5f), new Vector2(0f, 6f), new Vector2(540f, 160f));
             go.onClick.AddListener(onAction);
             return dim.gameObject;
         }
@@ -487,162 +481,5 @@ namespace RoadwaysGame.Slice
             safeRoot.anchorMax = new Vector2(s.xMax / Screen.width, s.yMax / Screen.height);
             safeRoot.offsetMin = safeRoot.offsetMax = Vector2.zero;
         }
-
-        private static void Stretch(RectTransform rt)
-        {
-            rt.anchorMin = Vector2.zero;
-            rt.anchorMax = Vector2.one;
-            rt.offsetMin = rt.offsetMax = Vector2.zero;
-        }
-
-        /// <summary>TextMesh Pro label: drawn from a distance field, so it stays sharp at any size, with a real outline.</summary>
-        private TextMeshProUGUI MakeText(Transform parent, string text, int size, Vector2 anchor, Vector2 pos, Vector2 box)
-        {
-            var t = new GameObject("Text", typeof(RectTransform)).AddComponent<TextMeshProUGUI>();
-            t.transform.SetParent(parent, false);
-            t.rectTransform.anchorMin = t.rectTransform.anchorMax = anchor;
-            t.rectTransform.anchoredPosition = pos;
-            t.rectTransform.sizeDelta = box;
-            if (SliceWorld.UiFont != null) t.font = SliceWorld.UiFont;
-            t.fontSize = size;
-            t.alignment = TextAlignmentOptions.Center;
-            t.textWrappingMode = TextWrappingModes.NoWrap;
-            t.color = Color.white;
-            t.text = text;
-            t.raycastTarget = false;
-            t.outlineWidth = 0.24f;
-            t.outlineColor = new Color32(0x1F, 0x2E, 0x5A, 0xFF);
-            return t;
-        }
-
-        /// <summary>Rounded button with a darker lip underneath, the reference's chunky "pressable" look.</summary>
-        private Button ChunkyButton(Transform parent, Vector2 anchor, Vector2 pos, Vector2 size, out Image face, Color? colour = null)
-        {
-            Color top = colour ?? ButtonBlue;
-            var lip = new GameObject("Button", typeof(Image), typeof(Button)).GetComponent<Image>();
-            lip.transform.SetParent(parent, false);
-            lip.rectTransform.anchorMin = lip.rectTransform.anchorMax = anchor;
-            lip.rectTransform.pivot = new Vector2(anchor.x == 0f ? 0f : anchor.x == 1f ? 1f : 0.5f, anchor.y == 1f ? 1f : anchor.y == 0f ? 0f : 0.5f);
-            lip.rectTransform.anchoredPosition = pos;
-            lip.rectTransform.sizeDelta = size;
-            lip.sprite = rounded;
-            lip.type = Image.Type.Sliced;
-            lip.color = colour.HasValue ? Color.Lerp(top, Color.black, 0.25f) : ButtonBlueDark;
-            face = new GameObject("Face", typeof(Image)).GetComponent<Image>();
-            face.transform.SetParent(lip.transform, false);
-            face.sprite = rounded;
-            face.type = Image.Type.Sliced;
-            face.color = top;
-            face.raycastTarget = false;
-            face.rectTransform.anchorMin = Vector2.zero;
-            face.rectTransform.anchorMax = Vector2.one;
-            face.rectTransform.offsetMin = new Vector2(0f, 14f); // lip shows below the face
-            face.rectTransform.offsetMax = Vector2.zero;
-            var b = lip.GetComponent<Button>();
-            b.targetGraphic = face;
-            var colours = b.colors;
-            colours.pressedColor = new Color(0.78f, 0.78f, 0.78f, 1f); // visible pressed state
-            b.colors = colours;
-            return b;
-        }
-
-        private static Image Icon(Transform parent, Sprite sprite, float size)
-        {
-            var img = new GameObject("Icon", typeof(Image)).GetComponent<Image>();
-            img.transform.SetParent(parent, false);
-            img.sprite = sprite;
-            img.raycastTarget = false;
-            img.rectTransform.sizeDelta = new Vector2(size, size);
-            img.rectTransform.anchoredPosition = new Vector2(0f, 7f);
-            return img;
-        }
-
-        private static Sprite RoundedSprite()
-        {
-            const int n = 128, r = 40;
-            var tex = new Texture2D(n, n, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp };
-            var px = new Color32[n * n];
-            for (int y = 0; y < n; y++)
-            for (int x = 0; x < n; x++)
-            {
-                float cx = Mathf.Clamp(x + 0.5f, r, n - r), cy = Mathf.Clamp(y + 0.5f, r, n - r);
-                float a = Mathf.Clamp01(r - Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), new Vector2(cx, cy)) + 0.5f);
-                px[y * n + x] = new Color32(255, 255, 255, (byte)(a * 255f));
-            }
-            tex.SetPixels32(px);
-            tex.Apply();
-            return Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, new Vector4(r + 2, r + 2, r + 2, r + 2));
-        }
-    }
-
-    /// <summary>HUD icons drawn in code at 256px with 4x supersampling (shapes are defined in 128-px coordinates) — no emoji (audit §E-2), no art pipeline needed.</summary>
-    internal static class Icons
-    {
-        private static Sprite Draw(Func<Vector2, Color32?> shade)
-        {
-            const int n = 256;
-            var tex = new Texture2D(n, n, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp };
-            var px = new Color32[n * n];
-            for (int y = 0; y < n; y++)
-            for (int x = 0; x < n; x++)
-            {
-                float r = 0, g = 0, b = 0, a = 0;
-                for (int s = 0; s < 4; s++)
-                {
-                    Color32? c = shade(new Vector2(x + 0.25f + (s & 1) * 0.5f, y + 0.25f + (s >> 1) * 0.5f) * (128f / n));
-                    if (!c.HasValue) continue;
-                    r += c.Value.r; g += c.Value.g; b += c.Value.b; a += 1f;
-                }
-                px[y * n + x] = a == 0f ? new Color32(0, 0, 0, 0) : new Color32((byte)(r / a), (byte)(g / a), (byte)(b / a), (byte)(a / 4f * 255f));
-            }
-            tex.SetPixels32(px);
-            tex.Apply();
-            return Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f));
-        }
-
-        private static readonly Color32 White = new Color32(255, 255, 255, 255);
-
-        public static Sprite Restart() => Draw(p =>
-        {
-            Vector2 c = new Vector2(64f, 64f), d = p - c;
-            float ang = Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg;
-            if (ang < 0f) ang += 360f;
-            if (ang > 70f && ang < 340f && Mathf.Abs(d.magnitude - 38f) < 9f) return White;
-            Vector2 head = c + new Vector2(Mathf.Cos(50f * Mathf.Deg2Rad), Mathf.Sin(50f * Mathf.Deg2Rad)) * 38f, q = p - head;
-            return q.y < 4f && q.y > -22f && Mathf.Abs(q.x) < (q.y + 22f) * 0.85f ? White : (Color32?)null;
-        });
-
-        public static Sprite Pause() => Draw(p =>
-            (Mathf.Abs(p.x - 46f) < 12f || Mathf.Abs(p.x - 82f) < 12f) && Mathf.Abs(p.y - 64f) < 40f ? White : (Color32?)null);
-
-        public static Sprite Star() => Draw(p =>
-        {
-            Vector2 d = p - new Vector2(64f, 62f);
-            float ang = Mathf.Atan2(d.x, d.y), sector = Mathf.Repeat(ang, Mathf.PI * 2f / 5f) / (Mathf.PI * 2f / 5f);
-            float radius = Mathf.Lerp(24f, 54f, Mathf.Abs(sector - 0.5f) * 2f); // tips at sector edges, valleys at centres
-            return d.magnitude < radius ? new Color32(0xFF, 0xD2, 0x3F, 0xFF) : (Color32?)null;
-        });
-
-        public static Sprite Arrange() => Draw(p =>
-        {
-            Color32[] bars = { new Color32(0xEE, 0x52, 0x53, 0xFF), new Color32(0xFE, 0xD3, 0x30, 0xFF), new Color32(0x2B, 0xD9, 0x7C, 0xFF) };
-            for (int i = 0; i < 3; i++)
-            {
-                float cy = 96f - i * 32f, half = 48f - i * 8f;
-                if (Mathf.Abs(p.y - cy) < 11f && Mathf.Abs(p.x - 64f) < half) return bars[i];
-            }
-            return null;
-        });
-
-        public static Sprite Ball() => Draw(p =>
-        {
-            Vector2 d = p - new Vector2(64f, 64f);
-            if (d.magnitude > 54f) return null;
-            Color32[] slices = { new Color32(0xEE, 0x52, 0x53, 0xFF), new Color32(0xFE, 0xD3, 0x30, 0xFF), new Color32(0x2B, 0xD9, 0x7C, 0xFF), new Color32(0x1E, 0x90, 0xFF, 0xFF), new Color32(0x88, 0x54, 0xD0, 0xFF), new Color32(0xE8, 0x43, 0x93, 0xFF) };
-            float ang = Mathf.Repeat(Mathf.Atan2(d.y, d.x) + Mathf.PI, Mathf.PI * 2f);
-            Color32 c = slices[Mathf.Min(5, (int)(ang / (Mathf.PI * 2f) * 6f))];
-            float shine = Mathf.Clamp01(1f - Vector2.Distance(p, new Vector2(48f, 84f)) / 22f) * 0.7f;
-            return Color32.Lerp(c, White, shine);
-        });
     }
 }
