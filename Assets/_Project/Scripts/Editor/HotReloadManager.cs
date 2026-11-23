@@ -14,6 +14,16 @@ namespace Roadways.Editor
         private const string PackageName = "com.roadways.busgame";
         private const string RemotePackageName = "com.unity3d.mobileremote";
 
+        /// <summary>Re-creates the Remote's port forward on every Play. Unity's Android device scans can drop adb forwards,
+        /// and without 7201 the Remote fails with "[remote] error: Init socket failed" until someone re-adds it.</summary>
+        [InitializeOnLoadMethod]
+        private static void KeepRemoteForwardOnPlay() =>
+            EditorApplication.playModeStateChanged += state =>
+            {
+                if (state == PlayModeStateChange.ExitingEditMode && EditorSettings.unityRemoteDevice != "None")
+                    RunAdbCommand("forward tcp:7201 tcp:7201");
+            };
+
         [MenuItem("Roadways/Hot Reload/1. Enable Unity Remote Live Streaming")]
         public static void EnableUnityRemote()
         {
