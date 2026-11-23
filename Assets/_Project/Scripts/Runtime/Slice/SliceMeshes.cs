@@ -4,13 +4,12 @@ using UnityEngine;
 namespace RoadwaysGame.Slice
 {
     /// <summary>
-    /// Procedural toy-style vehicle meshes for the slice: rounded-box body with an inset window band and bevelled roof,
-    /// four wheels, and a large roof arrow. Every triangle is oriented against an explicit outward direction,
+    /// Flat procedural meshes for the slice: bay plates and outlines, and the vehicles' roof arrow (the vehicles
+    /// themselves are ToyVehicle). Every triangle is oriented against an explicit outward direction,
     /// so winding can't silently invert (the failure mode found in BusMeshGenerator).
     /// </summary>
     public static class SliceMeshes
     {
-        public const int BodySubmesh = 0, GlassSubmesh = 1;
 
         private sealed class Builder
         {
@@ -93,63 +92,6 @@ namespace RoadwaysGame.Slice
             int first = b.V.Count;
             foreach (Vector3 p in ring) b.Add(p);
             for (int i = 0; i < ring.Count; i++) b.Tri(sub, c, first + i, first + (i + 1) % ring.Count, normal);
-        }
-
-        /// <summary>Body (submesh 0) and window band (submesh 1), footprint width × length, roof at height.</summary>
-        public static Mesh Body(float width, float length, float height)
-        {
-            float hw = width * 0.5f, hl = length * 0.5f, r = Mathf.Min(hw, hl) * 0.42f;
-            float waist = height * 0.52f, glassTop = height * 0.84f;
-            var b = new Builder(2);
-            List<Vector3> bottom = Ring(hw, hl, r, 0.09f, 0.04f), skirt = Ring(hw, hl, r, 0.14f, 0f), shoulder = Ring(hw, hl, r, waist, 0f);
-            List<Vector3> glassLow = Ring(hw, hl, r, waist, 0.035f), glassHigh = Ring(hw, hl, r, glassTop, 0.035f);
-            List<Vector3> roofEdge = Ring(hw, hl, r, glassTop, -0.005f), roofLip = Ring(hw, hl, r, height * 0.93f, 0.01f), roof = Ring(hw, hl, r, height, 0.08f);
-            Band(b, BodySubmesh, bottom, skirt);
-            Band(b, BodySubmesh, skirt, shoulder);
-            Band(b, BodySubmesh, shoulder, glassLow);       // ledge where the windows step in
-            // Side windows: along the long sides, every ~0.4 units leave a body-coloured pillar between panes.
-            float pane = Mathf.Max(0.32f, Mathf.Min(0.46f, length / Mathf.Round(length / 0.42f)));
-            Band(b, GlassSubmesh, glassLow, glassHigh, mid =>
-                Mathf.Abs(mid.x) > hw * 0.7f && Mathf.Abs(mid.z) < hl - r * 0.6f && Mathf.Repeat(mid.z + hl, pane) < 0.1f ? BodySubmesh : GlassSubmesh);
-            Band(b, BodySubmesh, glassHigh, roofEdge);      // roof overhang underside lip
-            Band(b, BodySubmesh, roofEdge, roofLip);
-            Band(b, BodySubmesh, roofLip, roof);            // bevel into the roof
-            Cap(b, BodySubmesh, roof, Vector3.up);
-            Cap(b, BodySubmesh, bottom, Vector3.down);
-            return b.Build("SliceVehicleBody");
-        }
-
-        /// <summary>Four wheels with axles along X, tucked under the body and peeking out at the sides.</summary>
-        public static Mesh Wheels(float width, float length)
-        {
-            const int seg = 12;
-            float radius = Mathf.Clamp(width * 0.17f, 0.12f, 0.18f), tread = 0.12f;
-            var b = new Builder(1);
-            foreach (float sx in new[] { -1f, 1f })
-            foreach (float sz in new[] { -1f, 1f })
-            {
-                float xOuter = sx * (width * 0.5f + 0.015f), xInner = xOuter - sx * tread;
-                var centre = new Vector3(0f, radius, sz * (length * 0.5f - radius - 0.14f));
-                var outer = new List<int>(); var inner = new List<int>();
-                for (int i = 0; i < seg; i++)
-                {
-                    float a = i * Mathf.PI * 2f / seg;
-                    Vector3 rim = new Vector3(0f, Mathf.Sin(a), Mathf.Cos(a)) * radius;
-                    outer.Add(b.Add(centre + rim + Vector3.right * xOuter));
-                    inner.Add(b.Add(centre + rim + Vector3.right * xInner));
-                }
-                for (int i = 0; i < seg; i++)
-                {
-                    int j = (i + 1) % seg;
-                    Vector3 mid = (b.V[outer[i]] + b.V[outer[j]]) * 0.5f;
-                    Vector3 outward = new Vector3(0f, mid.y - centre.y, mid.z - centre.z);
-                    b.Tri(0, outer[i], inner[i], outer[j], outward);
-                    b.Tri(0, outer[j], inner[i], inner[j], outward);
-                }
-                int hub = b.Add(centre + Vector3.right * xOuter);
-                for (int i = 0; i < seg; i++) b.Tri(0, hub, outer[i], outer[(i + 1) % seg], Vector3.right * sx);
-            }
-            return b.Build("SliceVehicleWheels");
         }
 
         /// <summary>Flat rounded rectangle (slot fill), facing up.</summary>

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace RoadwaysGame.Slice
 {
-    /// <summary>One depot vehicle: the toy car model (or the old block model for vans and buses), its roof arrow, and its motions.</summary>
+    /// <summary>One depot vehicle: its toy model, roof arrow and motions.</summary>
     public sealed class SliceVehicle : MonoBehaviour
     {
         private const float GroundY = 0.04f; // sits on the depot floor / apron surface
@@ -34,30 +34,17 @@ namespace RoadwaysGame.Slice
         private void Build()
         {
             Color colour = ColorPaletteDatabase.GetPrimaryColor((ChilbiColorType)Def.Colour);
-            float height;
-            if (Def.Kind == VehicleKind.Coupe)
-            {
-                body = ToyCar.Build(colour, transform);
-                height = ToyCar.RoofTop;
-            }
-            else // vans and buses keep the old block model until theirs are built
-            {
-                height = Def.Kind == VehicleKind.Bus ? 0.78f : 0.72f;
-                body = new GameObject("Body").transform;
-                body.SetParent(transform, false);
-                Part("Wheels", SliceMeshes.Wheels(Def.Width, Def.Length), SliceWorld.Lit(new Color32(0x26, 0x2B, 0x33, 0xFF), 0.3f));
-                Part("Hull", SliceMeshes.Body(Def.Width, Def.Length, height), SliceWorld.Lit(colour, 0.5f), SliceWorld.Lit(new Color32(0x1E, 0x2A, 0x3C, 0xFF), 0.92f));
-            }
+            body = ToyVehicle.Build(Def.Kind, colour, transform, out float roofTop);
             arrow = Part("Arrow", SliceMeshes.Arrow(Def.Width, Def.Length), SliceWorld.Lit(Color.white, 0.5f));
-            arrow.transform.localPosition = new Vector3(0f, height + 0.006f, 0f);
+            arrow.transform.localPosition = new Vector3(0f, roofTop + 0.006f, 0f);
         }
 
-        private GameObject Part(string name, Mesh mesh, params Material[] materials)
+        private GameObject Part(string name, Mesh mesh, Material material)
         {
             var go = new GameObject(name, typeof(MeshFilter), typeof(MeshRenderer));
             go.transform.SetParent(body, false);
             go.GetComponent<MeshFilter>().sharedMesh = mesh;
-            go.GetComponent<MeshRenderer>().sharedMaterials = materials;
+            go.GetComponent<MeshRenderer>().sharedMaterial = material;
             return go;
         }
 
