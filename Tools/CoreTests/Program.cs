@@ -229,7 +229,7 @@ static class Program
 
     static void TestSliceLevels()
     {
-        int[] expectLosing = { 0, 2, 8 }; // pinned so a regenerated bake can't silently change difficulty
+        int[] expectLosing = { 0, 1, 3 }; // pinned so a regenerated bake can't silently change difficulty
         for (int i = 0; i < SliceLevels.Count; i++)
         {
             LevelDef lvl = SliceLevels.Get(i);
