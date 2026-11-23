@@ -11,15 +11,16 @@ namespace RoadwaysGame.Slice
     public sealed class SliceVehicle : MonoBehaviour
     {
         private const float GroundY = 0.04f; // sits on the depot floor / apron surface
+        private const float BadgeSize = 0.7f;
 
         public VehicleDef Def { get; private set; }
         public bool Busy { get; private set; }
 
         private Transform body;
         private GameObject arrow;
+        private Transform badge;
         private TextMeshPro counter;
         private int capacity, aboard;
-        private float roofTop;
 
         public static SliceVehicle Create(VehicleDef def, int index, Transform parent)
         {
@@ -36,15 +37,15 @@ namespace RoadwaysGame.Slice
         private void Build()
         {
             Color colour = ColorPaletteDatabase.GetPrimaryColor((ChilbiColorType)Def.Colour);
-            body = ToyVehicle.Build(Def.Kind, colour, transform, out roofTop);
-            arrow = Part("Arrow", SliceMeshes.Arrow(Def.Width, Def.Length), SliceWorld.Lit(Color.white, 0.5f));
+            body = ToyVehicle.Build(Def.Kind, colour, transform, out float roofTop);
+            arrow = Part(body, "Arrow", SliceMeshes.Arrow(Def.Width, Def.Length), SliceWorld.Lit(Color.white, 0.5f));
             arrow.transform.localPosition = new Vector3(0f, roofTop + 0.006f, 0f);
         }
 
-        private GameObject Part(string name, Mesh mesh, Material material)
+        private static GameObject Part(Transform parent, string name, Mesh mesh, Material material)
         {
             var go = new GameObject(name, typeof(MeshFilter), typeof(MeshRenderer));
-            go.transform.SetParent(body, false);
+            go.transform.SetParent(parent, false);
             go.GetComponent<MeshFilter>().sharedMesh = mesh;
             go.GetComponent<MeshRenderer>().sharedMaterial = material;
             return go;
@@ -104,14 +105,28 @@ namespace RoadwaysGame.Slice
             body.localRotation = Quaternion.identity;
         }
 
+        /// <summary>Parked in a bay: a tile in the vehicle's colour at the back of the bay shows the seats still free,
+        /// counting down as passengers board. The camera looks from that side, so the vehicle never hides it.</summary>
         public void Dock(int seats)
         {
             capacity = seats;
             aboard = 0;
             arrow.SetActive(false);
-            counter = SliceWorld.WorldText(transform, "", 0.55f, Color.white, 0.25f);
-            counter.transform.localPosition = new Vector3(0f, roofTop + 0.45f, 0f); // clear of the roof, so it can't clip into it
+            badge = new GameObject("SeatBadge").transform;
+            badge.SetParent(transform, false);
+            badge.localPosition = new Vector3(0f, 0f, -(SliceWorld.BayLength * 0.5f - 0.05f)); // across the bay's back edge, clear of even a bus
+            Color colour = ColorPaletteDatabase.GetPrimaryColor((ChilbiColorType)Def.Colour);
+            Part(badge, "Tile", ToyVehicle.RoundedBox(new Vector3(BadgeSize, 0.12f, BadgeSize), 0.09f), SliceWorld.Lit(colour, 0.5f)).transform.localPosition = Vector3.up * 0.06f;
+            counter = SliceWorld.WorldText(badge, "", BadgeSize * 0.6f, Color.white, 0.2f);
+            counter.transform.localPosition = Vector3.up * 0.125f;
+            counter.transform.rotation = Quaternion.Euler(90f, 0f, 0f); // flat on the tile, upright on screen even though the bay is angled
             Refresh();
+        }
+
+        /// <summary>Leaving the bay: the seat tile stays with the bay, so it goes.</summary>
+        public void Undock()
+        {
+            if (badge != null) Destroy(badge.gameObject);
         }
 
         public void AddPassenger()
@@ -123,23 +138,21 @@ namespace RoadwaysGame.Slice
 
         private void Refresh()
         {
-            if (counter != null) counter.text = aboard + "/" + capacity;
+            if (counter != null) counter.text = (capacity - aboard).ToString();
         }
 
+        /// <summary>Each boarding: the vehicle bounces slightly and the seat tile pops.</summary>
         private IEnumerator Punch()
         {
-            for (float k = 0f; k < 1f; k += Time.deltaTime / 0.15f)
+            for (float k = 0f; k < 1f; k += Time.deltaTime / 0.18f)
             {
-                body.localScale = Vector3.one * (1f + 0.06f * Mathf.Sin(k * Mathf.PI));
+                float bump = Mathf.Sin(k * Mathf.PI);
+                body.localScale = Vector3.one * (1f + 0.06f * bump);
+                if (badge != null) badge.localScale = Vector3.one * (1f + 0.3f * bump);
                 yield return null;
             }
             body.localScale = Vector3.one;
-        }
-
-        private void LateUpdate()
-        {
-            Camera cam = Camera.main;
-            if (counter != null && cam != null) counter.transform.rotation = cam.transform.rotation; // billboard
+            if (badge != null) badge.localScale = Vector3.one;
         }
     }
 }

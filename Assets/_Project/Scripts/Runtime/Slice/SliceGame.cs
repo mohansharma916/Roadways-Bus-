@@ -238,6 +238,7 @@ namespace RoadwaysGame.Slice
         private IEnumerator Depart(int bay, SliceVehicle bus)
         {
             yield return new WaitForSeconds(0.15f);
+            bus.Undock();
             yield return bus.Drive(DepartRoute(bay), DepartSpeed, null, null);
             Destroy(bus.gameObject);
             docked[bay] = null;
