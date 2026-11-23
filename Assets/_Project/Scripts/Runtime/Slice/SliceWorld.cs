@@ -55,11 +55,15 @@ namespace RoadwaysGame.Slice
             return t;
         }
 
+        /// <summary>Material template from Resources/Slice (made by Roadways > Slice > Create Material Templates). Copying templates
+        /// instead of calling Shader.Find keeps the shaders in device builds, which strip any shader no asset references.</summary>
+        private static Material Template(string name) => Resources.Load<Material>("Slice/" + name);
+
         public static Material Lit(Color c, float smoothness = 0.15f)
         {
             string key = ColorUtility.ToHtmlStringRGBA(c) + smoothness;
             if (Materials.TryGetValue(key, out Material m) && m != null) return m;
-            m = new Material(Shader.Find("Universal Render Pipeline/Lit")) { name = "Slice_" + key, color = c };
+            m = new Material(Template("Lit")) { name = "Slice_" + key, color = c };
             m.SetFloat("_Smoothness", smoothness);
             Materials[key] = m;
             return m;
@@ -147,7 +151,7 @@ namespace RoadwaysGame.Slice
 
         private static void BuildSea(Transform env)
         {
-            Shader ocean = Shader.Find("Roadways/OceanWater");
+            Material ocean = Template("Ocean");
             Material m = ocean != null ? new Material(ocean) : Lit(new Color32(0x1F, 0xB6, 0xD0, 0xFF), 0.8f);
             if (ocean != null) m.SetFloat("_ShorelineZ", ShorelineZ);
             Slab(env, "Sea", new Vector3(0f, -0.06f, ShorelineZ + 30f - 0.6f), new Vector3(90f, 0.02f, 60f), m);

@@ -38,6 +38,25 @@ namespace RoadwaysGame.Editor
             Debug.Log("[Slice] Created " + path);
         }
 
+        /// <summary>Material templates in Resources, so device builds include the shaders the slice uses. The slice makes
+        /// every material at runtime, and a build strips any shader no asset references (Shader.Find then returns null).</summary>
+        [MenuItem("Roadways/Slice/Create Material Templates")]
+        public static void EnsureMaterialTemplates()
+        {
+            Template("Lit", "Universal Render Pipeline/Lit");
+            Template("Ocean", "Roadways/OceanWater");
+        }
+
+        private static void Template(string name, string shader)
+        {
+            const string dir = "Assets/_Project/Resources/Slice";
+            string path = dir + "/" + name + ".mat";
+            if (AssetDatabase.LoadAssetAtPath<Material>(path) != null) return;
+            if (!AssetDatabase.IsValidFolder(dir)) AssetDatabase.CreateFolder("Assets/_Project/Resources", "Slice");
+            AssetDatabase.CreateAsset(new Material(Shader.Find(shader)), path);
+            Debug.Log("[Slice] Created " + path);
+        }
+
         public const string SdfFontPath = "Assets/_Project/Resources/Fonts/LilitaOne-Regular SDF.asset";
 
         /// <summary>Sharp text, one step per run (run until it says ready): imports TextMesh Pro's essential resources without
