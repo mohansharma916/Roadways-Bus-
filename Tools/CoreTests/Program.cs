@@ -47,6 +47,16 @@ static class Program
 
     static void TestGeometry()
     {
+        // Four kinds, smallest to largest, each carrying more than the last.
+        VehicleKind[] bySize = { VehicleKind.Coupe, VehicleKind.BigCar, VehicleKind.Minivan, VehicleKind.Bus };
+        int[] seats = { 4, 6, 10, 16 };
+        for (int k = 0; k < bySize.Length; k++)
+        {
+            VehicleDef d = V(bySize[k], 0, 0, 0, 0);
+            Check(d.Capacity == seats[k], $"{bySize[k]} carries {seats[k]} (got {d.Capacity})");
+            if (k > 0) Check(d.Length > V(bySize[k - 1], 0, 0, 0, 0).Length, $"{bySize[k]} is longer than {bySize[k - 1]}");
+        }
+
         var a = new Obb(Vector2.Zero, Vector2.UnitY, 0.5f, 0.5f);
         Check(a.Overlaps(a), "box overlaps itself");
         Check(!a.Overlaps(new Obb(new Vector2(2f, 0), Vector2.UnitY, 0.5f, 0.5f)), "separated boxes don't overlap");
@@ -231,7 +241,7 @@ static class Program
     }
 
     static JamSpec Spec(int seed, int count, bool cars) =>
-        cars ? new JamSpec { Seed = seed, VehicleCount = count, CoupeShare = 1f, BusShare = 0f } : new JamSpec { Seed = seed, VehicleCount = count };
+        cars ? new JamSpec { Seed = seed, VehicleCount = count, CoupeShare = 1f, BigCarShare = 0f, BusShare = 0f } : new JamSpec { Seed = seed, VehicleCount = count };
 
     static int Scan(int seeds, int count, bool cars)
     {

@@ -4,8 +4,8 @@ using System.Numerics;
 
 namespace RoadwaysGame.Core
 {
-    /// <summary>Vehicle body type; maps 1:1 onto BusMeshGenerator.VehicleArchetype.</summary>
-    public enum VehicleKind : byte { Coupe = 0, Minivan = 1, Bus = 2 }
+    /// <summary>Vehicle body type, smallest to largest: Coupe (car) &lt; BigCar &lt; Minivan &lt; Bus. Values are baked into levels, so only append.</summary>
+    public enum VehicleKind : byte { Coupe = 0, Minivan = 1, Bus = 2, BigCar = 3 }
 
     public readonly struct VehicleDef
     {
@@ -22,11 +22,11 @@ namespace RoadwaysGame.Core
             HeadingDeg = headingDeg;
         }
 
-        // Dimensions mirror BusMeshGenerator.GetDimensions so logic and meshes agree.
-        public float Length => Kind == VehicleKind.Coupe ? 1.35f : Kind == VehicleKind.Bus ? 2.45f : 1.90f;
-        public float Width => Kind == VehicleKind.Coupe ? 0.88f : Kind == VehicleKind.Bus ? 1.05f : 0.95f;
-        // Bigger vehicles carry far more, as in the reference (its walkthrough cites buses of 16 and 40): that is what fills the crowd ring.
-        public int Capacity => Kind == VehicleKind.Coupe ? 4 : Kind == VehicleKind.Bus ? 16 : 10;
+        // Footprints match the Slice ToyVehicle models, so logic and meshes agree.
+        public float Length => Kind switch { VehicleKind.Coupe => 1.35f, VehicleKind.BigCar => 1.62f, VehicleKind.Minivan => 1.90f, _ => 2.45f };
+        public float Width => Kind switch { VehicleKind.Coupe => 0.88f, VehicleKind.BigCar => 0.92f, VehicleKind.Minivan => 0.95f, _ => 1.05f };
+        // Bigger vehicles carry more: that variety is what makes choosing which vehicle to free first matter, and fills the ring.
+        public int Capacity => Kind switch { VehicleKind.Coupe => 4, VehicleKind.BigCar => 6, VehicleKind.Minivan => 10, _ => 16 };
 
         public Vector2 Forward
         {

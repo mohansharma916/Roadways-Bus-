@@ -32,7 +32,7 @@ namespace RoadwaysGame.Core
     {
         public int Seed;
         public int VehicleCount = 18;
-        public float CoupeShare = 0.30f, BusShare = 0.30f; // rest are minivans; bigger vehicles mean bigger crowds
+        public float CoupeShare = 0.25f, BigCarShare = 0.25f, BusShare = 0.25f; // rest are minivans; bigger vehicles mean bigger crowds
         public int[] Colours = { 0, 1, 2, 3, 4, 6 }; // red, yellow, blue, green, purple, pink
         public int QueueCount = 2;
         public int BayCount = 4;
@@ -100,7 +100,9 @@ namespace RoadwaysGame.Core
         private static VehicleKind PickKind(ref Rng rng, JamSpec spec)
         {
             float r = rng.NextFloat();
-            return r < spec.CoupeShare ? VehicleKind.Coupe : r < 1f - spec.BusShare ? VehicleKind.Minivan : VehicleKind.Bus;
+            if (r < spec.CoupeShare) return VehicleKind.Coupe;
+            if (r < spec.CoupeShare + spec.BigCarShare) return VehicleKind.BigCar;
+            return r < 1f - spec.BusShare ? VehicleKind.Minivan : VehicleKind.Bus;
         }
 
         /// <summary>One contiguous colour block per vehicle, shuffled, dealt alternately into the queues.</summary>
