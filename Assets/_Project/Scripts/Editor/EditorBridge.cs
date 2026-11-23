@@ -162,6 +162,13 @@ namespace RoadwaysGame.Editor
                     game.SetPausedForTest(arg != "off");
                     return "paused " + (arg != "off");
                 }
+                case "home": // the pause popup's Home button
+                {
+                    var game = UnityEngine.Object.FindAnyObjectByType<RoadwaysGame.Slice.SliceGame>();
+                    if (game == null) return "error: no SliceGame running";
+                    game.GoHomeForTest();
+                    return "home";
+                }
                 case "level":
                 {
                     var game = UnityEngine.Object.FindAnyObjectByType<RoadwaysGame.Slice.SliceGame>();

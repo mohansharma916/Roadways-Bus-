@@ -35,6 +35,14 @@ namespace RoadwaysGame.Slice
         private bool ended, paused;
         private Vector2Int framedFor;
 
+        // Progress kept on the device: the level to play next, and coins.
+        private const string LevelKey = "progress.level", CoinsKey = "progress.coins";
+        private const int CoinsPerWin = 10; // shortcut: a flat reward until there is an economy to balance it against
+
+        private SliceHome home;
+        private GameObject homeSettings;
+        private RectTransform gameHud;
+        private bool atHome;
         private RectTransform safeRoot;
         private TextMeshProUGUI levelLabel, bannerTitle, bannerButtonLabel;
         private GameObject banner, pausePanel;
@@ -57,13 +65,34 @@ namespace RoadwaysGame.Slice
             queuePaths = SliceWorld.QueuePaths();
             SliceWorld.BuildEnvironment(transform, queuePaths);
             BuildHud();
-            LoadLevel(0);
+            ShowHome();
+        }
+
+        private static int SavedLevel => Mathf.Clamp(PlayerPrefs.GetInt(LevelKey, 0), 0, SliceLevels.Count - 1);
+
+        /// <summary>Leaves the level, if one is running, for the Home screen.</summary>
+        private void ShowHome()
+        {
+            StopAllCoroutines();
+            SetPaused(false);
+            if (level != null) Destroy(level.gameObject);
+            level = null;
+            session = null;
+            atHome = ended = true;
+            banner.SetActive(false);
+            gameHud.gameObject.SetActive(false);
+            home.Show(SavedLevel, PlayerPrefs.GetInt(CoinsKey, 0));
+            Frame(Screen.width, Screen.height, Screen.safeArea);
         }
 
         private void LoadLevel(int index)
         {
             StopAllCoroutines();
             SetPaused(false);
+            atHome = false;
+            home.Hide();
+            homeSettings.SetActive(false);
+            gameHud.gameObject.SetActive(true);
             if (level != null) Destroy(level.gameObject);
             levelIndex = index;
             ended = false;
@@ -89,6 +118,7 @@ namespace RoadwaysGame.Slice
         private void Update()
         {
             if (Screen.width != framedFor.x || Screen.height != framedFor.y) Frame(Screen.width, Screen.height, Screen.safeArea);
+            if (atHome) return;
             // Android Back arrives as Escape: it pauses rather than quitting (audit §B-2).
             if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame && !ended) SetPaused(!paused);
             if (paused) return;
@@ -281,8 +311,7 @@ namespace RoadwaysGame.Slice
             }
         }
 
-        // shortcut: Home only logs until the Home screen exists (the user is specifying it next); then it opens that screen.
-        private void GoHome() => Debug.Log("[Slice] Home tapped: the Home screen comes next");
+        private void GoHome() => ShowHome();
 
         private void SetPaused(bool value)
         {
@@ -294,6 +323,7 @@ namespace RoadwaysGame.Slice
         // ---------------------------------------------------------------- verification hooks (editor bridge)
 
         public void LoadLevelForTest(int index) => LoadLevel(index);
+        public void GoHomeForTest() => GoHome();
         public void UseBoosterForTest(int which) => UseBooster(which);
         public void SetPausedForTest(bool value) => SetPaused(value);
 
@@ -349,6 +379,8 @@ namespace RoadwaysGame.Slice
         private void Frame(int width, int height, Rect safe)
         {
             framedFor = new Vector2Int(width, height);
+            if (atHome) { home.PlaceCamera(cam, width / (float)height); return; }
+            cam.fieldOfView = CameraFov;
             // The buttons scale with screen width, so their share of the height depends on the aspect ratio.
             float topMargin = (height - safe.yMax + TopBarUnits * width / CanvasWidth) / height, sideMargin = 0.0f;
             float bottomMargin = (safe.yMin + BoosterBarUnits * width / CanvasWidth) / height;
@@ -402,15 +434,18 @@ namespace RoadwaysGame.Slice
             safeRoot = new GameObject("SafeArea", typeof(RectTransform)).GetComponent<RectTransform>();
             safeRoot.SetParent(canvasGo.transform, false);
             ApplySafeArea();
+            gameHud = new GameObject("GameHud", typeof(RectTransform)).GetComponent<RectTransform>();
+            gameHud.SetParent(safeRoot, false);
+            Hud.Stretch(gameHud);
 
             // Top row, as in the reference: restart · level · pause. 150 units = 50 dp touch targets.
-            Button restart = Hud.ChunkyButton(safeRoot, new Vector2(0f, 1f), new Vector2(40f, -40f), new Vector2(150f, 150f), out _);
+            Button restart = Hud.ChunkyButton(gameHud, new Vector2(0f, 1f), new Vector2(40f, -40f), new Vector2(150f, 150f), out _);
             Hud.Icon(restart.transform, Icons.Restart(), 96f);
             restart.onClick.AddListener(() => LoadLevel(levelIndex));
-            Button pause = Hud.ChunkyButton(safeRoot, new Vector2(1f, 1f), new Vector2(-40f, -40f), new Vector2(150f, 150f), out _);
+            Button pause = Hud.ChunkyButton(gameHud, new Vector2(1f, 1f), new Vector2(-40f, -40f), new Vector2(150f, 150f), out _);
             Hud.Icon(pause.transform, Icons.Pause(), 84f);
             pause.onClick.AddListener(() => { if (!ended) SetPaused(true); });
-            levelLabel = Hud.Text(safeRoot, "Level 1", 96, new Vector2(0.5f, 1f), new Vector2(0f, -115f), new Vector2(620f, 140f));
+            levelLabel = Hud.Text(gameHud, "Level 1", 96, new Vector2(0.5f, 1f), new Vector2(0f, -115f), new Vector2(620f, 140f));
 
             // Booster bar, bottom centre.
             string[] names = { "VIP", "Sort", "Shuffle" }; // own names, not the reference's
@@ -418,7 +453,7 @@ namespace RoadwaysGame.Slice
             for (int i = 0; i < 3; i++)
             {
                 int which = i;
-                Button btn = Hud.ChunkyButton(safeRoot, new Vector2(0.5f, 0f), new Vector2((i - 1) * 330f, 30f), new Vector2(270f, 220f), out boosterFace[i]);
+                Button btn = Hud.ChunkyButton(gameHud, new Vector2(0.5f, 0f), new Vector2((i - 1) * 330f, 30f), new Vector2(270f, 220f), out boosterFace[i]);
                 Image ic = Hud.Icon(btn.transform, icons[i], 130f);
                 ic.rectTransform.anchoredPosition = new Vector2(0f, 30f);
                 TextMeshProUGUI label = Hud.Text(btn.transform, names[i], 54, new Vector2(0.5f, 0f), new Vector2(0f, 38f), new Vector2(260f, 70f));
@@ -442,6 +477,12 @@ namespace RoadwaysGame.Slice
 
             banner = Overlay(canvasGo.transform, "", "", () => LoadLevel(session.IsWon ? (levelIndex + 1) % SliceLevels.Count : levelIndex), out bannerTitle, out bannerButtonLabel);
             banner.SetActive(false);
+
+            home = new GameObject("Home").AddComponent<SliceHome>();
+            home.transform.SetParent(transform, false);
+            home.Build(safeRoot, play: () => LoadLevel(SavedLevel), settings: () => homeSettings.SetActive(true));
+            homeSettings = SettingsPopup.Build(canvasGo.transform, close: () => homeSettings.SetActive(false), home: null, restart: null);
+            homeSettings.SetActive(false);
         }
 
         private GameObject Overlay(Transform canvas, string title, string action, UnityEngine.Events.UnityAction onAction, out TextMeshProUGUI titleText, out TextMeshProUGUI actionText)
@@ -469,6 +510,12 @@ namespace RoadwaysGame.Slice
         {
             ended = true;
             Debug.Log($"[Slice] Level {levelIndex + 1} {(won ? "complete" : "gridlocked")}: {session.Boarded}/{session.TotalPassengers} boarded");
+            if (won)
+            {
+                PlayerPrefs.SetInt(LevelKey, (levelIndex + 1) % SliceLevels.Count);
+                PlayerPrefs.SetInt(CoinsKey, PlayerPrefs.GetInt(CoinsKey, 0) + CoinsPerWin);
+                PlayerPrefs.Save();
+            }
             bannerTitle.text = won ? "Level complete!" : "Out of spots!";
             bannerButtonLabel.text = won ? "Next level" : "Try again";
             banner.SetActive(true);

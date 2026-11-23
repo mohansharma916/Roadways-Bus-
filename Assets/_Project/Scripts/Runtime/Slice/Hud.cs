@@ -72,6 +72,20 @@ namespace RoadwaysGame.Slice
             return b;
         }
 
+        /// <summary>Rounded panel in a colour, anchored and sized.</summary>
+        public static RectTransform Box(Transform parent, string name, Color colour, Vector2 anchor, Vector2 pos, Vector2 size)
+        {
+            var img = new GameObject(name, typeof(Image)).GetComponent<Image>();
+            img.transform.SetParent(parent, false);
+            img.sprite = Hud.Rounded;
+            img.type = Image.Type.Sliced;
+            img.color = colour;
+            img.rectTransform.anchorMin = img.rectTransform.anchorMax = anchor;
+            img.rectTransform.anchoredPosition = pos;
+            img.rectTransform.sizeDelta = size;
+            return img.rectTransform;
+        }
+
         public static Image Icon(Transform parent, Sprite sprite, float size)
         {
             var img = new GameObject("Icon", typeof(Image)).GetComponent<Image>();
@@ -210,6 +224,53 @@ namespace RoadwaysGame.Slice
                      || Seg(p, new Vector2(x0, 58f), new Vector2(x1, 46f)) < 4.5f;
             }
             return phone || buzz ? c : (Color32?)null;
+        });
+
+        /// <summary>Gold coin with a darker rim and a shine.</summary>
+        public static Sprite Coin() => Draw(p =>
+        {
+            float r = Vector2.Distance(p, new Vector2(64f, 64f));
+            if (r > 56f) return null;
+            if (r > 46f) return new Color32(0xE0, 0x93, 0x10, 0xFF);
+            bool shine = Seg(p, new Vector2(44f, 62f), new Vector2(56f, 88f)) < 6f;
+            return shine ? new Color32(0xFF, 0xF1, 0xB8, 0xFF) : new Color32(0xFF, 0xC7, 0x2C, 0xFF);
+        });
+
+        /// <summary>Cog wheel with a hole.</summary>
+        public static Sprite Gear(Color32 c) => Draw(p =>
+        {
+            Vector2 d = p - new Vector2(64f, 64f);
+            float r = d.magnitude, a = Mathf.Atan2(d.y, d.x);
+            float teeth = Mathf.Repeat(a * 8f / (Mathf.PI * 2f), 1f) < 0.5f ? 54f : 42f;
+            return r < teeth && r > 18f ? c : (Color32?)null;
+        });
+
+        /// <summary>House: walls, roof and a door.</summary>
+        public static Sprite House(Color32 c) => Draw(p =>
+        {
+            bool walls = p.x > 30f && p.x < 98f && p.y > 18f && p.y < 66f;
+            bool door = p.x > 54f && p.x < 74f && p.y > 18f && p.y < 46f;
+            bool roof = p.y >= 62f && p.y < 112f && Mathf.Abs(p.x - 64f) < (112f - p.y) * 0.98f;
+            return (walls && !door) || roof ? c : (Color32?)null;
+        });
+
+        /// <summary>Market stall: striped awning over a counter.</summary>
+        public static Sprite Shop() => Draw(p =>
+        {
+            if (p.y > 70f && p.y < 104f && p.x > 16f && p.x < 112f)
+                return ((int)((p.x - 16f) / 16f) % 2 == 0) ? new Color32(0xEE, 0x52, 0x53, 0xFF) : new Color32(255, 255, 255, 255);
+            if (p.y > 24f && p.y <= 70f && p.x > 26f && p.x < 102f) return p.y < 44f ? new Color32(0xF4, 0xA2, 0x3C, 0xFF) : new Color32(0xFF, 0xE0, 0x9E, 0xFF);
+            return null;
+        });
+
+        /// <summary>Winners' podium: three steps, the middle one tallest and gold.</summary>
+        public static Sprite Podium() => Draw(p =>
+        {
+            if (p.y < 20f) return null;
+            if (p.x > 46f && p.x < 82f && p.y < 96f) return new Color32(0xFF, 0xC7, 0x2C, 0xFF);
+            if (p.x > 14f && p.x <= 46f && p.y < 70f) return new Color32(0xC9, 0xD3, 0xE3, 0xFF);
+            if (p.x >= 82f && p.x < 114f && p.y < 58f) return new Color32(0xE0, 0x9A, 0x62, 0xFF);
+            return null;
         });
 
         public static Sprite Ball() => Draw(p =>

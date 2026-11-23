@@ -30,7 +30,8 @@ namespace RoadwaysGame.Slice
         private static readonly Color SwitchOn = new Color32(0x2E, 0xCC, 0x5A, 0xFF), SwitchOff = new Color32(0xB8, 0x9E, 0x62, 0xFF);
         private static readonly Color Orange = new Color32(0xFF, 0xA4, 0x1C, 0xFF), Green = new Color32(0x3D, 0xBE, 0x4B, 0xFF), CloseRed = new Color32(0xFF, 0x74, 0x2E, 0xFF);
 
-        /// <summary>Builds the popup (inactive) under the canvas. Dims and blocks the game behind it while shown.</summary>
+        /// <summary>Builds the popup (inactive) under the canvas. Dims and blocks the game behind it while shown. With no home or
+        /// restart action (on the Home screen) it has just the switches.</summary>
         public static GameObject Build(Transform canvas, Action close, Action home, Action restart)
         {
             var dim = new GameObject("SettingsPopup", typeof(Image)).GetComponent<Image>();
@@ -39,8 +40,10 @@ namespace RoadwaysGame.Slice
             Hud.Stretch(dim.rectTransform);
 
             // Gold frame with a darker lip underneath, like the buttons.
-            RectTransform card = Box(dim.transform, "Card", FrameLip, new Vector2(0.5f, 0.5f), new Vector2(0f, 40f), new Vector2(880f, 950f));
-            RectTransform face = Box(card, "Face", Frame, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+            bool actions = home != null || restart != null;
+            float panelHeight = actions ? 730f : 520f;
+            RectTransform card = Hud.Box(dim.transform, "Card", FrameLip, new Vector2(0.5f, 0.5f), new Vector2(0f, 40f), new Vector2(880f, panelHeight + 220f));
+            RectTransform face = Hud.Box(card, "Face", Frame, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
             face.anchorMin = Vector2.zero;
             face.anchorMax = Vector2.one;
             face.offsetMin = new Vector2(0f, 18f);
@@ -54,10 +57,10 @@ namespace RoadwaysGame.Slice
             Hud.Icon(shut.transform, Icons.Cross(new Color32(255, 255, 255, 255)), 64f);
             shut.onClick.AddListener(() => close());
 
-            RectTransform panel = Box(face, "Panel", Panel, new Vector2(0.5f, 0f), new Vector2(0f, 40f), new Vector2(800f, 730f));
+            RectTransform panel = Hud.Box(face, "Panel", Panel, new Vector2(0.5f, 0f), new Vector2(0f, 40f), new Vector2(800f, panelHeight));
             panel.pivot = new Vector2(0.5f, 0f);
             panel.anchoredPosition = new Vector2(0f, 40f);
-            RectTransform rows = Box(panel, "Rows", RowsBox, new Vector2(0.5f, 1f), new Vector2(0f, -30f), new Vector2(740f, 460f));
+            RectTransform rows = Hud.Box(panel, "Rows", RowsBox, new Vector2(0.5f, 1f), new Vector2(0f, -30f), new Vector2(740f, 460f));
             rows.pivot = new Vector2(0.5f, 1f);
             rows.anchoredPosition = new Vector2(0f, -30f);
 
@@ -65,8 +68,8 @@ namespace RoadwaysGame.Slice
             Row(rows, 1, "Sound", Icons.Speaker(Ink), GameSettings.Sound, on => GameSettings.Sound = on);
             Row(rows, 2, "Vibration", Icons.Vibrate(Ink), GameSettings.Vibration, on => GameSettings.Vibration = on);
 
-            ActionButton(panel, "Home", -190f, Orange, home);
-            ActionButton(panel, "Restart", 190f, Green, restart);
+            if (home != null) ActionButton(panel, "Home", -190f, Orange, home);
+            if (restart != null) ActionButton(panel, "Restart", 190f, Green, restart);
             return dim.gameObject;
         }
 
@@ -86,11 +89,11 @@ namespace RoadwaysGame.Slice
         /// <summary>Pill switch: green with a tick and the knob right when on; tan with a cross and the knob left when off.</summary>
         private static void Switch(RectTransform parent, Vector2 pos, bool on, Action<bool> changed)
         {
-            RectTransform pill = Box(parent, "Switch", SwitchOff, new Vector2(0.5f, 1f), pos, new Vector2(196f, 90f));
+            RectTransform pill = Hud.Box(parent, "Switch", SwitchOff, new Vector2(0.5f, 1f), pos, new Vector2(196f, 90f));
             Image pillImage = pill.GetComponent<Image>();
             var button = pill.gameObject.AddComponent<Button>();
             button.targetGraphic = pillImage;
-            RectTransform knob = Box(pill, "Knob", Color.white, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(72f, 72f));
+            RectTransform knob = Hud.Box(pill, "Knob", Color.white, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(72f, 72f));
             Image mark = Hud.Icon(pill, null, 46f);
             Sprite tick = Icons.Check(new Color32(255, 255, 255, 255)), cross = Icons.Cross(new Color32(255, 255, 255, 255));
             void Show()
@@ -110,19 +113,6 @@ namespace RoadwaysGame.Slice
             TextMeshProUGUI label = Hud.Text(b.transform, text, 72, new Vector2(0.5f, 0.5f), new Vector2(0f, 8f), new Vector2(320f, 140f));
             label.outlineColor = Color.Lerp(colour, Color.black, 0.45f);
             b.onClick.AddListener(() => onClick());
-        }
-
-        private static RectTransform Box(Transform parent, string name, Color colour, Vector2 anchor, Vector2 pos, Vector2 size)
-        {
-            var img = new GameObject(name, typeof(Image)).GetComponent<Image>();
-            img.transform.SetParent(parent, false);
-            img.sprite = Hud.Rounded;
-            img.type = Image.Type.Sliced;
-            img.color = colour;
-            img.rectTransform.anchorMin = img.rectTransform.anchorMax = anchor;
-            img.rectTransform.anchoredPosition = pos;
-            img.rectTransform.sizeDelta = size;
-            return img.rectTransform;
         }
     }
 }

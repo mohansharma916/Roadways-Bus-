@@ -151,9 +151,7 @@ namespace RoadwaysGame.Slice
 
         private static void BuildSea(Transform env)
         {
-            Material ocean = Template("Ocean");
-            Material m = ocean != null ? new Material(ocean) : Lit(new Color32(0x1F, 0xB6, 0xD0, 0xFF), 0.8f);
-            if (ocean != null) m.SetFloat("_ShorelineZ", ShorelineZ);
+            Material m = Sea(ShorelineZ);
             Slab(env, "Sea", new Vector3(0f, -0.06f, ShorelineZ + 30f - 0.6f), new Vector3(90f, 0.02f, 60f), m);
         }
 
@@ -295,13 +293,22 @@ namespace RoadwaysGame.Slice
             Palm(env, new Vector3(9.8f, 0f, 15.2f));
         }
 
-        private static void Umbrella(Transform env, Vector3 at, Color canopy)
+        /// <summary>Animated sea with its foam line at world z = shorelineZ.</summary>
+        public static Material Sea(float shorelineZ)
+        {
+            Material ocean = Template("Ocean");
+            Material m = ocean != null ? new Material(ocean) : Lit(new Color32(0x1F, 0xB6, 0xD0, 0xFF), 0.8f);
+            if (ocean != null) m.SetFloat("_ShorelineZ", shorelineZ);
+            return m;
+        }
+
+        public static void Umbrella(Transform env, Vector3 at, Color canopy)
         {
             Primitive(env, PrimitiveType.Cylinder, "UmbrellaPole", at + Vector3.up * 0.9f, new Vector3(0.08f, 0.9f, 0.08f), Quaternion.identity, Lit(Color.white, 0.4f));
             Primitive(env, PrimitiveType.Sphere, "UmbrellaCanopy", at + Vector3.up * 1.8f, new Vector3(2.2f, 0.5f, 2.2f), Quaternion.identity, Lit(canopy, 0.35f));
         }
 
-        private static void Palm(Transform env, Vector3 at)
+        public static void Palm(Transform env, Vector3 at)
         {
             Primitive(env, PrimitiveType.Cylinder, "PalmTrunk", at + new Vector3(0.15f, 1.3f, 0f), new Vector3(0.26f, 1.3f, 0.26f), Quaternion.Euler(0f, 0f, -7f), Lit(new Color32(0xA9, 0x7C, 0x50, 0xFF)));
             for (int i = 0; i < 6; i++)
