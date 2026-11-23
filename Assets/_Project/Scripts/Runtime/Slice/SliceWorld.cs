@@ -80,7 +80,7 @@ namespace RoadwaysGame.Slice
             {
                 new Vector3(-0.9f, 0f, 12.4f), new Vector3(-3.5f, 0f, 12.4f), new Vector3(-5.6f, 0f, 12.6f), new Vector3(-6.8f, 0f, 13.7f),
                 new Vector3(-7.0f, 0f, 15.6f), new Vector3(-6.6f, 0f, 17.6f), new Vector3(-5.4f, 0f, 19.4f), new Vector3(-3.6f, 0f, 20.1f),
-                new Vector3(-1.6f, 0f, 18.8f), new Vector3(0f, 0f, 18.6f),
+                new Vector3(-1.6f, 0f, 18.6f), new Vector3(0f, 0f, 18.6f), // level at the join, so the two halves meet without a crack
             };
             var right = new List<Vector3>();
             foreach (Vector3 p in left) right.Add(new Vector3(-p.x, p.y, p.z));
@@ -172,21 +172,49 @@ namespace RoadwaysGame.Slice
         private static void BuildRing(Transform env, SlicePath[] queues)
         {
             Material road = Lit(Road, 0.15f), curb = Lit(Curb, 0.3f);
-            foreach (SlicePath f in FeederPaths()) Lane(env, f, 0f, f.Length, 0.016f, road, curb, 0f);
+            SlicePath[] feeders = FeederPaths(); // feeders[i] joins queues[i]'s side of the ring
+            foreach (SlicePath f in feeders) Lane(env, f, 0f, f.Length, 0.016f, road, curb, 0f, Vector2.zero);
             float front = queues[0].PointAt(0f).z;
             Slab(env, "ExitNeck", new Vector3(0f, 0.016f, (ApronMaxZ + front) * 0.5f), new Vector3(3.0f, 0.012f, front - ApronMaxZ + 0.2f), road);
             // Each half runs a little past both ends, so the halves overlap and the loop closes; the outer curb starts
-            // 0.6 along, leaving the exit open at the bottom centre.
-            foreach (SlicePath q in queues) Lane(env, q, -1.0f, q.Length + 0.05f, 0.03f, road, curb, 0.6f);
+            // 0.6 along, leaving the exit open at the bottom centre, and stops where the feeder joins so the roads connect.
+            for (int i = 0; i < queues.Length; i++)
+                Lane(env, queues[i], -1.0f, queues[i].Length + 0.05f, 0.03f, road, curb, 0.6f, FeederMouth(queues[i], feeders[i]));
         }
 
-        private static void Lane(Transform env, SlicePath p, float s0, float s1, float y, Material road, Material curb, float outerCurbStart)
+        private static float OuterSide(SlicePath ring) => Vector3.Dot(ring.LeftAt(0f), Vector3.back) > 0f ? 1f : -1f; // the side facing the apron at the front
+
+        /// <summary>Arc-length span (x..y) of the ring's outer curb that the feeder road covers: centred where the feeder's
+        /// centreline crosses the curb, as wide as the road measured along the curb at that crossing angle.</summary>
+        private static Vector2 FeederMouth(SlicePath ring, SlicePath feeder)
         {
-            // Which side faces the apron (-Z) at the front is the outside of the ring.
-            float outer = Vector3.Dot(p.LeftAt(0f), Vector3.back) > 0f ? 1f : -1f;
-            float h = BandHalfWidth;
+            float outer = OuterSide(ring), bestS = 0f, bestT = 0f, best = float.MaxValue;
+            for (float s = 0f; s <= ring.Length; s += 0.05f)
+            {
+                Vector3 edge = ring.PointAt(s) + ring.LeftAt(s) * (outer * BandHalfWidth);
+                for (float t = 0f; t <= feeder.Length; t += 0.05f)
+                {
+                    float d = (feeder.PointAt(t) - edge).sqrMagnitude;
+                    if (d < best) { best = d; bestS = s; bestT = t; }
+                }
+            }
+            float sin = Mathf.Abs(Vector3.Cross(ring.TangentAt(bestS), feeder.TangentAt(bestT)).y);
+            float half = BandHalfWidth / Mathf.Max(sin, 0.3f) + 0.15f;
+            return new Vector2(bestS - half, bestS + half);
+        }
+
+        /// <summary>Road surface, curbs and dashes along a path. The outer curb runs from outerCurbStart, skipping gap (x..y) if set.</summary>
+        private static void Lane(Transform env, SlicePath p, float s0, float s1, float y, Material road, Material curb, float outerCurbStart, Vector2 gap)
+        {
+            float outer = OuterSide(p), h = BandHalfWidth;
             AddMesh(env, "Road", Ribbon(p, s0, s1, h, -h, y), road);
-            AddMesh(env, "CurbOuter", Ribbon(p, Mathf.Max(s0, outerCurbStart), s1, outer * (h + 0.1f), outer * (h - 0.04f), y + 0.004f), curb);
+            float from = Mathf.Max(s0, outerCurbStart);
+            if (gap.y > gap.x)
+            {
+                AddMesh(env, "CurbOuter", Ribbon(p, from, gap.x, outer * (h + 0.1f), outer * (h - 0.04f), y + 0.004f), curb);
+                from = gap.y;
+            }
+            AddMesh(env, "CurbOuter", Ribbon(p, from, s1, outer * (h + 0.1f), outer * (h - 0.04f), y + 0.004f), curb);
             AddMesh(env, "CurbInner", Ribbon(p, s0, s1, -outer * (h - 0.04f), -outer * (h + 0.1f), y + 0.004f), curb);
             AddMesh(env, "Dashes", Dashes(p, Mathf.Max(s0, 0f), s1, y + 0.004f), curb);
         }
