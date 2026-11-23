@@ -42,3 +42,6 @@ ehthumbs.db
 # Out-of-Unity core test harness build output
 Tools/**/bin/
 !Tools/CoreTests/CoreTests.csproj
+
+# project-track: local activity log
+.project-track/activity.jsonl
