@@ -38,6 +38,26 @@ namespace RoadwaysGame.Editor
             Debug.Log("[Slice] Created " + path);
         }
 
+        public const string SdfFontPath = "Assets/_Project/Resources/Fonts/LilitaOne-Regular SDF.asset";
+
+        /// <summary>Sharp text, one step per run (run until it says ready): imports TextMesh Pro's essential resources without
+        /// the import dialog, then makes an SDF font asset from Lilita One. Saved as an asset, its material references
+        /// the SDF shader, so device builds include it.</summary>
+        [MenuItem("Roadways/Slice/Set Up Sharp Text")]
+        public static void SetUpSharpText()
+        {
+            if (!AssetDatabase.IsValidFolder("Assets/TextMesh Pro"))
+            {
+                AssetDatabase.ImportPackage(Path.GetFullPath("Packages/com.unity.ugui/Package Resources/TMP Essential Resources.unitypackage"), false);
+                Debug.Log("[Slice] Imported TMP Essential Resources; run Set Up Sharp Text again to create the font asset.");
+                return;
+            }
+            if (AssetDatabase.LoadAssetAtPath<TMPro.TMP_FontAsset>(SdfFontPath) != null) { Debug.Log("[Slice] Sharp text ready."); return; }
+            Selection.objects = new Object[] { AssetDatabase.LoadAssetAtPath<Font>("Assets/_Project/Resources/Fonts/LilitaOne-Regular.ttf") };
+            EditorApplication.ExecuteMenuItem("Assets/Create/TextMeshPro/Font Asset/SDF");
+            Debug.Log("[Slice] Created " + SdfFontPath);
+        }
+
         /// <summary>Keeps play mode running while the editor is unfocused, so the game can be verified (and streamed to
         /// Unity Remote) while you work in another window. Android ignores runInBackground, so builds are unaffected.</summary>
         [MenuItem("Roadways/Slice/Enable Background Play")]

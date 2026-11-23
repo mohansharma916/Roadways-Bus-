@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using RoadwaysGame.Core;
+using TMPro;
 using UnityEngine;
 
 namespace RoadwaysGame.Slice
@@ -16,8 +17,9 @@ namespace RoadwaysGame.Slice
 
         private Transform body;
         private GameObject arrow;
-        private TextMesh counter;
+        private TextMeshPro counter;
         private int capacity, aboard;
+        private float roofTop;
 
         public static SliceVehicle Create(VehicleDef def, int index, Transform parent)
         {
@@ -34,7 +36,7 @@ namespace RoadwaysGame.Slice
         private void Build()
         {
             Color colour = ColorPaletteDatabase.GetPrimaryColor((ChilbiColorType)Def.Colour);
-            body = ToyVehicle.Build(Def.Kind, colour, transform, out float roofTop);
+            body = ToyVehicle.Build(Def.Kind, colour, transform, out roofTop);
             arrow = Part("Arrow", SliceMeshes.Arrow(Def.Width, Def.Length), SliceWorld.Lit(Color.white, 0.5f));
             arrow.transform.localPosition = new Vector3(0f, roofTop + 0.006f, 0f);
         }
@@ -107,17 +109,8 @@ namespace RoadwaysGame.Slice
             capacity = seats;
             aboard = 0;
             arrow.SetActive(false);
-            var go = new GameObject("Counter", typeof(TextMesh));
-            go.transform.SetParent(transform, false);
-            go.transform.localPosition = new Vector3(0f, 1.15f, 0f);
-            counter = go.GetComponent<TextMesh>();
-            Font font = SliceWorld.GameFont;
-            counter.font = font;
-            go.GetComponent<MeshRenderer>().sharedMaterial = font.material;
-            counter.fontSize = 96;
-            counter.characterSize = 0.55f * 10f / counter.fontSize;
-            counter.anchor = TextAnchor.MiddleCenter;
-            counter.color = Color.white;
+            counter = SliceWorld.WorldText(transform, "", 0.55f, Color.white, 0.25f);
+            counter.transform.localPosition = new Vector3(0f, roofTop + 0.45f, 0f); // clear of the roof, so it can't clip into it
             Refresh();
         }
 

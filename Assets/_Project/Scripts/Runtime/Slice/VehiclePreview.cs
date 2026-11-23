@@ -42,18 +42,9 @@ namespace RoadwaysGame.Slice
 
         private void Label(string text, Vector3 at)
         {
-            var go = new GameObject("Label", typeof(TextMesh));
-            go.transform.SetParent(transform, false);
-            go.transform.localPosition = at;
-            go.transform.rotation = cam.transform.rotation; // face the camera
-            var tm = go.GetComponent<TextMesh>();
-            tm.font = SliceWorld.GameFont;
-            go.GetComponent<MeshRenderer>().sharedMaterial = tm.font.material;
-            tm.text = text;
-            tm.fontSize = 96;
-            tm.characterSize = 0.32f * 10f / tm.fontSize;
-            tm.anchor = TextAnchor.MiddleCenter;
-            tm.color = new Color32(0x2E, 0x34, 0x48, 0xFF);
+            TMPro.TextMeshPro t = SliceWorld.WorldText(transform, text, 0.32f, new Color32(0x2E, 0x34, 0x48, 0xFF));
+            t.transform.localPosition = at;
+            t.transform.rotation = cam.transform.rotation; // face the camera
         }
 
         private void Update()

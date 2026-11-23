@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -31,17 +32,27 @@ namespace RoadwaysGame.Slice
         public static readonly Color WallColour = new Color32(0xF4, 0xF5, 0xF7, 0xFF);
 
         private static readonly Dictionary<string, Material> Materials = new Dictionary<string, Material>();
-        private static Font gameFont;
 
-        /// <summary>Lilita One (SIL OFL, bundled with its licence in Resources/Fonts); falls back to the built-in font.</summary>
-        public static Font GameFont
+        private static TMP_FontAsset uiFont;
+
+        /// <summary>Lilita One (SIL OFL, licence in Resources/Fonts) as a TextMesh Pro SDF asset, made by Roadways > Slice >
+        /// Set Up Sharp Text; null falls back to TMP's default font.</summary>
+        public static TMP_FontAsset UiFont => uiFont != null ? uiFont : uiFont = Resources.Load<TMP_FontAsset>("Fonts/LilitaOne-Regular SDF");
+
+        /// <summary>Centred world-space TextMesh Pro label, sharp at any distance; height is roughly the glyph height in world units.</summary>
+        public static TextMeshPro WorldText(Transform parent, string text, float height, Color colour, float outline = 0f)
         {
-            get
-            {
-                if (gameFont == null) gameFont = Resources.Load<Font>("Fonts/LilitaOne-Regular");
-                if (gameFont == null) gameFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                return gameFont;
-            }
+            var t = new GameObject("Label", typeof(RectTransform)).AddComponent<TextMeshPro>();
+            t.transform.SetParent(parent, false);
+            if (UiFont != null) t.font = UiFont;
+            t.fontSize = height * 10f; // 3D TextMesh Pro: 10 pt is about 1 world unit
+            t.rectTransform.sizeDelta = new Vector2(20f, 4f) * height;
+            t.alignment = TextAlignmentOptions.Center;
+            t.textWrappingMode = TextWrappingModes.NoWrap;
+            t.color = colour;
+            t.text = text;
+            if (outline > 0f) { t.outlineWidth = outline; t.outlineColor = new Color32(0x1F, 0x2E, 0x5A, 0xFF); }
+            return t;
         }
 
         public static Material Lit(Color c, float smoothness = 0.15f)
@@ -151,19 +162,9 @@ namespace RoadwaysGame.Slice
 
         private static void Label(Transform parent, string text, Color colour, float height, float spin)
         {
-            var go = new GameObject("Label", typeof(TextMesh));
-            go.transform.SetParent(parent, false);
-            go.transform.localPosition = new Vector3(0f, 0.045f, 0f);
-            go.transform.localRotation = Quaternion.Euler(90f, spin, 0f);
-            var tm = go.GetComponent<TextMesh>();
-            tm.font = GameFont;
-            go.GetComponent<MeshRenderer>().sharedMaterial = GameFont.material;
-            tm.text = text;
-            tm.fontSize = 96;
-            tm.characterSize = height * 10f / tm.fontSize; // TextMesh glyph height ≈ characterSize × fontSize / 10
-            tm.anchor = TextAnchor.MiddleCenter;
-            tm.alignment = TextAlignment.Center;
-            tm.color = colour;
+            TextMeshPro t = WorldText(parent, text, height, colour);
+            t.transform.localPosition = new Vector3(0f, 0.045f, 0f);
+            t.transform.localRotation = Quaternion.Euler(90f, spin, 0f); // lying on the bay, readable from above
         }
 
         /// <summary>The ring road the crowd stands on, with white curbs and a dashed centre line. Feeders and the exit neck sit

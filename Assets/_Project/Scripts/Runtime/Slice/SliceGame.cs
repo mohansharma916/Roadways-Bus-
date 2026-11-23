@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using RoadwaysGame.Core;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -37,14 +38,13 @@ namespace RoadwaysGame.Slice
         private bool ended, paused;
         private Vector2Int framedFor;
 
-        private Font font;
         private Sprite rounded;
         private RectTransform safeRoot;
-        private Text levelLabel, bannerTitle, bannerButtonLabel;
+        private TextMeshProUGUI levelLabel, bannerTitle, bannerButtonLabel;
         private GameObject banner, pausePanel;
         private readonly int[] boosterCount = new int[3];
         private readonly Image[] boosterFace = new Image[3];
-        private readonly Text[] boosterBadge = new Text[3];
+        private readonly TextMeshProUGUI[] boosterBadge = new TextMeshProUGUI[3];
         private readonly List<RaycastResult> uiHits = new List<RaycastResult>();
 
         private void Start()
@@ -58,7 +58,6 @@ namespace RoadwaysGame.Slice
             cam.nearClipPlane = 0.3f;
             cam.farClipPlane = 150f;
 
-            font = SliceWorld.GameFont;
             queuePaths = SliceWorld.QueuePaths();
             SliceWorld.BuildEnvironment(transform, queuePaths);
             BuildHud();
@@ -423,7 +422,7 @@ namespace RoadwaysGame.Slice
                 Button btn = ChunkyButton(safeRoot, new Vector2(0.5f, 0f), new Vector2((i - 1) * 330f, 30f), new Vector2(270f, 220f), out boosterFace[i]);
                 Image ic = Icon(btn.transform, icons[i], 130f);
                 ic.rectTransform.anchoredPosition = new Vector2(0f, 30f);
-                Text label = MakeText(btn.transform, names[i], 54, new Vector2(0.5f, 0f), new Vector2(0f, 38f), new Vector2(260f, 70f));
+                TextMeshProUGUI label = MakeText(btn.transform, names[i], 54, new Vector2(0.5f, 0f), new Vector2(0f, 38f), new Vector2(260f, 70f));
                 label.rectTransform.pivot = new Vector2(0.5f, 0f);
                 // Count badge, top-right corner (the reference's red/green bubbles).
                 var badge = new GameObject("Badge", typeof(Image)).GetComponent<Image>();
@@ -450,7 +449,7 @@ namespace RoadwaysGame.Slice
             banner.SetActive(false);
         }
 
-        private GameObject Overlay(Transform canvas, string title, string action, UnityEngine.Events.UnityAction onAction, out Text titleText, out Text actionText)
+        private GameObject Overlay(Transform canvas, string title, string action, UnityEngine.Events.UnityAction onAction, out TextMeshProUGUI titleText, out TextMeshProUGUI actionText)
         {
             var dim = new GameObject("Overlay", typeof(Image)).GetComponent<Image>();
             dim.transform.SetParent(canvas, false);
@@ -464,7 +463,7 @@ namespace RoadwaysGame.Slice
             card.rectTransform.sizeDelta = new Vector2(820f, 760f);
             titleText = MakeText(card.rectTransform, title, 110, new Vector2(0.5f, 0.5f), new Vector2(0f, 200f), new Vector2(780f, 160f));
             titleText.color = new Color32(0x3A, 0x2A, 0x3E, 0xFF);
-            titleText.GetComponent<Outline>().enabled = false;
+            titleText.outlineWidth = 0f;
             Button go = ChunkyButton(card.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0f, -40f), new Vector2(560f, 180f), out _, new Color32(0x2E, 0xCC, 0x71, 0xFF));
             actionText = MakeText(go.transform, action, 70, new Vector2(0.5f, 0.5f), new Vector2(0f, 6f), new Vector2(540f, 160f));
             go.onClick.AddListener(onAction);
@@ -495,22 +494,23 @@ namespace RoadwaysGame.Slice
             rt.offsetMin = rt.offsetMax = Vector2.zero;
         }
 
-        private Text MakeText(Transform parent, string text, int size, Vector2 anchor, Vector2 pos, Vector2 box)
+        /// <summary>TextMesh Pro label: drawn from a distance field, so it stays sharp at any size, with a real outline.</summary>
+        private TextMeshProUGUI MakeText(Transform parent, string text, int size, Vector2 anchor, Vector2 pos, Vector2 box)
         {
-            var t = new GameObject("Text", typeof(Text), typeof(Outline)).GetComponent<Text>();
+            var t = new GameObject("Text", typeof(RectTransform)).AddComponent<TextMeshProUGUI>();
             t.transform.SetParent(parent, false);
             t.rectTransform.anchorMin = t.rectTransform.anchorMax = anchor;
             t.rectTransform.anchoredPosition = pos;
             t.rectTransform.sizeDelta = box;
-            t.font = font;
+            if (SliceWorld.UiFont != null) t.font = SliceWorld.UiFont;
             t.fontSize = size;
-            t.alignment = TextAnchor.MiddleCenter;
+            t.alignment = TextAlignmentOptions.Center;
+            t.textWrappingMode = TextWrappingModes.NoWrap;
             t.color = Color.white;
             t.text = text;
             t.raycastTarget = false;
-            var o = t.GetComponent<Outline>();
-            o.effectColor = new Color(0.12f, 0.18f, 0.35f, 0.9f);
-            o.effectDistance = new Vector2(4f, -4f);
+            t.outlineWidth = 0.24f;
+            t.outlineColor = new Color32(0x1F, 0x2E, 0x5A, 0xFF);
             return t;
         }
 
@@ -574,12 +574,12 @@ namespace RoadwaysGame.Slice
         }
     }
 
-    /// <summary>HUD icons drawn in code at 128px with 4x supersampling — no emoji (audit §E-2), no art pipeline needed.</summary>
+    /// <summary>HUD icons drawn in code at 256px with 4x supersampling (shapes are defined in 128-px coordinates) — no emoji (audit §E-2), no art pipeline needed.</summary>
     internal static class Icons
     {
         private static Sprite Draw(Func<Vector2, Color32?> shade)
         {
-            const int n = 128;
+            const int n = 256;
             var tex = new Texture2D(n, n, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp };
             var px = new Color32[n * n];
             for (int y = 0; y < n; y++)
@@ -588,7 +588,7 @@ namespace RoadwaysGame.Slice
                 float r = 0, g = 0, b = 0, a = 0;
                 for (int s = 0; s < 4; s++)
                 {
-                    Color32? c = shade(new Vector2(x + 0.25f + (s & 1) * 0.5f, y + 0.25f + (s >> 1) * 0.5f));
+                    Color32? c = shade(new Vector2(x + 0.25f + (s & 1) * 0.5f, y + 0.25f + (s >> 1) * 0.5f) * (128f / n));
                     if (!c.HasValue) continue;
                     r += c.Value.r; g += c.Value.g; b += c.Value.b; a += 1f;
                 }
