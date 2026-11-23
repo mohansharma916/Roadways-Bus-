@@ -19,6 +19,7 @@ namespace RoadwaysGame.Slice
 
         private void Start()
         {
+            Application.targetFrameRate = 60; // the editor otherwise renders uncapped and heats the machine
             cam = new GameObject("Main Camera", typeof(Camera)).GetComponent<Camera>();
             cam.tag = "MainCamera";
             cam.fieldOfView = 30f;
