@@ -6,35 +6,49 @@ namespace RoadwaysGame.Slice
 {
     /// <summary>
     /// Procedural beach world for the vertical slice, laid out after the Bus Fever Party! reference:
-    /// depot (near, bottom of screen) → apron with 8 bays → horseshoe queue with two exit gates → beach and sea (far).
-    /// World units on the XZ ground plane; +Z is up the screen.
+    /// depot (near, bottom of screen) → apron with 8 bays → ring road with the crowd on it → beach and sea.
+    /// World units on the XZ ground plane; +Z is up the screen. Scaled so a bus is ~1/6.5 of the screen width.
     /// </summary>
     public static class SliceWorld
     {
-        // Depot bounds come from the level (x ±4.6, z -5.2..3.6); vehicles reach the apron along these side lanes.
-        public const float LaneX = 5.35f;
-        public const float FloorHalfWidth = 5.95f, FloorMinZ = -6.3f;
-        public const float ApronMinZ = 4.2f, ApronMaxZ = 9.25f;
-        public const float BayZ = 6.55f, BayYawDeg = 12f, BayPitch = 1.42f, BayWidth = 1.22f, BayLength = 2.75f;
+        // Depot bounds come from the level (x ±7.2, z -13..4.6); vehicles reach the apron along these side lanes.
+        public const float LaneX = 7.95f;
+        public const float FloorHalfWidth = 8.6f, FloorMinZ = -13.8f;
+        public const float ApronMinZ = 5.3f, ApronMaxZ = 10.7f;
+        public const float BayZ = 7.85f, BayYawDeg = 12f, BayPitch = 1.8f, BayWidth = 1.5f, BayLength = 3.6f;
         public const int SlotCount = 8;          // VIP + 4 standard + 3 locked, as in the reference
-        public const int FirstPlayableSlot = 1;  // core bay b sits in physical slot b + 1
-        public const float GateX = 1.15f, GateZ = 9.35f;
-        public const float BandHalfWidth = 0.95f;
-        public const float ShorelineZ = 17.6f;
+        public const float GateZ = 11.05f;
+        public const float BandHalfWidth = 1.15f;
+        public const float ShorelineZ = 24.5f;
+        public const float FrameTopZ = 21.4f;    // top of the ring road: the camera keeps the whole ring in view
 
-        public static readonly Color Sand = new Color32(0xF3, 0xD0, 0x8A, 0xFF);
-        public static readonly Color DepotFloor = new Color32(0xC4, 0xCA, 0xD8, 0xFF);
-        public static readonly Color Asphalt = new Color32(0x5E, 0x64, 0x72, 0xFF);
-        public static readonly Color Paving = new Color32(0xD6, 0xD3, 0xCE, 0xFF);
+        public static readonly Color Sand = new Color32(0xF4, 0xD9, 0xA0, 0xFF);
+        // Albedo, not screen colour: the slice's sun + ambient brighten it ~1.6x (linear), so it renders as #D3DAED.
+        public static readonly Color DepotFloor = new Color32(0xAA, 0xB1, 0xC2, 0xFF);
+        public static readonly Color Asphalt = new Color32(0x50, 0x54, 0x5E, 0xFF);
+        public static readonly Color Road = new Color32(0x52, 0x57, 0x69, 0xFF);  // the CircuitRoad design's asphalt
+        public static readonly Color Curb = new Color32(0xE6, 0xE9, 0xEE, 0xFF);
+        public static readonly Color WallColour = new Color32(0xF4, 0xF5, 0xF7, 0xFF);
 
         private static readonly Dictionary<string, Material> Materials = new Dictionary<string, Material>();
+        private static Font gameFont;
+
+        /// <summary>Lilita One (SIL OFL, bundled with its licence in Resources/Fonts); falls back to the built-in font.</summary>
+        public static Font GameFont
+        {
+            get
+            {
+                if (gameFont == null) gameFont = Resources.Load<Font>("Fonts/LilitaOne-Regular");
+                if (gameFont == null) gameFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                return gameFont;
+            }
+        }
 
         public static Material Lit(Color c, float smoothness = 0.15f)
         {
             string key = ColorUtility.ToHtmlStringRGBA(c) + smoothness;
             if (Materials.TryGetValue(key, out Material m) && m != null) return m;
-            Shader lit = Shader.Find("Universal Render Pipeline/Lit");
-            m = new Material(lit) { name = "Slice_" + key, color = c };
+            m = new Material(Shader.Find("Universal Render Pipeline/Lit")) { name = "Slice_" + key, color = c };
             m.SetFloat("_Smoothness", smoothness);
             Materials[key] = m;
             return m;
@@ -42,16 +56,30 @@ namespace RoadwaysGame.Slice
 
         public static Vector3 SlotCenter(int slot) => new Vector3((slot - (SlotCount - 1) * 0.5f) * BayPitch, 0f, BayZ);
         public static Quaternion SlotRotation => Quaternion.Euler(0f, BayYawDeg, 0f);
-        public static Vector3 BayCenter(int coreBay) => SlotCenter(coreBay + FirstPlayableSlot);
 
-        /// <summary>Queue centrelines, front first: each arm runs from its gate out along the bottom and up the side.</summary>
+        /// <summary>Core bays 0..regular-1 sit in the standard slots 1..4; the VIP bay (index == regular) sits in slot 0.</summary>
+        public static Vector3 BayCenter(int coreBay, int regularBays) => SlotCenter(coreBay >= regularBays ? 0 : coreBay + 1);
+
+        /// <summary>Queue centrelines, front first. Each queue is one half of the ring road (CircuitRoad shape: flat bottom,
+        /// rounded sides, a dip in the top middle): from its exit at the bottom centre, round the side, to the top dip.
+        /// Together the two halves close the loop.</summary>
         public static SlicePath[] QueuePaths()
         {
             var left = new List<Vector3>
             {
-                new Vector3(-0.95f, 0f, 10.35f), new Vector3(-2.8f, 0f, 10.4f), new Vector3(-4.3f, 0f, 10.9f),
-                new Vector3(-5.1f, 0f, 12.2f), new Vector3(-5.2f, 0f, 13.8f), new Vector3(-4.8f, 0f, 15.4f), new Vector3(-4.2f, 0f, 16.9f),
+                new Vector3(-0.9f, 0f, 12.4f), new Vector3(-3.5f, 0f, 12.4f), new Vector3(-5.6f, 0f, 12.6f), new Vector3(-6.8f, 0f, 13.7f),
+                new Vector3(-7.0f, 0f, 15.6f), new Vector3(-6.6f, 0f, 17.6f), new Vector3(-5.4f, 0f, 19.4f), new Vector3(-3.6f, 0f, 20.1f),
+                new Vector3(-1.6f, 0f, 18.8f), new Vector3(0f, 0f, 18.6f),
             };
+            var right = new List<Vector3>();
+            foreach (Vector3 p in left) right.Add(new Vector3(-p.x, p.y, p.z));
+            return new[] { new SlicePath(left), new SlicePath(right) };
+        }
+
+        /// <summary>Decorative feeder roads running in from the screen edges to the ring's upper sides, as in CircuitRoad.</summary>
+        private static SlicePath[] FeederPaths()
+        {
+            var left = new List<Vector3> { new Vector3(-13.5f, 0f, 22.6f), new Vector3(-10.6f, 0f, 20.6f), new Vector3(-8.2f, 0f, 18.2f), new Vector3(-6.9f, 0f, 16.8f) };
             var right = new List<Vector3>();
             foreach (Vector3 p in left) right.Add(new Vector3(-p.x, p.y, p.z));
             return new[] { new SlicePath(left), new SlicePath(right) };
@@ -63,31 +91,38 @@ namespace RoadwaysGame.Slice
         {
             var env = new GameObject("Environment").transform;
             env.SetParent(root, false);
-
-            // Low warm key light: the "golden hour" lever from VISUAL_TARGET §5 that keeps this beach distinct from the reference's midday.
-            var sun = new GameObject("Sun").AddComponent<Light>();
-            sun.transform.SetParent(env, false);
-            sun.type = LightType.Directional;
-            sun.color = new Color(1f, 0.87f, 0.70f);
-            sun.intensity = 1.3f;
-            sun.shadows = LightShadows.Soft;
-            sun.shadowStrength = 0.55f;
-            sun.transform.rotation = Quaternion.Euler(48f, -38f, 0f);
-            RenderSettings.sun = sun;
-            RenderSettings.ambientMode = AmbientMode.Trilight;
-            RenderSettings.ambientSkyColor = new Color(0.66f, 0.82f, 0.93f);
-            RenderSettings.ambientEquatorColor = new Color(0.97f, 0.87f, 0.72f);
-            RenderSettings.ambientGroundColor = new Color(0.78f, 0.64f, 0.45f);
+            SetupLighting(env);
 
             Slab(env, "Sand", new Vector3(0f, -0.05f, (ShorelineZ - 40f) * 0.5f), new Vector3(90f, 0.1f, ShorelineZ + 40f), Lit(Sand, 0.05f));
             BuildSea(env);
-            Slab(env, "DepotFloor", new Vector3(0f, 0.01f, (FloorMinZ + ApronMinZ) * 0.5f), new Vector3(FloorHalfWidth * 2f, 0.02f, ApronMinZ - FloorMinZ), Lit(DepotFloor, 0.2f));
-            Slab(env, "Apron", new Vector3(0f, 0.015f, (ApronMinZ + ApronMaxZ) * 0.5f), new Vector3(FloorHalfWidth * 2f, 0.03f, ApronMaxZ - ApronMinZ), Lit(Asphalt, 0.1f));
-            Slab(env, "ApronEdge", new Vector3(0f, 0.035f, ApronMinZ), new Vector3(FloorHalfWidth * 2f, 0.01f, 0.09f), Lit(Color.white, 0.3f));
+            // Runs well past both screen edges, down under the booster bar and up beside the apron, so no sand shows there.
+            const float floorBottom = -40f;
+            Slab(env, "DepotFloor", new Vector3(0f, 0.01f, (floorBottom + ApronMaxZ) * 0.5f), new Vector3(60f, 0.02f, ApronMaxZ - floorBottom), Lit(DepotFloor, 0f));
+            Slab(env, "Apron", new Vector3(0f, 0.015f, (ApronMinZ + ApronMaxZ) * 0.5f), new Vector3(FloorHalfWidth * 2f, 0.03f, ApronMaxZ - ApronMinZ), Lit(Asphalt, 0.12f));
+            Slab(env, "ApronEdge", new Vector3(0f, 0.035f, ApronMinZ), new Vector3(FloorHalfWidth * 2f, 0.012f, 0.12f), Lit(WallColour, 0.3f));
             for (int slot = 0; slot < SlotCount; slot++) BuildSlot(env, slot);
-            foreach (SlicePath q in queues) BuildBand(env, q);
-            Slab(env, "GateIsland", new Vector3(0f, 0.09f, 10.35f), new Vector3(0.5f, 0.18f, BandHalfWidth * 2f), Lit(Color.white, 0.3f));
+            BuildRing(env, queues);
             BuildProps(env);
+        }
+
+        /// <summary>Sun and ambient shared by the slice and the vehicle preview.</summary>
+        public static void SetupLighting(Transform env)
+        {
+            // Neutral bright daylight, as in the reference; sun from behind-left so shadows fall toward the camera's lower right.
+            // Kept well off the camera's mirror angle: at (58°, 155°) every flat roof reflected it and bleached the arrows out.
+            var sun = new GameObject("Sun").AddComponent<Light>();
+            sun.transform.SetParent(env, false);
+            sun.type = LightType.Directional;
+            sun.color = new Color(1f, 0.97f, 0.93f);
+            sun.intensity = 1.15f;
+            sun.shadows = LightShadows.Soft;
+            sun.shadowStrength = 0.45f;
+            sun.transform.rotation = Quaternion.Euler(50f, 125f, 0f);
+            RenderSettings.sun = sun;
+            RenderSettings.ambientMode = AmbientMode.Trilight;
+            RenderSettings.ambientSkyColor = new Color(0.86f, 0.9f, 0.97f);
+            RenderSettings.ambientEquatorColor = new Color(0.93f, 0.91f, 0.88f);
+            RenderSettings.ambientGroundColor = new Color(0.78f, 0.74f, 0.66f);
         }
 
         private static void BuildSea(Transform env)
@@ -101,54 +136,78 @@ namespace RoadwaysGame.Slice
         private static void BuildSlot(Transform env, int slot)
         {
             bool vip = slot == 0, locked = slot > 4;
-            Color border = vip ? new Color32(0xFF, 0xB5, 0x2E, 0xFF) : locked ? new Color32(0x4C, 0xD0, 0x7D, 0xFF) : new Color32(0xD4, 0xD8, 0xE0, 0xFF);
-            Color fill = vip ? new Color32(0x66, 0x60, 0x52, 0xFF) : locked ? new Color32(0x50, 0x6E, 0x60, 0xFF) : new Color32(0x50, 0x56, 0x63, 0xFF);
+            Color border = vip ? new Color32(0xFF, 0xB6, 0x27, 0xFF) : locked ? new Color32(0x4C, 0xD0, 0x7D, 0xFF) : new Color32(0xC9, 0xCD, 0xD4, 0xFF);
+            Color fill = vip ? new Color32(0x4A, 0x47, 0x3E, 0xFF) : locked ? new Color32(0x48, 0x60, 0x55, 0xFF) : new Color32(0x43, 0x47, 0x4F, 0xFF);
 
             var s = new GameObject("Slot" + slot).transform;
             s.SetParent(env, false);
             s.localPosition = SlotCenter(slot);
             s.localRotation = SlotRotation;
-            const float t = 0.08f, y = 0.045f;
-            Slab(s, "Fill", new Vector3(0f, 0.035f, 0f), new Vector3(BayWidth, 0.01f, BayLength), Lit(fill, 0.1f));
-            Slab(s, "L", new Vector3(-BayWidth * 0.5f, y, 0f), new Vector3(t, 0.02f, BayLength), Lit(border, 0.3f));
-            Slab(s, "R", new Vector3(BayWidth * 0.5f, y, 0f), new Vector3(t, 0.02f, BayLength), Lit(border, 0.3f));
-            Slab(s, "T", new Vector3(0f, y, BayLength * 0.5f), new Vector3(BayWidth + t, 0.02f, t), Lit(border, 0.3f));
-            Slab(s, "B", new Vector3(0f, y, -BayLength * 0.5f), new Vector3(BayWidth + t, 0.02f, t), Lit(border, 0.3f));
-            if (vip) Label(s, "VIP", border, 0.32f, 90f);
-            if (locked) Label(s, "+", border, 0.55f, 0f);
+            AddMesh(s, "Fill", SliceMeshes.RoundedPlate(BayWidth, BayLength, 0.22f), Lit(fill, 0.1f)).localPosition = Vector3.up * 0.034f;
+            AddMesh(s, "Frame", SliceMeshes.RoundedFrame(BayWidth, BayLength, 0.22f, 0.085f), Lit(border, 0.3f)).localPosition = Vector3.up * 0.038f;
+            if (vip) Label(s, "VIP", border, 0.5f, 90f);
+            if (locked) Label(s, "+", border, 0.95f, 0f);
         }
 
         private static void Label(Transform parent, string text, Color colour, float height, float spin)
         {
             var go = new GameObject("Label", typeof(TextMesh));
             go.transform.SetParent(parent, false);
-            go.transform.localPosition = new Vector3(0f, 0.06f, 0f);
+            go.transform.localPosition = new Vector3(0f, 0.045f, 0f);
             go.transform.localRotation = Quaternion.Euler(90f, spin, 0f);
             var tm = go.GetComponent<TextMesh>();
-            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            tm.font = font;
-            go.GetComponent<MeshRenderer>().sharedMaterial = font.material;
+            tm.font = GameFont;
+            go.GetComponent<MeshRenderer>().sharedMaterial = GameFont.material;
             tm.text = text;
             tm.fontSize = 96;
             tm.characterSize = height * 10f / tm.fontSize; // TextMesh glyph height ≈ characterSize × fontSize / 10
-            tm.fontStyle = FontStyle.Bold;
             tm.anchor = TextAnchor.MiddleCenter;
             tm.alignment = TextAlignment.Center;
             tm.color = colour;
         }
 
-        /// <summary>Paved band the crowd stands on, with low walls and an opening (the gate) on the apron side of the front.</summary>
-        private static void BuildBand(Transform env, SlicePath path)
+        /// <summary>The ring road the crowd stands on, with white curbs and a dashed centre line. Feeders and the exit neck sit
+        /// slightly lower, so the ring's surface covers them where they join.</summary>
+        private static void BuildRing(Transform env, SlicePath[] queues)
         {
-            float end = path.Length;
-            AddMesh(env, "Band", Ribbon(path, -0.6f, end, BandHalfWidth, -BandHalfWidth, 0.025f), Lit(Paving, 0.15f));
-            // Which side faces the apron (-Z) at the front decides where the gate gap goes.
-            float apronSide = Vector3.Dot(path.LeftAt(0f), Vector3.back) > 0f ? 1f : -1f;
-            AddMesh(env, "WallOuterFront", Wall(path, 1.0f, end, BandHalfWidth * apronSide), Lit(Color.white, 0.35f));
-            AddMesh(env, "WallInner", Wall(path, -0.6f, end, -BandHalfWidth * apronSide), Lit(Color.white, 0.35f));
-            Vector3 cap = path.PointAt(end);
-            var capWall = Slab(env, "TailCap", cap + Vector3.up * 0.09f, new Vector3(BandHalfWidth * 2f, 0.18f, 0.14f), Lit(Color.white, 0.35f));
-            capWall.rotation = Quaternion.LookRotation(path.TangentAt(end));
+            Material road = Lit(Road, 0.15f), curb = Lit(Curb, 0.3f);
+            foreach (SlicePath f in FeederPaths()) Lane(env, f, 0f, f.Length, 0.016f, road, curb, 0f);
+            float front = queues[0].PointAt(0f).z;
+            Slab(env, "ExitNeck", new Vector3(0f, 0.016f, (ApronMaxZ + front) * 0.5f), new Vector3(3.0f, 0.012f, front - ApronMaxZ + 0.2f), road);
+            // Each half runs a little past both ends, so the halves overlap and the loop closes; the outer curb starts
+            // 0.6 along, leaving the exit open at the bottom centre.
+            foreach (SlicePath q in queues) Lane(env, q, -1.0f, q.Length + 0.05f, 0.03f, road, curb, 0.6f);
+        }
+
+        private static void Lane(Transform env, SlicePath p, float s0, float s1, float y, Material road, Material curb, float outerCurbStart)
+        {
+            // Which side faces the apron (-Z) at the front is the outside of the ring.
+            float outer = Vector3.Dot(p.LeftAt(0f), Vector3.back) > 0f ? 1f : -1f;
+            float h = BandHalfWidth;
+            AddMesh(env, "Road", Ribbon(p, s0, s1, h, -h, y), road);
+            AddMesh(env, "CurbOuter", Ribbon(p, Mathf.Max(s0, outerCurbStart), s1, outer * (h + 0.1f), outer * (h - 0.04f), y + 0.004f), curb);
+            AddMesh(env, "CurbInner", Ribbon(p, s0, s1, -outer * (h - 0.04f), -outer * (h + 0.1f), y + 0.004f), curb);
+            AddMesh(env, "Dashes", Dashes(p, Mathf.Max(s0, 0f), s1, y + 0.004f), curb);
+        }
+
+        /// <summary>Dashed centre line: 0.45-long dashes every 0.9, in one mesh.</summary>
+        private static Mesh Dashes(SlicePath path, float s0, float s1, float y)
+        {
+            var verts = new List<Vector3>();
+            var tris = new List<int>();
+            for (float s = s0; s + 0.45f <= s1; s += 0.9f)
+            {
+                int b = verts.Count;
+                foreach (float d in new[] { s, s + 0.45f })
+                {
+                    Vector3 c = path.PointAt(d) + Vector3.up * y, side = path.LeftAt(d) * 0.05f;
+                    verts.Add(c + side);
+                    verts.Add(c - side);
+                }
+                tris.Add(b); tris.Add(b + 2); tris.Add(b + 1); // same winding as Ribbon
+                tris.Add(b + 1); tris.Add(b + 2); tris.Add(b + 3);
+            }
+            return Finish(verts, tris);
         }
 
         private static Mesh Ribbon(SlicePath path, float s0, float s1, float left, float right, float y, float step = 0.2f)
@@ -170,30 +229,6 @@ namespace RoadwaysGame.Slice
             return Finish(verts, tris);
         }
 
-        /// <summary>Box-section wall swept along the path at a sideways offset: top face plus both sides.</summary>
-        private static Mesh Wall(SlicePath path, float s0, float s1, float offset, float halfWidth = 0.07f, float height = 0.18f, float step = 0.2f)
-        {
-            var verts = new List<Vector3>();
-            var tris = new List<int>();
-            int n = Mathf.Max(2, Mathf.CeilToInt((s1 - s0) / step) + 1);
-            for (int i = 0; i < n; i++)
-            {
-                float s = Mathf.Lerp(s0, s1, i / (float)(n - 1));
-                Vector3 side = path.LeftAt(s), c = path.PointAt(s) + side * offset;
-                Vector3 l = c + side * halfWidth, r = c - side * halfWidth, up = Vector3.up * height;
-                verts.Add(l); verts.Add(l + up); verts.Add(r + up); verts.Add(r);
-                if (i == 0) continue;
-                int b = verts.Count - 8;
-                for (int f = 0; f < 3; f++)
-                {
-                    int a0 = b + f, a1 = b + f + 1, c0 = b + 4 + f, c1 = b + 4 + f + 1;
-                    tris.Add(a0); tris.Add(c0); tris.Add(a1);
-                    tris.Add(a1); tris.Add(c0); tris.Add(c1);
-                }
-            }
-            return Finish(verts, tris);
-        }
-
         private static Mesh Finish(List<Vector3> verts, List<int> tris)
         {
             var m = new Mesh();
@@ -206,28 +241,30 @@ namespace RoadwaysGame.Slice
 
         private static void BuildProps(Transform env)
         {
-            Umbrella(env, new Vector3(-7.1f, 0f, 13.4f), new Color32(0xFF, 0x6B, 0x6B, 0xFF));
-            Umbrella(env, new Vector3(7.2f, 0f, 12.3f), new Color32(0x4F, 0xC3, 0xF7, 0xFF));
-            Slab(env, "TowelA", new Vector3(-6.7f, 0.01f, 11.1f), new Vector3(0.75f, 0.02f, 1.35f), Lit(new Color32(0xFF, 0xD1, 0x66, 0xFF))).rotation = Quaternion.Euler(0f, -14f, 0f);
-            Slab(env, "TowelB", new Vector3(6.8f, 0.01f, 14.7f), new Vector3(0.75f, 0.02f, 1.35f), Lit(new Color32(0x06, 0xD6, 0xA0, 0xFF))).rotation = Quaternion.Euler(0f, 18f, 0f);
-            Primitive(env, PrimitiveType.Sphere, "BeachBall", new Vector3(-6.1f, 0.18f, 15.6f), Vector3.one * 0.36f, Quaternion.identity, Lit(new Color32(0xEF, 0x47, 0x6F, 0xFF), 0.6f));
-            Primitive(env, PrimitiveType.Capsule, "Surfboard", new Vector3(6.6f, 0.05f, 10.3f), new Vector3(0.45f, 0.75f, 0.06f), Quaternion.Euler(90f, 28f, 0f), Lit(new Color32(0x11, 0x8A, 0xB2, 0xFF), 0.7f));
-            Palm(env, new Vector3(-7.6f, 0f, 16.3f));
-            Palm(env, new Vector3(7.9f, 0f, 16.9f));
+            // Inside the ring's hole and beside it on the sand. Kept toward the hole's bottom: seen from the 60° camera,
+            // the umbrella canopies stand 1.8 up and would otherwise cover the top of the ring.
+            Umbrella(env, new Vector3(-2.7f, 0f, 14.2f), new Color32(0xFF, 0x6B, 0x6B, 0xFF));
+            Umbrella(env, new Vector3(2.9f, 0f, 14.0f), new Color32(0x4F, 0xC3, 0xF7, 0xFF));
+            Slab(env, "TowelA", new Vector3(-0.9f, 0.01f, 14.9f), new Vector3(1.0f, 0.02f, 1.8f), Lit(new Color32(0x4F, 0xC3, 0xF7, 0xFF))).rotation = Quaternion.Euler(0f, -14f, 0f);
+            Slab(env, "TowelB", new Vector3(4.4f, 0.01f, 15.6f), new Vector3(1.0f, 0.02f, 1.8f), Lit(new Color32(0xFF, 0xD1, 0x66, 0xFF))).rotation = Quaternion.Euler(0f, 18f, 0f);
+            Primitive(env, PrimitiveType.Sphere, "BeachBall", new Vector3(0.7f, 0.24f, 16.0f), Vector3.one * 0.48f, Quaternion.identity, Lit(new Color32(0xEF, 0x47, 0x6F, 0xFF), 0.6f));
+            Primitive(env, PrimitiveType.Capsule, "Surfboard", new Vector3(-4.4f, 0.06f, 15.4f), new Vector3(0.55f, 0.95f, 0.07f), Quaternion.Euler(90f, 28f, 0f), Lit(new Color32(0x11, 0x8A, 0xB2, 0xFF), 0.7f));
+            Palm(env, new Vector3(-9.6f, 0f, 14.6f));
+            Palm(env, new Vector3(9.8f, 0f, 15.2f));
         }
 
         private static void Umbrella(Transform env, Vector3 at, Color canopy)
         {
-            Primitive(env, PrimitiveType.Cylinder, "UmbrellaPole", at + Vector3.up * 0.8f, new Vector3(0.07f, 0.8f, 0.07f), Quaternion.identity, Lit(Color.white, 0.4f));
-            Primitive(env, PrimitiveType.Sphere, "UmbrellaCanopy", at + Vector3.up * 1.6f, new Vector3(1.9f, 0.42f, 1.9f), Quaternion.identity, Lit(canopy, 0.35f));
+            Primitive(env, PrimitiveType.Cylinder, "UmbrellaPole", at + Vector3.up * 0.9f, new Vector3(0.08f, 0.9f, 0.08f), Quaternion.identity, Lit(Color.white, 0.4f));
+            Primitive(env, PrimitiveType.Sphere, "UmbrellaCanopy", at + Vector3.up * 1.8f, new Vector3(2.2f, 0.5f, 2.2f), Quaternion.identity, Lit(canopy, 0.35f));
         }
 
         private static void Palm(Transform env, Vector3 at)
         {
-            Primitive(env, PrimitiveType.Cylinder, "PalmTrunk", at + new Vector3(0.15f, 1.2f, 0f), new Vector3(0.22f, 1.2f, 0.22f), Quaternion.Euler(0f, 0f, -7f), Lit(new Color32(0xA9, 0x7C, 0x50, 0xFF)));
+            Primitive(env, PrimitiveType.Cylinder, "PalmTrunk", at + new Vector3(0.15f, 1.3f, 0f), new Vector3(0.26f, 1.3f, 0.26f), Quaternion.Euler(0f, 0f, -7f), Lit(new Color32(0xA9, 0x7C, 0x50, 0xFF)));
             for (int i = 0; i < 6; i++)
-                Primitive(env, PrimitiveType.Sphere, "PalmLeaf", at + new Vector3(0.3f, 2.35f, 0f) + Quaternion.Euler(0f, i * 60f, 0f) * new Vector3(0.7f, -0.15f, 0f),
-                    new Vector3(1.5f, 0.08f, 0.42f), Quaternion.Euler(0f, i * 60f, -18f), Lit(new Color32(0x2A, 0x9D, 0x5C, 0xFF), 0.3f));
+                Primitive(env, PrimitiveType.Sphere, "PalmLeaf", at + new Vector3(0.3f, 2.55f, 0f) + Quaternion.Euler(0f, i * 60f, 0f) * new Vector3(0.8f, -0.15f, 0f),
+                    new Vector3(1.8f, 0.09f, 0.5f), Quaternion.Euler(0f, i * 60f, -18f), Lit(new Color32(0x2A, 0x9D, 0x5C, 0xFF), 0.3f));
         }
 
         public static Transform Slab(Transform parent, string name, Vector3 pos, Vector3 size, Material m) =>
@@ -246,12 +283,13 @@ namespace RoadwaysGame.Slice
             return go.transform;
         }
 
-        private static void AddMesh(Transform parent, string name, Mesh mesh, Material m)
+        private static Transform AddMesh(Transform parent, string name, Mesh mesh, Material m)
         {
             var go = new GameObject(name, typeof(MeshFilter), typeof(MeshRenderer));
             go.transform.SetParent(parent, false);
             go.GetComponent<MeshFilter>().sharedMesh = mesh;
             go.GetComponent<MeshRenderer>().sharedMaterial = m;
+            return go.transform;
         }
     }
 }

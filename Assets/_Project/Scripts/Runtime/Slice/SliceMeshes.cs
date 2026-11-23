@@ -43,22 +43,34 @@ namespace RoadwaysGame.Slice
             }
         }
 
-        /// <summary>Rounded-rectangle outline at height y, shrunk by inset; counter-clockwise seen from above.</summary>
-        private static List<Vector3> Ring(float hw, float hl, float r, float y, float inset, int seg = 5)
+        /// <summary>Rounded-rectangle outline at height y, shrunk by inset; counter-clockwise seen from above.
+        /// Straight edges are subdivided every `step` so window pillars can be cut along the long sides.</summary>
+        private static List<Vector3> Ring(float hw, float hl, float r, float y, float inset, int seg = 5, float step = 0.12f)
         {
             var pts = new List<Vector3>();
             float w = hw - inset, l = hl - inset, rr = Mathf.Max(0.02f, r - inset);
             Vector2[] centres = { new Vector2(w - rr, l - rr), new Vector2(-(w - rr), l - rr), new Vector2(-(w - rr), -(l - rr)), new Vector2(w - rr, -(l - rr)) };
             for (int c = 0; c < 4; c++)
+            {
                 for (int s = 0; s <= seg; s++)
                 {
                     float a = (c + s / (float)seg) * Mathf.PI * 0.5f;
                     pts.Add(new Vector3(centres[c].x + Mathf.Cos(a) * rr, y, centres[c].y + Mathf.Sin(a) * rr));
                 }
+                // Straight run from this corner arc's end to the next arc's start.
+                Vector3 from = pts[pts.Count - 1];
+                float a1 = (c + 1) * Mathf.PI * 0.5f;
+                Vector2 nc = centres[(c + 1) % 4];
+                var to = new Vector3(nc.x + Mathf.Cos(a1) * rr, y, nc.y + Mathf.Sin(a1) * rr);
+                // Count from the un-inset dimensions so every ring of a body has the same number of points (Band pairs them by index).
+                float run = 2f * Mathf.Max(0f, (c % 2 == 0 ? hw : hl) - r);
+                int pieces = Mathf.Max(1, Mathf.RoundToInt(run / step));
+                for (int k = 1; k < pieces; k++) pts.Add(Vector3.Lerp(from, to, k / (float)pieces));
+            }
             return pts;
         }
 
-        private static void Band(Builder b, int sub, List<Vector3> lower, List<Vector3> upper)
+        private static void Band(Builder b, int sub, List<Vector3> lower, List<Vector3> upper, System.Func<Vector3, int> pick = null)
         {
             int n = lower.Count;
             for (int i = 0; i < n; i++)
@@ -67,8 +79,9 @@ namespace RoadwaysGame.Slice
                 int a0 = b.Add(lower[i]), a1 = b.Add(lower[j]), b0 = b.Add(upper[i]), b1 = b.Add(upper[j]);
                 Vector3 mid = (lower[i] + lower[j] + upper[i] + upper[j]) * 0.25f;
                 Vector3 outward = new Vector3(mid.x, 0f, mid.z) + Vector3.up * ((upper[i].y - lower[i].y) < 0.02f ? 1f : 0f); // flat ledges face up
-                b.Tri(sub, a0, b0, a1, outward);
-                b.Tri(sub, a1, b0, b1, outward);
+                int s = pick != null ? pick(mid) : sub;
+                b.Tri(s, a0, b0, a1, outward);
+                b.Tri(s, a1, b0, b1, outward);
             }
         }
 
@@ -94,7 +107,10 @@ namespace RoadwaysGame.Slice
             Band(b, BodySubmesh, bottom, skirt);
             Band(b, BodySubmesh, skirt, shoulder);
             Band(b, BodySubmesh, shoulder, glassLow);       // ledge where the windows step in
-            Band(b, GlassSubmesh, glassLow, glassHigh);
+            // Side windows: along the long sides, every ~0.4 units leave a body-coloured pillar between panes.
+            float pane = Mathf.Max(0.32f, Mathf.Min(0.46f, length / Mathf.Round(length / 0.42f)));
+            Band(b, GlassSubmesh, glassLow, glassHigh, mid =>
+                Mathf.Abs(mid.x) > hw * 0.7f && Mathf.Abs(mid.z) < hl - r * 0.6f && Mathf.Repeat(mid.z + hl, pane) < 0.1f ? BodySubmesh : GlassSubmesh);
             Band(b, BodySubmesh, glassHigh, roofEdge);      // roof overhang underside lip
             Band(b, BodySubmesh, roofEdge, roofLip);
             Band(b, BodySubmesh, roofLip, roof);            // bevel into the roof
@@ -134,6 +150,29 @@ namespace RoadwaysGame.Slice
                 for (int i = 0; i < seg; i++) b.Tri(0, hub, outer[i], outer[(i + 1) % seg], Vector3.right * sx);
             }
             return b.Build("SliceVehicleWheels");
+        }
+
+        /// <summary>Flat rounded rectangle (slot fill), facing up.</summary>
+        public static Mesh RoundedPlate(float width, float length, float radius)
+        {
+            var b = new Builder(1);
+            Cap(b, 0, Ring(width * 0.5f, length * 0.5f, radius, 0f, 0f, 6, 10f), Vector3.up);
+            return b.Build("SliceRoundedPlate");
+        }
+
+        /// <summary>Flat rounded-rectangle outline (slot border), facing up.</summary>
+        public static Mesh RoundedFrame(float width, float length, float radius, float thickness)
+        {
+            var b = new Builder(1);
+            List<Vector3> outer = Ring(width * 0.5f, length * 0.5f, radius, 0f, 0f, 6, 10f), inner = Ring(width * 0.5f, length * 0.5f, radius, 0f, thickness, 6, 10f);
+            for (int i = 0; i < outer.Count; i++)
+            {
+                int j = (i + 1) % outer.Count;
+                int o0 = b.Add(outer[i]), o1 = b.Add(outer[j]), i0 = b.Add(inner[i]), i1 = b.Add(inner[j]);
+                b.Tri(0, o0, i0, o1, Vector3.up);
+                b.Tri(0, o1, i0, i1, Vector3.up);
+            }
+            return b.Build("SliceRoundedFrame");
         }
 
         /// <summary>Flat roof arrow pointing +Z, sized to the roof so it reads at a glance (the reference's arrows are large).</summary>

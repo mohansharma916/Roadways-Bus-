@@ -54,7 +54,7 @@ namespace RoadwaysGame.Core
             for (int q = 0; q < s.Level.Queues.Length; q++)
             {
                 int h = s.QueueHead(q);
-                if (h < s.Level.Queues[q].Length && s.Level.Queues[q][h] == colour) return true;
+                if (h < s.QueueLength(q) && s.ColourAt(q, h) == colour) return true;
             }
             return false;
         }

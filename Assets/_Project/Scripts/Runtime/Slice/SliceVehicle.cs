@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace RoadwaysGame.Slice
 {
-    /// <summary>One depot vehicle: visuals built with the shared HD mesh generators, plus its motions.</summary>
+    /// <summary>One depot vehicle: the toy car model (or the old block model for vans and buses), its roof arrow, and its motions.</summary>
     public sealed class SliceVehicle : MonoBehaviour
     {
         private const float GroundY = 0.04f; // sits on the depot floor / apron surface
@@ -33,15 +33,23 @@ namespace RoadwaysGame.Slice
 
         private void Build()
         {
-            float height = Def.Kind == VehicleKind.Coupe ? 0.5f : Def.Kind == VehicleKind.Bus ? 0.64f : 0.58f;
             Color colour = ColorPaletteDatabase.GetPrimaryColor((ChilbiColorType)Def.Colour);
-
-            body = new GameObject("Body").transform;
-            body.SetParent(transform, false);
-            Part("Wheels", SliceMeshes.Wheels(Def.Width, Def.Length), SliceWorld.Lit(new Color32(0x26, 0x2B, 0x33, 0xFF), 0.3f));
-            Part("Hull", SliceMeshes.Body(Def.Width, Def.Length, height), SliceWorld.Lit(colour, 0.68f), SliceWorld.Lit(new Color32(0x1E, 0x2A, 0x3C, 0xFF), 0.92f));
+            float height;
+            if (Def.Kind == VehicleKind.Coupe)
+            {
+                body = ToyCar.Build(colour, transform);
+                height = ToyCar.RoofTop;
+            }
+            else // vans and buses keep the old block model until theirs are built
+            {
+                height = Def.Kind == VehicleKind.Bus ? 0.78f : 0.72f;
+                body = new GameObject("Body").transform;
+                body.SetParent(transform, false);
+                Part("Wheels", SliceMeshes.Wheels(Def.Width, Def.Length), SliceWorld.Lit(new Color32(0x26, 0x2B, 0x33, 0xFF), 0.3f));
+                Part("Hull", SliceMeshes.Body(Def.Width, Def.Length, height), SliceWorld.Lit(colour, 0.5f), SliceWorld.Lit(new Color32(0x1E, 0x2A, 0x3C, 0xFF), 0.92f));
+            }
             arrow = Part("Arrow", SliceMeshes.Arrow(Def.Width, Def.Length), SliceWorld.Lit(Color.white, 0.5f));
-            arrow.transform.localPosition = new Vector3(0f, height + 0.004f, 0f);
+            arrow.transform.localPosition = new Vector3(0f, height + 0.006f, 0f);
         }
 
         private GameObject Part(string name, Mesh mesh, params Material[] materials)
@@ -114,14 +122,13 @@ namespace RoadwaysGame.Slice
             arrow.SetActive(false);
             var go = new GameObject("Counter", typeof(TextMesh));
             go.transform.SetParent(transform, false);
-            go.transform.localPosition = new Vector3(0f, 0.9f, 0f);
+            go.transform.localPosition = new Vector3(0f, 1.15f, 0f);
             counter = go.GetComponent<TextMesh>();
-            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            Font font = SliceWorld.GameFont;
             counter.font = font;
             go.GetComponent<MeshRenderer>().sharedMaterial = font.material;
             counter.fontSize = 96;
-            counter.characterSize = 0.38f * 10f / counter.fontSize;
-            counter.fontStyle = FontStyle.Bold;
+            counter.characterSize = 0.55f * 10f / counter.fontSize;
             counter.anchor = TextAnchor.MiddleCenter;
             counter.color = Color.white;
             Refresh();

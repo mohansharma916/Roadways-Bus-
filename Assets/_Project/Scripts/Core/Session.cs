@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace RoadwaysGame.Core
@@ -31,8 +33,9 @@ namespace RoadwaysGame.Core
         private readonly int[] bayVehicle;
         private readonly int[] bayFill;
         private readonly int[] head;
+        private readonly int[][] queues; // own copy: boosters may reorder the part still waiting
         private readonly int totalPassengers;
-        private int boarded;
+        private int boarded, usableBays;
 
         public Session(LevelDef level)
         {
@@ -40,11 +43,15 @@ namespace RoadwaysGame.Core
             if (problem != null) throw new ArgumentException("Invalid level: " + problem);
             Level = level;
             present = Jam.AllMask(level.Vehicles.Length);
-            bayState = new BayState[level.BayCount];
-            bayVehicle = new int[level.BayCount];
-            bayFill = new int[level.BayCount];
+            // One spare bay beyond BayCount: the VIP spot, usable only after UnlockVipBay().
+            bayState = new BayState[level.BayCount + 1];
+            bayVehicle = new int[level.BayCount + 1];
+            bayFill = new int[level.BayCount + 1];
             for (int b = 0; b < bayVehicle.Length; b++) bayVehicle[b] = -1;
+            usableBays = level.BayCount;
             head = new int[level.Queues.Length];
+            queues = new int[level.Queues.Length][];
+            for (int q = 0; q < queues.Length; q++) queues[q] = (int[])level.Queues[q].Clone();
             foreach (int[] q in level.Queues) totalPassengers += q.Length;
         }
 
@@ -56,8 +63,11 @@ namespace RoadwaysGame.Core
             bayVehicle = (int[])s.bayVehicle.Clone();
             bayFill = (int[])s.bayFill.Clone();
             head = (int[])s.head.Clone();
+            queues = new int[s.queues.Length][];
+            for (int q = 0; q < queues.Length; q++) queues[q] = (int[])s.queues[q].Clone();
             totalPassengers = s.totalPassengers;
             boarded = s.boarded;
+            usableBays = s.usableBays;
         }
 
         public Session Clone() => new Session(this);
@@ -68,6 +78,12 @@ namespace RoadwaysGame.Core
         public int BayVehicle(int bay) => bayVehicle[bay];
         public int BayFill(int bay) => bayFill[bay];
         public int QueueHead(int queue) => head[queue];
+        public int QueueLength(int queue) => queues[queue].Length;
+        public int ColourAt(int queue, int index) => queues[queue][index];
+        public int UsableBays => usableBays;
+        public bool VipUnlocked => usableBays > Level.BayCount;
+        /// <summary>Index of the VIP bay (the one beyond the level's regular bays).</summary>
+        public int VipBay => Level.BayCount;
         public int Boarded => boarded;
         public int TotalPassengers => totalPassengers;
         public bool IsWon => boarded == totalPassengers;
@@ -79,7 +95,8 @@ namespace RoadwaysGame.Core
             if (!IsPresent(vehicle)) return DispatchResult.NotPresent;
             int blocker = Jam.FindBlocker(Level, present, vehicle);
             if (blocker >= 0) { detail = blocker; return DispatchResult.Blocked; }
-            int bay = Array.IndexOf(bayState, BayState.Empty);
+            int bay = -1;
+            for (int b = 0; b < usableBays && bay < 0; b++) if (bayState[b] == BayState.Empty) bay = b;
             if (bay < 0) return DispatchResult.NoFreeBay;
 
             present &= ~(1UL << vehicle);
@@ -100,7 +117,7 @@ namespace RoadwaysGame.Core
         {
             for (int q = 0; q < head.Length; q++)
             {
-                int[] queue = Level.Queues[q];
+                int[] queue = queues[q];
                 if (head[q] >= queue.Length) continue;
                 int colour = queue[head[q]];
                 for (int b = 0; b < bayState.Length; b++)
@@ -136,13 +153,13 @@ namespace RoadwaysGame.Core
             get
             {
                 if (IsWon) return false;
-                for (int b = 0; b < bayState.Length; b++)
+                for (int b = 0; b < usableBays; b++)
                     if (bayState[b] != BayState.Docked) return false;
                 for (int q = 0; q < head.Length; q++)
                 {
-                    if (head[q] >= Level.Queues[q].Length) continue;
-                    int colour = Level.Queues[q][head[q]];
-                    for (int b = 0; b < bayState.Length; b++)
+                    if (head[q] >= queues[q].Length) continue;
+                    int colour = queues[q][head[q]];
+                    for (int b = 0; b < usableBays; b++)
                         if (Level.Vehicles[bayVehicle[b]].Colour == colour) return false;
                 }
                 return true;
@@ -157,10 +174,75 @@ namespace RoadwaysGame.Core
             for (int b = 0; b < bayState.Length; b++) ReleaseBay(b);
         }
 
+        // ---------------------------------------------------------------- boosters
+
+        /// <summary>VIP booster: opens one extra bay for the rest of the level. False if already open.</summary>
+        public bool UnlockVipBay()
+        {
+            if (VipUnlocked) return false;
+            usableBays++;
+            return true;
+        }
+
+        /// <summary>
+        /// Arrange booster: in each queue, waiting passengers a parked (or arriving) vehicle can take move to the front,
+        /// and the rest are grouped by colour. Stable within a colour. Returns perm[q][k] = the old index of whoever is now
+        /// at index k, so the view can walk each person to their new place.
+        /// </summary>
+        public int[][] Arrange()
+        {
+            var wanted = new HashSet<int>();
+            for (int b = 0; b < usableBays; b++)
+                if (bayState[b] == BayState.Docked || bayState[b] == BayState.Incoming) wanted.Add(Level.Vehicles[bayVehicle[b]].Colour);
+            return Reorder((q, waiting) =>
+            {
+                int[] colours = queues[q];
+                var firstSeen = new List<int>();
+                foreach (int i in waiting) if (!firstSeen.Contains(colours[i])) firstSeen.Add(colours[i]);
+                return waiting.OrderBy(i => wanted.Contains(colours[i]) ? 0 : 1).ThenBy(i => firstSeen.IndexOf(colours[i])).ThenBy(i => i).ToList();
+            });
+        }
+
+        /// <summary>Jumble booster: shuffles each queue's waiting passengers (deterministic per seed). Same contract as Arrange.</summary>
+        public int[][] Jumble(int seed)
+        {
+            var rng = new Rng(seed);
+            return Reorder((q, waiting) =>
+            {
+                var list = new List<int>(waiting);
+                for (int i = list.Count - 1; i > 0; i--)
+                {
+                    int j = rng.Range(0, i + 1);
+                    (list[i], list[j]) = (list[j], list[i]);
+                }
+                return list;
+            });
+        }
+
+        /// <summary>Applies a new order to each queue's waiting part; `order(q, waitingIndices)` returns those indices reordered.</summary>
+        private int[][] Reorder(Func<int, List<int>, List<int>> order)
+        {
+            var perms = new int[queues.Length][];
+            for (int q = 0; q < queues.Length; q++)
+            {
+                int h = head[q], n = queues[q].Length;
+                var waiting = new List<int>();
+                for (int i = h; i < n; i++) waiting.Add(i);
+                List<int> sorted = order(q, waiting);
+                var perm = new int[n];
+                for (int i = 0; i < h; i++) perm[i] = i;
+                for (int k = 0; k < sorted.Count; k++) perm[h + k] = sorted[k];
+                var old = (int[])queues[q].Clone();
+                for (int k = 0; k < n; k++) queues[q][k] = old[perm[k]];
+                perms[q] = perm;
+            }
+            return perms;
+        }
+
         internal string StateKey()
         {
-            var sb = new StringBuilder(64);
-            sb.Append(present).Append('|');
+            var sb = new StringBuilder(96);
+            sb.Append(present).Append('|').Append(usableBays).Append('|');
             foreach (int h in head) sb.Append(h).Append(',');
             sb.Append('|');
             for (int b = 0; b < bayState.Length; b++)

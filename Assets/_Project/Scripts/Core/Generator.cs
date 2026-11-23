@@ -32,10 +32,12 @@ namespace RoadwaysGame.Core
     {
         public int Seed;
         public int VehicleCount = 18;
+        public float CoupeShare = 0.30f, BusShare = 0.30f; // rest are minivans; bigger vehicles mean bigger crowds
         public int[] Colours = { 0, 1, 2, 3, 4, 6 }; // red, yellow, blue, green, purple, pink
         public int QueueCount = 2;
         public int BayCount = 4;
-        public float MinX = -4.6f, MinY = -5.2f, MaxX = 4.6f, MaxY = 3.6f;
+        // Depot sized so a bus is ~1/6.5 of the screen width and the depot fills ~44 % of a 9:20 screen, as in the reference.
+        public float MinX = -7.2f, MinY = -13.0f, MaxX = 7.2f, MaxY = 4.6f;
         public float Gap = 0.14f;          // minimum air between vehicles
         public float DiagonalChance = 0.2f; // share of 45-degree vehicles; the rest are axis-aligned
     }
@@ -64,7 +66,7 @@ namespace RoadwaysGame.Core
             var placed = new List<VehicleDef>(spec.VehicleCount);
             for (int k = 0; k < spec.VehicleCount; k++)
             {
-                VehicleKind kind = PickKind(ref rng);
+                VehicleKind kind = PickKind(ref rng, spec);
                 int colour = spec.Colours[rng.Range(0, spec.Colours.Length)];
                 bool ok = false;
                 for (int tries = 0; tries < 300 && !ok; tries++)
@@ -95,10 +97,10 @@ namespace RoadwaysGame.Core
             return true;
         }
 
-        private static VehicleKind PickKind(ref Rng rng)
+        private static VehicleKind PickKind(ref Rng rng, JamSpec spec)
         {
             float r = rng.NextFloat();
-            return r < 0.45f ? VehicleKind.Coupe : r < 0.80f ? VehicleKind.Minivan : VehicleKind.Bus;
+            return r < spec.CoupeShare ? VehicleKind.Coupe : r < 1f - spec.BusShare ? VehicleKind.Minivan : VehicleKind.Bus;
         }
 
         /// <summary>One contiguous colour block per vehicle, shuffled, dealt alternately into the queues.</summary>

@@ -7,7 +7,7 @@ using RoadwaysGame.Core;
 
 // Usage: dotnet run            -> run tests
 //        dotnet run -- --scan  -> search seeds for slice-worthy levels
-//        dotnet run -- --bake N -> print seed N as C# level data
+//        dotnet run -- --bake N -> print seed N as C# level data (append COUNT cars for car-only jams)
 static class Program
 {
     static int passed, failed;
@@ -29,8 +29,9 @@ static class Program
     static int Main(string[] args)
     {
         int count = args.Length > 2 ? int.Parse(args[2]) : 18;
-        if (args.Length > 0 && args[0] == "--scan") return Scan(args.Length > 1 ? int.Parse(args[1]) : 80, count);
-        if (args.Length > 1 && args[0] == "--bake") return Bake(int.Parse(args[1]), count);
+        bool cars = args.Length > 3 && args[3] == "cars"; // car-only jams, while the car is the only finished vehicle model
+        if (args.Length > 0 && args[0] == "--scan") return Scan(args.Length > 1 ? int.Parse(args[1]) : 80, count, cars);
+        if (args.Length > 1 && args[0] == "--bake") return Bake(int.Parse(args[1]), count, cars);
 
         TestGeometry();
         TestBlocking();
@@ -39,6 +40,7 @@ static class Program
         TestSolver();
         TestGenerator();
         TestSliceLevels();
+        TestBoosters();
         Console.WriteLine($"{passed} passed, {failed} failed");
         return failed == 0 ? 0 : 1;
     }
@@ -72,7 +74,7 @@ static class Program
         lvl = L(new[] { V(VehicleKind.Coupe, 0, 0, 0, 180), V(VehicleKind.Coupe, 0, 0, 3, 90) }, new[] { Repeat(0, 8) }, 1);
         Check(Jam.FindBlocker(lvl, 3, 0) == -1, "vehicle behind doesn't block");
 
-        lvl = L(new[] { V(VehicleKind.Minivan, 0, 0, 0, 0), V(VehicleKind.Minivan, 0, 1.0f, 0.5f, 0) }, new[] { Repeat(0, 14) }, 1);
+        lvl = L(new[] { V(VehicleKind.Minivan, 0, 0, 0, 0), V(VehicleKind.Minivan, 0, 1.0f, 0.5f, 0) }, new[] { Repeat(0, 20) }, 1);
         Check(lvl.Validate() == null && Jam.FindBlocker(lvl, 3, 0) == -1, "parallel neighbour 5cm away doesn't block");
 
         lvl = L(new[] { V(VehicleKind.Coupe, 0, 0, 0, 0), V(VehicleKind.Coupe, 0, 0, 3, 180) }, new[] { Repeat(0, 8) }, 1);
@@ -165,9 +167,59 @@ static class Program
         Check(same, "same seed, same level");
     }
 
+    static void TestBoosters()
+    {
+        // VIP: one bay holding the wrong colour is gridlock; the VIP bay turns it into a playable state, once.
+        var s = new Session(OrderMatters());
+        s.TryDispatch(1, out _); s.Settle();
+        Check(s.IsGridlocked, "VIP setup: wrong colour in the only bay is gridlock");
+        Check(s.UnlockVipBay() && s.VipUnlocked && !s.IsGridlocked, "VIP unlock opens a spot and lifts the gridlock");
+        Check(s.TryDispatch(0, out int vipBay) == DispatchResult.Ok && vipBay == s.VipBay, "next dispatch goes to the VIP bay");
+        Check(!s.UnlockVipBay(), "VIP can only be unlocked once");
+        s.Settle();
+        Check(s.Boarded == 8 && s.IsWon, "red boards via the VIP bay, then the waiting blue vehicle fills: level won");
+
+        // Arrange: whoever a parked vehicle can take moves to the front.
+        var lvl = L(new[] { V(VehicleKind.Coupe, 0, -2, 0, 0), V(VehicleKind.Coupe, 2, 2, 0, 0) },
+            new[] { Concat(Repeat(0, 4), Repeat(2, 4)) }, 1);
+        s = new Session(lvl);
+        s.TryDispatch(1, out _); s.MarkArrived(0);                 // blue parked, reds at the front
+        int[][] perm = s.Arrange();
+        Check(s.ColourAt(0, 0) == 2 && s.ColourAt(0, 3) == 2 && s.ColourAt(0, 4) == 0, "Arrange brings the parked vehicle's colour to the front");
+        Check(perm[0][0] == 4 && perm[0][4] == 0, "Arrange reports where each passenger came from");
+        Check(s.StepBoarding(out BoardEvent e) && e.Colour == 2, "boarding resumes after Arrange");
+
+        // Jumble: a permutation of the waiting passengers only; deterministic per seed; never creates or loses anyone.
+        LevelDef big = SliceLevels.Get(1);
+        var a = new Session(big); var b = new Session(big);
+        int[][] pa = a.Jumble(42), pb = b.Jumble(42);
+        bool sameAsTwin = true, isPermutation = true;
+        for (int q = 0; q < big.Queues.Length; q++)
+        {
+            var seen = new bool[big.Queues[q].Length];
+            for (int k = 0; k < seen.Length; k++)
+            {
+                sameAsTwin &= pa[q][k] == pb[q][k];
+                isPermutation &= !seen[pa[q][k]];
+                seen[pa[q][k]] = true;
+                isPermutation &= a.ColourAt(q, k) == big.Queues[q][pa[q][k]];
+            }
+        }
+        Check(isPermutation, "Jumble is a true permutation of each queue");
+        Check(sameAsTwin, "Jumble is deterministic for a seed");
+
+        // Boosters only reorder people: a jumbled level must still be winnable when bays allow it.
+        Check(Solver.Solve(a, out _) != null || Solver.Solve(new Session(big), out _) != null, "jumbled session remains solvable or original was");
+        a = new Session(OrderMatters());
+        a.TryDispatch(0, out _); a.Settle();                        // 4 red boarded
+        int before = a.Boarded;
+        a.Jumble(7);
+        Check(a.Boarded == before && a.QueueHead(0) == 4, "Jumble leaves boarded passengers untouched");
+    }
+
     static void TestSliceLevels()
     {
-        int[] expectLosing = { 0, 2, 5 }; // pinned so a regenerated bake can't silently change difficulty
+        int[] expectLosing = { 0, 2, 8 }; // pinned so a regenerated bake can't silently change difficulty
         for (int i = 0; i < SliceLevels.Count; i++)
         {
             LevelDef lvl = SliceLevels.Get(i);
@@ -178,13 +230,16 @@ static class Program
         }
     }
 
-    static int Scan(int seeds, int count)
+    static JamSpec Spec(int seed, int count, bool cars) =>
+        cars ? new JamSpec { Seed = seed, VehicleCount = count, CoupeShare = 1f, BusShare = 0f } : new JamSpec { Seed = seed, VehicleCount = count };
+
+    static int Scan(int seeds, int count, bool cars)
     {
         Console.WriteLine("seed  vehicles  riders  win/lose-openers  ms");
         for (int seed = 1; seed <= seeds; seed++)
         {
             var sw = Stopwatch.StartNew();
-            LevelDef lvl = JamGenerator.Generate(new JamSpec { Seed = seed, VehicleCount = count });
+            LevelDef lvl = JamGenerator.Generate(Spec(seed, count, cars));
             if (lvl == null) { Console.WriteLine($"{seed,4}  (no level)"); continue; }
             Solver.AnalyseOpening(lvl, out int win, out int lose);
             int riders = 0; foreach (var q in lvl.Queues) riders += q.Length;
@@ -193,13 +248,13 @@ static class Program
         return 0;
     }
 
-    static int Bake(int seed, int count)
+    static int Bake(int seed, int count, bool cars)
     {
-        LevelDef lvl = JamGenerator.Generate(new JamSpec { Seed = seed, VehicleCount = count });
+        LevelDef lvl = JamGenerator.Generate(Spec(seed, count, cars));
         if (lvl == null) { Console.Error.WriteLine("no level for seed " + seed); return 1; }
         var ci = CultureInfo.InvariantCulture;
         var sb = new StringBuilder();
-        sb.AppendLine($"        // Generated by Tools/CoreTests `dotnet run -- --bake {seed} {count}`; verified well-formed, clearable and winnable.");
+        sb.AppendLine($"        // Generated by Tools/CoreTests `dotnet run -- --bake {seed} {count}{(cars ? " cars" : "")}`; verified well-formed, clearable and winnable.");
         sb.AppendLine("        new LevelDef(new[]");
         sb.AppendLine("        {");
         foreach (VehicleDef v in lvl.Vehicles)

@@ -25,7 +25,8 @@ namespace RoadwaysGame.Core
         // Dimensions mirror BusMeshGenerator.GetDimensions so logic and meshes agree.
         public float Length => Kind == VehicleKind.Coupe ? 1.35f : Kind == VehicleKind.Bus ? 2.45f : 1.90f;
         public float Width => Kind == VehicleKind.Coupe ? 0.88f : Kind == VehicleKind.Bus ? 1.05f : 0.95f;
-        public int Capacity => Kind == VehicleKind.Coupe ? 4 : Kind == VehicleKind.Bus ? 10 : 7;
+        // Bigger vehicles carry far more, as in the reference (its walkthrough cites buses of 16 and 40): that is what fills the crowd ring.
+        public int Capacity => Kind == VehicleKind.Coupe ? 4 : Kind == VehicleKind.Bus ? 16 : 10;
 
         public Vector2 Forward
         {
