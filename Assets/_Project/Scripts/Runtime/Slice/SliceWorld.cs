@@ -69,6 +69,17 @@ namespace RoadwaysGame.Slice
             return m;
         }
 
+        /// <summary>See-through material (Resources/Slice/Glass.mat: the Lit template set to Transparent); c.a is the opacity.</summary>
+        public static Material Glass(Color c, float smoothness)
+        {
+            string key = "Glass" + ColorUtility.ToHtmlStringRGBA(c) + smoothness;
+            if (Materials.TryGetValue(key, out Material m) && m != null) return m;
+            m = new Material(Template("Glass")) { name = "Slice_" + key, color = c };
+            m.SetFloat("_Smoothness", smoothness);
+            Materials[key] = m;
+            return m;
+        }
+
         public static Vector3 SlotCenter(int slot) => new Vector3((slot - (SlotCount - 1) * 0.5f) * BayPitch, 0f, BayZ);
         public static Quaternion SlotRotation => Quaternion.Euler(0f, BayYawDeg, 0f);
 
@@ -130,6 +141,8 @@ namespace RoadwaysGame.Slice
         }
 
         /// <summary>Sun and ambient shared by the slice and the vehicle preview.</summary>
+        public static readonly Quaternion SunRotation = Quaternion.Euler(50f, 125f, 0f);
+
         public static void SetupLighting(Transform env)
         {
             // Neutral bright daylight, as in the reference; sun from behind-left so shadows fall toward the camera's lower right.
@@ -141,7 +154,7 @@ namespace RoadwaysGame.Slice
             sun.intensity = 1.15f;
             sun.shadows = LightShadows.Soft;
             sun.shadowStrength = 0.45f;
-            sun.transform.rotation = Quaternion.Euler(50f, 125f, 0f);
+            sun.transform.rotation = SunRotation;
             RenderSettings.sun = sun;
             RenderSettings.ambientMode = AmbientMode.Trilight;
             RenderSettings.ambientSkyColor = new Color(0.86f, 0.9f, 0.97f);

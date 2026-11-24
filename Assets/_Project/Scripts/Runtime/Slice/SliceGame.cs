@@ -81,6 +81,7 @@ namespace RoadwaysGame.Slice
             atHome = ended = true;
             banner.SetActive(false);
             gameHud.gameObject.SetActive(false);
+            RenderSettings.sun.transform.rotation = SliceHome.SunRotation;
             home.Show(SavedLevel, PlayerPrefs.GetInt(CoinsKey, 0));
             Frame(Screen.width, Screen.height, Screen.safeArea);
         }
@@ -93,6 +94,7 @@ namespace RoadwaysGame.Slice
             home.Hide();
             homeSettings.SetActive(false);
             gameHud.gameObject.SetActive(true);
+            RenderSettings.sun.transform.rotation = SliceWorld.SunRotation;
             if (level != null) Destroy(level.gameObject);
             levelIndex = index;
             ended = false;

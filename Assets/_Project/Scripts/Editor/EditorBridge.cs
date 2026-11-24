@@ -169,6 +169,22 @@ namespace RoadwaysGame.Editor
                     game.GoHomeForTest();
                     return "home";
                 }
+                case "model": // model NAME: how Unity imported Resources/Models/NAME (node transforms, mesh bounds, materials)
+                {
+                    var go = Resources.Load<GameObject>("Models/" + arg);
+                    if (go == null) return "error: no model " + arg;
+                    var sb = new System.Text.StringBuilder();
+                    foreach (Transform t in go.GetComponentsInChildren<Transform>())
+                    {
+                        sb.Append($"{t.name} pos={t.localPosition:F2} rot={t.localEulerAngles:F0} scale={t.localScale:F2}");
+                        var mf = t.GetComponent<MeshFilter>();
+                        var mr = t.GetComponent<MeshRenderer>();
+                        if (mf != null) sb.Append($" mesh={mf.sharedMesh.bounds.center:F2}/{mf.sharedMesh.bounds.size:F2} tris={mf.sharedMesh.triangles.Length / 3}");
+                        if (mr != null) sb.Append(" mats=" + string.Join(",", Array.ConvertAll(mr.sharedMaterials, m => m == null ? "null" : m.name)));
+                        sb.Append(" | ");
+                    }
+                    return sb.ToString();
+                }
                 case "back": // the Android Back key
                 {
                     var game = UnityEngine.Object.FindAnyObjectByType<RoadwaysGame.Slice.SliceGame>();
