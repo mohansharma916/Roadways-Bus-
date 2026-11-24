@@ -1,6 +1,6 @@
 {
   "stage": "prototype",
-  "next": "Decide which Home features come next (shop, daily rewards, events) now that Home, level, win/fail and Back connect",
+  "next": "User reviews the Blender-made Home street and depot vehicles in Unity; then decide Home UI extras (avatar, coin +, event bar, side buttons)",
   "blockers": [],
-  "updatedAt": "2026-11-24T12:38:16Z"
+  "updatedAt": "2026-11-24T13:11:19Z"
 }
