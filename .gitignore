@@ -43,5 +43,10 @@ ehthumbs.db
 Tools/**/bin/
 !Tools/CoreTests/CoreTests.csproj
 
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+
 # project-track: local activity log
 .project-track/activity.jsonl
