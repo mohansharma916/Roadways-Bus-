@@ -45,7 +45,7 @@ namespace RoadwaysGame.Slice
         private bool atHome;
         private RectTransform safeRoot;
         private TextMeshProUGUI levelLabel, bannerTitle, bannerButtonLabel;
-        private GameObject banner, pausePanel;
+        private GameObject banner, bannerReward, pausePanel;
         private readonly int[] boosterCount = new int[3];
         private readonly Image[] boosterFace = new Image[3];
         private readonly TextMeshProUGUI[] boosterBadge = new TextMeshProUGUI[3];
@@ -118,12 +118,32 @@ namespace RoadwaysGame.Slice
         private void Update()
         {
             if (Screen.width != framedFor.x || Screen.height != framedFor.y) Frame(Screen.width, Screen.height, Screen.safeArea);
-            if (atHome) return;
-            // Android Back arrives as Escape: it pauses rather than quitting (audit §B-2).
-            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame && !ended) SetPaused(!paused);
-            if (paused) return;
+            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame) Back(); // Android Back arrives as Escape
+            if (atHome || paused) return;
             if (!ended) HandleTap();
             CheckEnd();
+        }
+
+        /// <summary>Back steps out one level: popup → Home screen → background. Mid-level it pauses rather than quitting (audit §B-2).</summary>
+        private void Back()
+        {
+            if (atHome)
+            {
+                if (homeSettings.activeSelf) homeSettings.SetActive(false);
+                else SendToBackground();
+            }
+            else if (ended) ShowHome();
+            else SetPaused(!paused);
+        }
+
+        /// <summary>What Android itself does for Back on an app's root screen: background it, ready to resume, rather than kill it.</summary>
+        private static void SendToBackground()
+        {
+#if UNITY_ANDROID && !UNITY_EDITOR
+            using var player = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            using var activity = player.GetStatic<AndroidJavaObject>("currentActivity");
+            activity.Call<bool>("moveTaskToBack", true);
+#endif
         }
 
         // ---------------------------------------------------------------- input
@@ -326,6 +346,7 @@ namespace RoadwaysGame.Slice
         public void GoHomeForTest() => GoHome();
         public void UseBoosterForTest(int which) => UseBooster(which);
         public void SetPausedForTest(bool value) => SetPaused(value);
+        public void BackForTest() => Back();
 
         /// <summary>Plays the current level with the solver's winning order, through the real screen-tap path.
         /// speed > 1 runs the whole game faster (the loop takes ~10 s a lap), for verification only.</summary>
@@ -475,7 +496,7 @@ namespace RoadwaysGame.Slice
             pausePanel = SettingsPopup.Build(canvasGo.transform, close: () => SetPaused(false), home: GoHome, restart: () => LoadLevel(levelIndex));
             pausePanel.SetActive(false);
 
-            banner = Overlay(canvasGo.transform, "", "", () => LoadLevel(session.IsWon ? (levelIndex + 1) % SliceLevels.Count : levelIndex), out bannerTitle, out bannerButtonLabel);
+            banner = Overlay(canvasGo.transform, () => LoadLevel(session.IsWon ? (levelIndex + 1) % SliceLevels.Count : levelIndex));
             banner.SetActive(false);
 
             home = new GameObject("Home").AddComponent<SliceHome>();
@@ -485,24 +506,26 @@ namespace RoadwaysGame.Slice
             homeSettings.SetActive(false);
         }
 
-        private GameObject Overlay(Transform canvas, string title, string action, UnityEngine.Events.UnityAction onAction, out TextMeshProUGUI titleText, out TextMeshProUGUI actionText)
+        /// <summary>Level-end card: title, the coins just won (wins only), and Home beside Next level / Try again.</summary>
+        private GameObject Overlay(Transform canvas, Action onAction)
         {
             var dim = new GameObject("Overlay", typeof(Image)).GetComponent<Image>();
             dim.transform.SetParent(canvas, false);
             dim.color = new Color(0.05f, 0.08f, 0.15f, 0.5f);
             Hud.Stretch(dim.rectTransform);
-            var card = new GameObject("Card", typeof(Image)).GetComponent<Image>();
-            card.transform.SetParent(dim.transform, false);
-            card.sprite = Hud.Rounded;
-            card.type = Image.Type.Sliced;
-            card.color = new Color32(0xFF, 0xF8, 0xEF, 0xFF);
-            card.rectTransform.sizeDelta = new Vector2(820f, 760f);
-            titleText = Hud.Text(card.rectTransform, title, 110, new Vector2(0.5f, 0.5f), new Vector2(0f, 200f), new Vector2(780f, 160f));
-            titleText.color = new Color32(0x3A, 0x2A, 0x3E, 0xFF);
-            titleText.outlineWidth = 0f;
-            Button go = Hud.ChunkyButton(card.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0f, -40f), new Vector2(560f, 180f), out _, new Color32(0x2E, 0xCC, 0x71, 0xFF));
-            actionText = Hud.Text(go.transform, action, 70, new Vector2(0.5f, 0.5f), new Vector2(0f, 6f), new Vector2(540f, 160f));
-            go.onClick.AddListener(onAction);
+            RectTransform card = Hud.Box(dim.transform, "Card", new Color32(0xFF, 0xF8, 0xEF, 0xFF), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(820f, 640f));
+            bannerTitle = Hud.Text(card, "", 110, new Vector2(0.5f, 0.5f), new Vector2(0f, 180f), new Vector2(780f, 160f));
+            bannerTitle.color = new Color32(0x3A, 0x2A, 0x3E, 0xFF);
+            bannerTitle.outlineWidth = 0f;
+
+            bannerReward = new GameObject("Reward", typeof(RectTransform));
+            bannerReward.transform.SetParent(card, false);
+            Image coin = Hud.Icon(bannerReward.transform, Icons.Coin(), 130f);
+            coin.rectTransform.anchoredPosition = new Vector2(-90f, 20f);
+            Hud.Text(bannerReward.transform, "+" + CoinsPerWin, 96, new Vector2(0.5f, 0.5f), new Vector2(80f, 20f), new Vector2(240f, 130f));
+
+            SettingsPopup.ActionButton(card, "Home", -190f, SettingsPopup.Orange, GoHome);
+            bannerButtonLabel = SettingsPopup.ActionButton(card, "", 190f, SettingsPopup.Green, onAction);
             return dim.gameObject;
         }
 
@@ -518,6 +541,7 @@ namespace RoadwaysGame.Slice
             }
             bannerTitle.text = won ? "Level complete!" : "Out of spots!";
             bannerButtonLabel.text = won ? "Next level" : "Try again";
+            bannerReward.SetActive(won);
             banner.SetActive(true);
         }
 

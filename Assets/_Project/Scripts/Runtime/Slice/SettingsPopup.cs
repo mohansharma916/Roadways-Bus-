@@ -28,7 +28,8 @@ namespace RoadwaysGame.Slice
         private static readonly Color Panel = new Color32(0xFF, 0xF6, 0xE0, 0xFF), RowsBox = new Color32(0xEF, 0xE2, 0xC0, 0xFF);
         private static readonly Color32 Ink = new Color32(0xA8, 0x7E, 0x3C, 0xFF), Brown = new Color32(0x6B, 0x3A, 0x12, 0xFF);
         private static readonly Color SwitchOn = new Color32(0x2E, 0xCC, 0x5A, 0xFF), SwitchOff = new Color32(0xB8, 0x9E, 0x62, 0xFF);
-        private static readonly Color Orange = new Color32(0xFF, 0xA4, 0x1C, 0xFF), Green = new Color32(0x3D, 0xBE, 0x4B, 0xFF), CloseRed = new Color32(0xFF, 0x74, 0x2E, 0xFF);
+        internal static readonly Color Orange = new Color32(0xFF, 0xA4, 0x1C, 0xFF), Green = new Color32(0x3D, 0xBE, 0x4B, 0xFF);
+        private static readonly Color CloseRed = new Color32(0xFF, 0x74, 0x2E, 0xFF);
 
         /// <summary>Builds the popup (inactive) under the canvas. Dims and blocks the game behind it while shown. With no home or
         /// restart action (on the Home screen) it has just the switches.</summary>
@@ -107,12 +108,14 @@ namespace RoadwaysGame.Slice
             button.onClick.AddListener(() => { on = !on; changed(on); Show(); });
         }
 
-        private static void ActionButton(RectTransform panel, string text, float x, Color colour, Action onClick)
+        /// <summary>Wide chunky button along a card's bottom edge (Home / Restart here, and on the level-end card).</summary>
+        internal static TextMeshProUGUI ActionButton(RectTransform panel, string text, float x, Color colour, Action onClick)
         {
             Button b = Hud.ChunkyButton(panel, new Vector2(0.5f, 0f), new Vector2(x, 44f), new Vector2(340f, 150f), out _, colour);
             TextMeshProUGUI label = Hud.Text(b.transform, text, 72, new Vector2(0.5f, 0.5f), new Vector2(0f, 8f), new Vector2(320f, 140f));
             label.outlineColor = Color.Lerp(colour, Color.black, 0.45f);
             b.onClick.AddListener(() => onClick());
+            return label;
         }
     }
 }

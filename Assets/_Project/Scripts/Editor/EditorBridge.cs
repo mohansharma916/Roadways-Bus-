@@ -169,6 +169,13 @@ namespace RoadwaysGame.Editor
                     game.GoHomeForTest();
                     return "home";
                 }
+                case "back": // the Android Back key
+                {
+                    var game = UnityEngine.Object.FindAnyObjectByType<RoadwaysGame.Slice.SliceGame>();
+                    if (game == null) return "error: no SliceGame running";
+                    game.BackForTest();
+                    return "back";
+                }
                 case "level":
                 {
                     var game = UnityEngine.Object.FindAnyObjectByType<RoadwaysGame.Slice.SliceGame>();
